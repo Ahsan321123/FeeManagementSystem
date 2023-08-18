@@ -9,7 +9,7 @@ const Voucher = ({ student, closeModal }) => {
 
   const handleModalSubmit = (e) => {
     e.preventDefault();
-    // Handle the submit logic here
+ 
   };
 
 
@@ -21,7 +21,7 @@ const Voucher = ({ student, closeModal }) => {
         <div className="modal-content">
           <div className="modal-header">
             <h5 className="modal-title">Generate Voucher</h5>
-            {/* Removed close button as setShowModal is not passed */}
+ 
           </div>
           <div className="modal-body">
             <form onSubmit={handleModalSubmit}>
@@ -42,7 +42,7 @@ const Voucher = ({ student, closeModal }) => {
               <div className="modal-footer">
                 <button type="submit" className="btn btn-primary">Save changes</button>
                 <button onClick={closeModal}  type="submit" className="btn btn-primary">close</button>
-                {/* Removed close button as setShowModal is not passed */}
+        
               </div>
             </form>
           </div>
