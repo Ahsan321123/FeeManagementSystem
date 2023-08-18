@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from "axios";
+import Voucher from '../Components/voucher'
 
 export default function Allstudents() {  
     
@@ -13,6 +14,7 @@ export default function Allstudents() {
     const [bankName, setBankName] = useState("");
     const [date, setDate] = useState();
     const [status, setStatus] = useState();
+    const [ showVoucher,setShowVoucher]=useState()
 
     const fetchStudents = async () => {
         const { data } = await axios.get('http://localhost:5000/api/v1/students');
@@ -44,10 +46,13 @@ export default function Allstudents() {
         setShowModal(true);
     }
 
-    const handleVoucher = (id) => {
-        axios.get(`http://localhost:5000/api/v1/student/${id}/voucher`).then(res => {
-            window.open(`http://localhost:5000/api/v1/student/${id}/voucher`, '_blank', 'noopener,noreferrer');
-        });
+    const handleVoucher = (id,student) => {
+        // axios.get(`http://localhost:5000/api/v1/student/${id}/voucher`).then(res => {
+        //     window.open(`http://localhost:5000/api/v1/student/${id}/voucher`, '_blank', 'noopener,noreferrer');
+        // });
+        setStudentID(id)
+        setShowVoucher(true)
+
     }
 
     const handleClassFilterChange = (event) => {
@@ -92,10 +97,11 @@ export default function Allstudents() {
                     {student.name}
                     <span>Fee Status : {student.status}</span>
                 </h5>
+
                 <div className="card-body">
                     <h5 className="card-title">Class {student.className}</h5>
                     <button className="btn btn-primary" onClick={() => handleUpdate(student._id)}>Update fee status</button>
-                    <button className="btn btn-primary mx-2" onClick={() => handleVoucher(student._id)}>Generate Voucher</button>
+                    <button className="btn btn-primary mx-2" onClick={() => handleVoucher(student._id,student   )}>Generate Voucher</button>
                 </div>
             </div>
         ))
@@ -103,6 +109,9 @@ export default function Allstudents() {
 
     const uniqueClasses = [...new Set(allStudent.map(student => student.className))];
 
+    const closeModal=()=>{
+        setShowVoucher(false)
+    }
     return (
         <>
             <div>
@@ -164,6 +173,8 @@ export default function Allstudents() {
                     </div>
                 )}
             </div>
+
+            {showVoucher && <Voucher closeModal={closeModal} student={allStudent.find(s=>s._id=== studentId )} />  } 
         </>
     );
 }
