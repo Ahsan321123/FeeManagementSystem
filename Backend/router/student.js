@@ -1,7 +1,7 @@
 const express= require('express')
 const router= express.Router()
 const {createStudent,createClass,getAllclasses}= require('../controllers/student')
-const {getAllStudents,generateVoucher,updateFeeStatus}=require('../controllers/feeCollection')
+const {getAllStudents,generateVoucher,updateFeeStatus, generateBatchVouchers}=require('../controllers/feeCollection')
 
 
 router.route('/students').get( getAllStudents)
@@ -11,7 +11,7 @@ router.route('/student/:id/updateStatus').post(updateFeeStatus)
 // router.route('/student/:id/voucher').post(generateFeeVoucher)
 router.route('/create/class').post(createClass)
 router.route('/classes').get(getAllclasses)
-
+router.route('/student/generateBatchVouchers').post(generateBatchVouchers)
 
 
 module.exports=router;

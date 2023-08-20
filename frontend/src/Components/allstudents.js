@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from "axios";
 import Voucher from '../Components/voucher'
+import { useNavigate } from 'react-router-dom';
 
 export default function Allstudents() {  
     
@@ -14,7 +15,8 @@ export default function Allstudents() {
     const [bankName, setBankName] = useState("");
     const [date, setDate] = useState();
     const [status, setStatus] = useState();
-    const [ showVoucher,setShowVoucher]=useState()
+    const [ batchVouchers,setBatchVouchers]=useState([])
+    const [batchStudents,setBatchStudents]=useState([])
 
     const fetchStudents = async () => {
         const { data } = await axios.get('http://localhost:5000/api/v1/students');
@@ -45,15 +47,16 @@ export default function Allstudents() {
         setStudentID(id);
         setShowModal(true);
     }
-
-    const handleVoucher = (id,student) => {
-        // axios.get(`http://localhost:5000/api/v1/student/${id}/voucher`).then(res => {
-        //     window.open(`http://localhost:5000/api/v1/student/${id}/voucher`, '_blank', 'noopener,noreferrer');
-        // });
+const navigate=useNavigate()
+    const handleVoucher = async  (id,student) => {
+   await axios.get(`http://localhost:5000/api/v1/student/${id}/voucher`).then(res => {
+   
+           navigate( '/voucher', {state: {studentData:student ,voucherData:res.data}})
+        });
         setStudentID(id)
-        setShowVoucher(true)
+           
 
-    }
+   }
 
     const handleClassFilterChange = (event) => {
         setClassFilter(event.target.value);
@@ -109,9 +112,32 @@ export default function Allstudents() {
 
     const uniqueClasses = [...new Set(allStudent.map(student => student.className))];
 
-    const closeModal=()=>{
-        setShowVoucher(false)
-    }
+
+// Generate All Vouchers 
+
+
+const  handleVouchersAll=(data)=>{
+
+const stundetIds=data.map((student)=>{
+return student._id  
+}) 
+generateAllVouchers(stundetIds)
+}
+
+const generateAllVouchers=async(StudentIds)=>{
+ await axios.post('http://localhost:5000/api/v1/student/generateBatchVouchers',{StudentIds} ).then(res=>{
+setBatchVouchers(res.data.vouchers)
+setBatchStudents(res.data.students)
+
+})
+
+}
+
+
+
+
+
+  
     return (
         <>
             <div>
@@ -135,6 +161,7 @@ export default function Allstudents() {
                 </div>
 
                 {filterByGr.length > 0 ? renderStudents(filterByGr) : filterData.length > 0 ? renderStudents(filterData) : renderStudents(allStudent)}
+       
 
                 {showModal && (
                     <div className="modal show d-block blurred-background" tabIndex="-1">
@@ -173,8 +200,8 @@ export default function Allstudents() {
                     </div>
                 )}
             </div>
-
-            {showVoucher && <Voucher closeModal={closeModal} student={allStudent.find(s=>s._id=== studentId )} />  } 
+            { filterData.length>0 && <button className="btn btn-primary mx-2" onClick={()=>handleVouchersAll(filterData)}>Generate All  Vouchers</button>    }
+            { batchVouchers.length >0 && <Voucher vouchers={batchVouchers}   students={batchStudents} />  }
         </>
     );
 }

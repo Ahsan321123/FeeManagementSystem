@@ -3,6 +3,7 @@ import {BrowserRouter as Router, Routes,Route,Link} from 'react-router-dom';
 import Allstudents from './allstudents';
 import CreateStudent from './createStudent';
 import CreateClass from './createClass';
+import Voucher from './voucher';
 export default function Sidebar() {
   return (
    <Router>
@@ -18,6 +19,7 @@ export default function Sidebar() {
         <Route path='/' element={<CreateStudent/>} ></Route>
         <Route path='/allstudents' element={<Allstudents/>} ></Route>
         <Route path='/createclass' element={<CreateClass/>} ></Route>
+        <Route path='/voucher' element={<Voucher/>} ></Route>
         {/* CreateClass */}
     </Routes>
    </Router>
