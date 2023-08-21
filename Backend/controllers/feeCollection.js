@@ -40,6 +40,7 @@ if(req.query.GRNo){
   
   }
    
+  // **** Generate Voucher for Specifice student logic 
 
   let nowInPakistan = new Date(new Intl.DateTimeFormat('en-US', {
     timeZone: 'Asia/Karachi',
@@ -70,10 +71,6 @@ return{
     dueDate: dueDateString,
     currentDate: currentDate
 }
-
-
-
-
 
 
 }
@@ -120,6 +117,9 @@ console.log(err)
 
 }
 
+
+   
+  // **** Generate Vouchers of All Students  by class 
 
 exports.generateBatchVouchers = async (req, res, next) => {
   try {

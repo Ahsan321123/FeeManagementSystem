@@ -47,17 +47,19 @@ export default function Allstudents() {
         setStudentID(id);
         setShowModal(true);
     }
+
+    //**** Generate Voucher for specific Student  */ 
 const navigate=useNavigate()
     const handleVoucher = async  (id,student) => {
    await axios.get(`http://localhost:5000/api/v1/student/${id}/voucher`).then(res => {
-   
+            // passing student data and navigating
            navigate( '/voucher', {state: {studentData:student ,voucherData:res.data}})
         });
         setStudentID(id)
            
 
    }
-
+// **********
     const handleClassFilterChange = (event) => {
         setClassFilter(event.target.value);
     }
@@ -133,7 +135,7 @@ setBatchStudents(res.data.students)
 
 }
 
-
+// ***********
 
 
 

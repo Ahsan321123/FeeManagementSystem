@@ -5,8 +5,10 @@ import { useLocation } from 'react-router-dom';
 
 const Voucher = ({batchVocuher,students}) => {
 
+    // Reciveing students Data in location object 
  const  location=useLocation()
  console.log(location.state)
+//  Getting Data
 const individualStudent = location.state?.studentData
 const individualvoucherData= location.state?.voucherData
 
@@ -148,13 +150,13 @@ const renderBatchVouchers = () => {
 </PDFViewer> 
   });
 }
-const 
+
 
   return (
 
 
 
-
+<div></div>
    
 
 )}
