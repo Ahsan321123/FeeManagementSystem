@@ -53,8 +53,10 @@ const navigate=useNavigate()
     const handleVoucher = async  (id,student) => {
    await axios.get(`http://localhost:5000/api/v1/student/${id}/voucher`).then(res => {
             // passing student data and navigating
-           navigate( '/voucher', {state: {studentData:student ,voucherData:res.data}})
+            console.log(res.data)
+            navigate( '/voucher', {state: {studentData:student ,voucherData:res.data,from:"generateSingle"}})
         });
+        
         setStudentID(id)
            
 
@@ -128,8 +130,12 @@ generateAllVouchers(stundetIds)
 
 const generateAllVouchers=async(StudentIds)=>{
  await axios.post('http://localhost:5000/api/v1/student/generateBatchVouchers',{StudentIds} ).then(res=>{
-setBatchVouchers(res.data.vouchers)
-setBatchStudents(res.data.students)
+
+
+// console.log(res.data.students)
+// console.log(res.data.vouchers)
+  navigate('/voucher',{state:{ studentsData:res.data.students,vouchersData:res.data.vouchers,from:"generateAll" }}  )
+
 
 })
 
@@ -202,8 +208,14 @@ setBatchStudents(res.data.students)
                     </div>
                 )}
             </div>
-            { filterData.length>0 && <button className="btn btn-primary mx-2" onClick={()=>handleVouchersAll(filterData)}>Generate All  Vouchers</button>    }
-            { batchVouchers.length >0 && <Voucher vouchers={batchVouchers}   students={batchStudents} />  }
+            { filterData.length>0 && <div className="d-flex justify-content-end mt-1" >
+    { filterData.length > 0 && 
+        <button className="btn btn-primary mx-2 " onClick={() => handleVouchersAll(filterData)}>
+            Generate All Vouchers
+        </button> 
+    }
+</div>   }
+            {/* { batchVouchers.length >0 && <Voucher vouchers={batchVouchers}   students={batchStudents} />  } */}
         </>
     );
 }
