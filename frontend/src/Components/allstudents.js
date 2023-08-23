@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from "axios";
 import Voucher from '../Components/voucher'
 import { useNavigate } from 'react-router-dom';
+import UpdateStudent from './updateStudent';
 
 export default function Allstudents() {  
     
@@ -17,6 +18,8 @@ export default function Allstudents() {
     const [status, setStatus] = useState();
     const [ batchVouchers,setBatchVouchers]=useState([])
     const [batchStudents,setBatchStudents]=useState([])
+    const [updateStudent,setUpdateStudent]=useState()
+    const [ updateModal,setUpdateModal]=useState(false)
 
     const fetchStudents = async () => {
         const { data } = await axios.get('http://localhost:5000/api/v1/students');
@@ -65,6 +68,12 @@ const navigate=useNavigate()
     const handleClassFilterChange = (event) => {
         setClassFilter(event.target.value);
     }
+    /////// Update Student 
+   const  handleStudentUpdate=(student)=>{
+     
+        setUpdateStudent(student)
+        setUpdateModal(true)
+    }
 
     const handleGrNum = (e) => {
         e.preventDefault();
@@ -109,6 +118,7 @@ const navigate=useNavigate()
                     <h5 className="card-title">Class {student.className}</h5>
                     <button className="btn btn-primary" onClick={() => handleUpdate(student._id)}>Update fee status</button>
                     <button className="btn btn-primary mx-2" onClick={() => handleVoucher(student._id,student   )}>Generate Voucher</button>
+                    <button className="btn btn-primary mx-2" onClick={() => handleStudentUpdate(student)}>Update Student</button>
                 </div>
             </div>
         ))
@@ -143,9 +153,6 @@ const generateAllVouchers=async(StudentIds)=>{
 
 // ***********
 
-
-
-  
     return (
         <>
             <div>
@@ -215,7 +222,9 @@ const generateAllVouchers=async(StudentIds)=>{
         </button> 
     }
 </div>   }
-            {/* { batchVouchers.length >0 && <Voucher vouchers={batchVouchers}   students={batchStudents} />  } */}
+
+
+           { updateModal && <UpdateStudent student= {updateStudent} />}
         </>
     );
 }

@@ -72,6 +72,30 @@ exports.createClass=async(req,res,next)=>{
         
         }
 
+
+        exports.updateStudent=async( req,res,next )=>{
+   
+            try{
+               const studentsId= req.params.id
+              const   updatedStudent= req.body
+                const student= await studentSchema.findOneAndUpdate({ _id:studentsId },
+                    updatedStudent,
+                    {new:true}
+                    
+                    )
+           res.status(200).json({
+            student
+           })
+
+
+            }
+            catch(err){
+                    console.log(err.message)
+            }
+
+
+        }
+
 // exports.studentByClass=async(req,res,next)=>{
 
 // try{
