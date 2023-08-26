@@ -1,22 +1,24 @@
 import React, { useState } from "react";
 import axios from 'axios'
-const UpdateStudent = ({ student,setUpdateModal,updatedStudent }) => {
+const UpdateStudent = ({ student,setUpdateModal,updatedStudent,classes }) => {
   const [studentId, setStudentId] = useState(student.Id);
   const [studentData,setStudentData]=useState( {
 name:student.name,
 className:student.className
 }  )
-
+console.log(classes)
 const handleModalSubmit= async(e)=>{
 // Api call 
 e.preventDefault()
-await axios.post(`http://localhost:5000/api/v1/studentnew/${student._id}/updateStudent`,studentData).then( res=>{
-   updatedStudent(res.data)
-}
-
-
-)
-
+await axios.post(`http://localhost:5000/api/v1/studentnew/${student._id}/updateStudent`, studentData)
+  .then(res => {
+    console.log("Received from backend:", res.data);
+    updatedStudent(res.data);
+  })
+  .catch(err => {
+    console.error("Error updating student:", err);
+  });
+setUpdateModal(false)
 
 
 }
@@ -49,23 +51,28 @@ await axios.post(`http://localhost:5000/api/v1/studentnew/${student._id}/updateS
                   />
                 </div>
                 
-                
-                <div className="mb-3">
-                  <label htmlFor="inputName" className="form-label">
-                    Class
-                  </label>
-                  <input
-                    type="text"
-                    value={studentData.className}
-                    onChange={(e) => setStudentData( prevData=>({ ...prevData,className:e.target.value }) )}
-                    className="form-control"
-                    id="inputName"
-                    placeholder="Enter bank name"
-                    autoComplete="off"
-                  />
-                </div>
-                
-                <div className="modal-footer">
+               
+   { <div className="mb-3"  >
+   <label htmlFor="inputClass" className="form-label">Class</label>
+   <select 
+      id="inputClass" 
+      className="form-control" 
+      onChange={e => setStudentData(prevClass=> ({ ...prevClass,className:e.target.value }) )}
+   >
+      <option>{studentData.className}</option>
+     
+      {
+      classes && classes.map((classList, index) => (
+         /* condition to check kay class wala drop down me already jo class select hai wo to nhi arhi agr alag hain to drop down show hoga  */
+        studentData.className !== classList.className &&(
+         <option key={index} value={classList.className} >
+         {classList.className}
+         </option>
+        )
+      ))}
+   </select>
+</div> }
+                   <div className="modal-footer">
                   <button type="submit" className="btn btn-primary">
                     Save changes
                   </button>

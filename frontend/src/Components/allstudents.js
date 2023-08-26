@@ -19,11 +19,17 @@ export default function Allstudents() {
   const [batchStudents, setBatchStudents] = useState([]);
   const [updateStudent, setUpdateStudent] = useState();
   const [updateModal, setUpdateModal] = useState(false);
+  const[ classes ,setClasses]=useState([])
 
   const fetchStudents = async () => {
     const { data } = await axios.get("http://localhost:5000/api/v1/students");
     setAllStudent(data.allStudents);
   };
+
+  const fetchClasses= async()=>{
+    const { data }= await axios.get( "http://localhost:5000/api/v1/classes")
+    setClasses(data.classData)
+}
 
   const fetchFilteredStudentsByClass = async (className) => {
     const { data } = await axios.get(
@@ -31,6 +37,11 @@ export default function Allstudents() {
     );
     setFilterData(data.student);
   };
+
+
+  useEffect(()=>{
+    fetchClasses()
+  },[fetchClasses])
 
   useEffect(() => {
     fetchStudents();
@@ -184,13 +195,12 @@ export default function Allstudents() {
 // Student Update 
 
 
-const updatedStudent =  (updatedStudentData)=>{
+const updatedStudent =  (updatedStudentData)=>{ 
 
-  
-  const newUpdateStudents =  allStudent.map(student => student._id === updatedStudentData._id ? updatedStudentData : student
-    );
-  
- setAllStudent(newUpdateStudents);
+ let newUpdateStudents = allStudent.map(student=>student._id == updatedStudentData.student._id ? updatedStudentData.student : student
+  );
+
+  setAllStudent(newUpdateStudents);
 
 } 
 
@@ -330,7 +340,7 @@ const updatedStudent =  (updatedStudentData)=>{
         </div>
       )}
 
-      {updateModal && <UpdateStudent student={updateStudent} setUpdateModal={setUpdateModal} updatedStudent={updatedStudent}  />}
+      {updateModal && <UpdateStudent student={updateStudent} setUpdateModal={setUpdateModal} updatedStudent={updatedStudent} classes={classes} />}
     </>
   );
 }
