@@ -96,6 +96,27 @@ exports.createClass=async(req,res,next)=>{
 
         }
 
+     exports.deleteStudent= async(req,res,next)=>{
+        
+        try{
+       const  studentId= req.params.id 
+    let  student= await studentSchema.findOneAndDelete({_id:studentId})
+            if( !student){
+                console.log("not student found")
+            }
+
+            res.status(200).json({
+                success:true,
+                message:"Student Deleted Successfully"
+            })
+
+        }catch(err){
+                console.log(err.message)
+        }
+
+
+     }   
+
 // exports.studentByClass=async(req,res,next)=>{
 
 // try{

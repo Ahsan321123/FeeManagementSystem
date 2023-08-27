@@ -4,6 +4,7 @@ import Voucher from "../Components/voucher";
 import { useNavigate } from "react-router-dom";
 import UpdateStudent from "./updateStudent";
 
+
 export default function Allstudents() {
   const [allStudent, setAllStudent] = useState([]);
   const [classFilter, setClassFilter] = useState("");
@@ -19,17 +20,21 @@ export default function Allstudents() {
   const [batchStudents, setBatchStudents] = useState([]);
   const [updateStudent, setUpdateStudent] = useState();
   const [updateModal, setUpdateModal] = useState(false);
-  const[ classes ,setClasses]=useState([])
+  const [classes, setClasses] = useState([]);
+  const [studentStatus, setStudentStatus] = useState("");
+
+  ///////////////////
+  
 
   const fetchStudents = async () => {
     const { data } = await axios.get("http://localhost:5000/api/v1/students");
     setAllStudent(data.allStudents);
   };
 
-  const fetchClasses= async()=>{
-    const { data }= await axios.get( "http://localhost:5000/api/v1/classes")
-    setClasses(data.classData)
-}
+  const fetchClasses = async () => {
+    const { data } = await axios.get("http://localhost:5000/api/v1/classes");
+    setClasses(data.classData);
+  };
 
   const fetchFilteredStudentsByClass = async (className) => {
     const { data } = await axios.get(
@@ -38,26 +43,26 @@ export default function Allstudents() {
     setFilterData(data.student);
   };
 
-
-  useEffect(()=>{
-    fetchClasses()
-  },[fetchClasses])
-
   useEffect(() => {
     fetchStudents();
+    fetchClasses()
+  }, []); // Yeh useEffect sirf component mount hone par run hoga.
 
+  useEffect(() => {
     if (classFilter && classFilter !== "All Classes") {
       fetchFilteredStudentsByClass(classFilter);
     } else {
       setFilterData([]);
     }
+  }, [classFilter]); // Yeh useEffect sirf classFilter change hone par run hoga.
 
+  useEffect(() => {
     if (grNum) {
       axios
         .get(`http://localhost:5000/api/v1/students?GRNo=${grNum}`)
         .then((res) => setFilterByGr(res.data.student));
     }
-  }, [classFilter, grNum]);
+  }, [grNum]);
 
   const handleUpdate = (id) => {
     setStudentID(id);
@@ -84,8 +89,10 @@ export default function Allstudents() {
     setStudentID(id);
   };
   // **********
-  const handleClassFilterChange = (event) => {
-    setClassFilter(event.target.value);
+  const handleClassFilterChange = (e) => {
+    setClassFilter(e.target.value);
+    console.log(  "handleClassFilter", e.target.value)
+
   };
   /////// Update Student
   const handleStudentUpdate = (student) => {
@@ -95,6 +102,7 @@ export default function Allstudents() {
 
   const handleGrNum = (e) => {
     e.preventDefault();
+
     let url = `http://localhost:5000/api/v1/students?GRNo=${grNum}`;
     axios.get(url).then((res) => setFilterByGr(res.data.student));
   };
@@ -127,6 +135,25 @@ export default function Allstudents() {
       });
   };
 
+  // delete
+  const handleStudentDelete = (student) => {
+    axios
+      .get(`http://localhost:5000/api/v1/student/${student._id}/delete`)
+      .then((res) => {
+        const updateStudent = allStudent.filter((s) => s._id !== student._id);
+        setAllStudent(updateStudent);
+
+        if (filterByGr) {
+          const updateStudent = filterByGr.filter((s) => s._id !== student._id);
+          setFilterByGr(updateStudent);
+        }
+        if (filterData) {
+          const updateStudent = filterData.filter((s) => s._id !== student._id);
+          setFilterData(updateStudent);
+        }
+      });
+  };
+
   const renderStudents = (studentsList) =>
     studentsList.map((student) => (
       <div className="card w-50 mx-auto my-3" key={student._id}>
@@ -153,7 +180,13 @@ export default function Allstudents() {
             className="btn btn-primary mx-2"
             onClick={() => handleStudentUpdate(student)}
           >
-            Update Student
+            View&Update Student
+          </button>
+          <button
+            className="btn btn-danger mx-2"
+            onClick={() => handleStudentDelete(student)}
+          >
+            Delete
           </button>
         </div>
       </div>
@@ -192,17 +225,38 @@ export default function Allstudents() {
 
   // ***********
 
-// Student Update 
+  // Student Update
+
+  const updatedStudent = (updatedStudentData) => {
+    let newUpdateStudents = allStudent.map((student) =>
+      student._id === updatedStudentData.student._id
+        ? updatedStudentData.student
+        : student
+    );
+
+    setAllStudent(newUpdateStudents);
+  };
 
 
-const updatedStudent =  (updatedStudentData)=>{ 
 
- let newUpdateStudents = allStudent.map(student=>student._id == updatedStudentData.student._id ? updatedStudentData.student : student
-  );
+// rendering 
+let studentsToRender = allStudent;
 
-  setAllStudent(newUpdateStudents);
+// Pehle class filter
+if (classFilter && classFilter !== "") {
+  studentsToRender = studentsToRender.filter(s => s.className === classFilter);
+}
 
-} 
+// Phir status filter
+if (studentStatus) {
+  studentsToRender = studentsToRender.filter(s => s.status === studentStatus);
+}
+
+// Phir GR number filter
+if (filterByGr.length > 0) {
+  studentsToRender = filterByGr;
+}
+
 
 
   return (
@@ -217,7 +271,7 @@ const updatedStudent =  (updatedStudentData)=>{
               className="form-select"
               id="classFilter"
               value={classFilter}
-              onChange={handleClassFilterChange}
+              onChange={(e)=>handleClassFilterChange(e)}
             >
               <option value="">All Classes</option>
               {uniqueClasses.map((c) => (
@@ -227,6 +281,24 @@ const updatedStudent =  (updatedStudentData)=>{
               ))}
             </select>
           </div>
+
+          {/* Filter By Status */}
+          <div className="col-md-3">
+            <label htmlFor="classFilter" className="d-block mb-1">
+              Filter by Status:
+            </label>
+            <select
+              className="form-select"
+              id="classFilter"
+              value={studentStatus}
+              onChange={(e) => setStudentStatus(e.target.value)}
+            >
+              <option value=""> All </option>
+              <option value="Paid">paid</option>
+              <option value="pending">pending</option>
+            </select>
+          </div>
+
           <div className="col-md-4">
             <label htmlFor="grNum" className="d-block mb-1">
               Filter by Gr:
@@ -247,11 +319,10 @@ const updatedStudent =  (updatedStudentData)=>{
           </div>
         </div>
 
-        {filterByGr.length > 0
-          ? renderStudents(filterByGr)
-          : filterData.length > 0
-          ? renderStudents(filterData)
-          : renderStudents(allStudent)}
+      {/* render  */}
+
+      {renderStudents(studentsToRender)}
+
 
         {showModal && (
           <div className="modal show d-block blurred-background" tabIndex="-1">
@@ -340,7 +411,15 @@ const updatedStudent =  (updatedStudentData)=>{
         </div>
       )}
 
-      {updateModal && <UpdateStudent student={updateStudent} setUpdateModal={setUpdateModal} updatedStudent={updatedStudent} classes={classes} />}
+     
+      {updateModal && (
+        <UpdateStudent
+          student={updateStudent}
+          setUpdateModal={setUpdateModal}
+          updatedStudent={updatedStudent}
+          classes={classes}
+        />
+      )}
     </>
   );
 }
