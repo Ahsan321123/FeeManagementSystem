@@ -3,7 +3,8 @@ import axios from "axios";
 import Voucher from "../Components/voucher";
 import { useNavigate } from "react-router-dom";
 import UpdateStudent from "./updateStudent";
-
+import Loader from '../Components/Loader'
+import { toast } from "react-toastify";
 
 export default function Allstudents() {
   const [allStudent, setAllStudent] = useState([]);
@@ -22,13 +23,14 @@ export default function Allstudents() {
   const [updateModal, setUpdateModal] = useState(false);
   const [classes, setClasses] = useState([]);
   const [studentStatus, setStudentStatus] = useState("");
+  const [loading,setLoading]= useState(false);
 
-  ///////////////////
-  
 
   const fetchStudents = async () => {
+    setLoading(true)
     const { data } = await axios.get("http://localhost:5000/api/v1/students");
     setAllStudent(data.allStudents);
+    setLoading(false)
   };
 
   const fetchClasses = async () => {
@@ -140,6 +142,10 @@ export default function Allstudents() {
     axios
       .get(`http://localhost:5000/api/v1/student/${student._id}/delete`)
       .then((res) => {
+        toast.success('Student removed',{
+          position:toast.POSITION.TOP_CENTER,
+          autoClose:2000
+        })
         const updateStudent = allStudent.filter((s) => s._id !== student._id);
         setAllStudent(updateStudent);
 
@@ -151,6 +157,11 @@ export default function Allstudents() {
           const updateStudent = filterData.filter((s) => s._id !== student._id);
           setFilterData(updateStudent);
         }
+      }).catch(()=>{
+        toast.error('Failed to remove student',{
+          position:toast.POSITION.TOP_CENTER,
+          autoClose:2000
+        })
       });
   };
 
@@ -258,10 +269,12 @@ if (filterByGr.length > 0) {
 }
 
 
-
   return (
     <>
       <div>
+        {loading && <Loader/>}
+
+        
         <div className="row justify-content-end mx-5 my-4">
           <div className="col-md-3">
             <label htmlFor="classFilter" className="d-block mb-1">
@@ -321,7 +334,7 @@ if (filterByGr.length > 0) {
 
       {/* render  */}
 
-      {renderStudents(studentsToRender)}
+      {(renderStudents(studentsToRender))}
 
 
         {showModal && (

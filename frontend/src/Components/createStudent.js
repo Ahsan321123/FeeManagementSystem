@@ -1,5 +1,8 @@
 import React, { useEffect, useState } from 'react'
 import axios from 'axios';
+import {toast} from 'react-toastify'
+import Loader from './Loader'
+
 export default function CreateStudent() {
 
     const [name,setName]=useState('')
@@ -14,8 +17,8 @@ export default function CreateStudent() {
     const [CNIC,setCNIC]=useState('')
     const [GRNo,setGRNo]=useState('')
     const [classes,setClasses ]=useState()
-
-
+    const [loading,setLoading] = useState(false)
+ 
     useEffect(()=>{
       axios.get('http://localhost:5000/api/v1/classes')
       .then(res=>{
@@ -26,16 +29,29 @@ export default function CreateStudent() {
 
 
     const handleSubmit = (e)=>{
+      setLoading(true)
         e.preventDefault();
         const data={name,class:studentClass,fee,DOB,fatherName,dateOfAdmission,gender,
                         phoneNo,address,CNIC,GRNo}
         axios.post('http://localhost:5000/api/v1/student/create',data).then(res=>{
             console.log(res.data);
+            setLoading(false)
+            toast.success("Student created",{
+              position: toast.POSITION.TOP_CENTER,
+              autoClose: 2000 
+            })
+        }).catch(e=>{
+          toast.error("Student not created",{
+            position: toast.POSITION.TOP_CENTER,
+            autoClose: 2000 
+          })
         })   
     }
 
   return (
     <div className="container mb-4">
+      {loading && <Loader/>}
+      
       <div className="row justify-content-center">
         <div className="col-md-6 mt-5">
           <div className="card">
