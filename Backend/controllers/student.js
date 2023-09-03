@@ -117,6 +117,31 @@ exports.createClass=async(req,res,next)=>{
 
      }   
 
+// Reports 
+
+exports.studentDefaulterList=(req,res,next)=>{
+try{
+const students= studentSchema.find({status:"pending"})
+
+if( !students){
+console.log("no students found  ")
+}
+
+
+res.status(200).json({
+    students
+})
+}catch(err){
+
+}
+
+
+}
+
+
+
+
+
 // exports.studentByClass=async(req,res,next)=>{
 
 // try{

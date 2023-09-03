@@ -4,6 +4,7 @@ import Allstudents from './allstudents';
 import CreateStudent from './createStudent';
 import CreateClass from './createClass';
 import Voucher from './voucher';
+import FeeReport from './feeReport';
 export default function Sidebar() {
   return (
    <Router>
@@ -13,6 +14,7 @@ export default function Sidebar() {
             <Link className='link' to='/'>Create Student</Link>
             <Link className='link' to='/allstudents'>All Students</Link>
             <Link className='link' to='/createclass'>Create Class</Link>
+            <Link className='link' to='/feeReport'>Fee Report</Link>
         </nav>
     </div>
     <Routes>
@@ -20,6 +22,7 @@ export default function Sidebar() {
         <Route path='/allstudents' element={<Allstudents/>} ></Route>
         <Route path='/createclass' element={<CreateClass/>} ></Route>
         <Route path='/voucher' element={<Voucher/>} ></Route>
+        <Route path='/feeReport' element={<FeeReport/>} ></Route>
         {/* CreateClass */}
     </Routes>
    </Router>

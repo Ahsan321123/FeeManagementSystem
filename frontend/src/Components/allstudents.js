@@ -118,6 +118,7 @@ export default function Allstudents() {
       .post(url, data)
       .then((response) => {
         const updatedStudent = response.data.student;
+        console.log(response.data)
         const updateList = (list) =>
           list.map((student) => {
             if (student._id === updatedStudent._id) {
@@ -131,6 +132,7 @@ export default function Allstudents() {
         setFilterByGr((prevFilterByGr) => updateList(prevFilterByGr));
 
         setShowModal(false);
+     
       })
       .catch((error) => {
         console.error("Error updating status:", error);
@@ -260,7 +262,11 @@ if (classFilter && classFilter !== "") {
 
 // Phir status filter
 if (studentStatus) {
-  studentsToRender = studentsToRender.filter(s => s.status === studentStatus);
+studentsToRender = studentsToRender.filter(s => s.status === studentStatus);
+if(studentsToRender.length === 0 ){
+  console.log("not found")
+}
+
 }
 
 // Phir GR number filter
@@ -296,7 +302,8 @@ if (filterByGr.length > 0) {
           </div>
 
           {/* Filter By Status */}
-          <div className="col-md-3">
+
+        <div className="col-md-3">
             <label htmlFor="classFilter" className="d-block mb-1">
               Filter by Status:
             </label>
@@ -334,7 +341,11 @@ if (filterByGr.length > 0) {
 
       {/* render  */}
 
-      {(renderStudents(studentsToRender))}
+         {     studentsToRender.length===0 ? (
+      <div className=" d-flex justify-content-center align-items-center">
+      <h4>No Students Found</h4>
+      </div>
+    ):   (renderStudents(studentsToRender))}
 
 
         {showModal && (

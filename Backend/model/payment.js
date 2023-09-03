@@ -6,13 +6,23 @@ studentId:{
 type:mongoose.Schema.Types.ObjectId,
 ref:"studentSchema"
 },
+
+studentName:{
+type:String,
+},
+GRNo:{
+    type:Number,
+},
+className:{
+    type:String,
+},
 status:{
     type:String,
     required:true
 },
 date:{
     type:Date,
-    default:Date.now(),
+    default:Date.now,
     required:true
 },
 bankName:{

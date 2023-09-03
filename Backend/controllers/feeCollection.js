@@ -2,7 +2,7 @@
 const studentSchema= require ('../model/student')
 const paymentSchema = require('../model/payment');
 
-const PDFDocument = require('pdfkit');
+
 
 exports.getAllStudents=async(req,res,next)=>{
   try{
@@ -94,19 +94,20 @@ const voucherDetails=await calculateFee(student)
       }
   };
 
-exports.updateFeeStatus=async(req,res,nexy)=>{
+exports.updateFeeStatus=async(req,res,next)=>{
 const id= req.params.id
     try{
 const payment = await paymentSchema.create(req.body)
+const student = await studentSchema.findById(id)
+payment.studentName=student.name;
+payment.className=student.className;
+payment.GRNo=student.GRNo;
+student.status= payment.status;
+
 await payment.save()
-    const student = await studentSchema.findById(id)
-    if(student){
-    student.status= payment.status
-    await student.save()
-} 
-
-
-res.status(200).json({
+await student.save()    
+    
+  res.status(200).json({
   message:"payment status updated successfully",
   payment,
   student
@@ -145,6 +146,42 @@ exports.generateBatchVouchers = async (req, res, next) => {
   }
 };
 
+exports.studentFeeReport= async(req,res,next)=>{
+  try{
+  
+  
+  const startDate =  new Date( req.query.startDate)
+  const endDate= new Date(req.query.endDate) 
+  endDate.setHours(23, 59, 59, 999);
+const payment = await paymentSchema.find({
+  status:"Paid",
+date:{
+  $gte:startDate,
+  $lte:endDate
+  }
+})
+
+
+
+let groupPayments= {}
+payment.forEach((p)=>{
+let dateStr= p.date.toISOString().split('T')[0];
+if(!groupPayments[dateStr]){
+  groupPayments[dateStr]=[]
+}
+groupPayments[dateStr].push(p)
+
+})
+
+
+
+res.status(200).json({
+  success:"true",
+ data:payment ,
+ groupPayments
+})}catch(err){
+console.log(err)
+}} 
 
 
 

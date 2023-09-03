@@ -33,7 +33,7 @@ export default function CreateStudent() {
         e.preventDefault();
         const data={name,class:studentClass,fee,DOB,fatherName,dateOfAdmission,gender,
                         phoneNo,address,CNIC,GRNo}
-        axios.post('http://localhost:5000/api/v1/student/create',data).then(res=>{
+        axios.post('http://localhost:5000/api/v1/students',data).then(res=>{
             console.log(res.data);
             setLoading(false)
             toast.success("Student created",{

@@ -18,6 +18,9 @@ const UpdateStudent = ({
     gender: student.gender,
     phoneNo: student.phoneNo,
     CNIC: student.CNIC,
+    DOB:student.DOB,
+    dateOfAdmission:student.dateOfAdmission
+  
   });
 
   const handleModalSubmit = async (e) => {
@@ -122,11 +125,16 @@ const UpdateStudent = ({
                     Date of Admission
                   </label>
                   <input
+                  value={new Date(studentData.dateOfAdmission).toISOString().split("T")[0] }
                     type="date"
                     className="form-control"
                     id="inputName"
                     placeholder="Date of Admission"
-                    // onChange={e=>{setDateOfAdmission(e.target.value)}}
+             
+                     onChange={ e=>{ setStudentData(prev=>({
+                      ...prev,
+                      dateOfAdmission:e.target.value
+                     })) } }
                     autoComplete="off"
                   />
                 </div>
@@ -136,11 +144,16 @@ const UpdateStudent = ({
                     Date of Birth
                   </label>
                   <input
+                  
+                    value={ new Date(studentData.DOB).toISOString().split("T")[0]  }
                     type="date"
                     className="form-control"
                     id="inputName"
                     placeholder="Date of Birth"
-                    // onChange={e=>{setDOB(e.target.value)}}
+                     onChange={ e=>{ setStudentData(prev=>({
+                      ...prev,
+                      DOB:e.target.value
+                     })) } }
                     autoComplete="off"
                   />
                 </div>
