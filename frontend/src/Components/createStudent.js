@@ -18,7 +18,7 @@ export default function CreateStudent() {
     const [GRNo,setGRNo]=useState('')
     const [classes,setClasses ]=useState()
     const [loading,setLoading] = useState(false)
- 
+
     useEffect(()=>{
       axios.get('http://localhost:5000/api/v1/classes')
       .then(res=>{
@@ -31,17 +31,20 @@ export default function CreateStudent() {
     const handleSubmit = (e)=>{
       setLoading(true)
         e.preventDefault();
+
         const data={name,class:studentClass,fee,DOB,fatherName,dateOfAdmission,gender,
                         phoneNo,address,CNIC,GRNo}
+
         axios.post('http://localhost:5000/api/v1/student/create',data).then(res=>{
             console.log(res.data);
             setLoading(false)
+
             toast.success("Student created",{
               position: toast.POSITION.TOP_CENTER,
               autoClose: 2000 
             })
         }).catch(e=>{
-          toast.error("Student not created",{
+          toast.error("Student not created, fill form correctly",{
             position: toast.POSITION.TOP_CENTER,
             autoClose: 2000 
           })
@@ -64,7 +67,9 @@ export default function CreateStudent() {
                   <input type="text" className="form-control" id="inputName" 
                   placeholder="Enter student name" 
                   onChange={e=>{setName(e.target.value)}}
-                  autoComplete='off'/>
+                  autoComplete='off'  
+                  required
+                  />
                 </div>
 
                 <div className="mb-3">
@@ -72,7 +77,11 @@ export default function CreateStudent() {
                   <input type="text" className="form-control" id="inputName" 
                   placeholder="Enter Father name" 
                   onChange={e=>{setFatherName(e.target.value)}}
-                  autoComplete='off'/>
+                  autoComplete='off'
+                  required
+                  />
+      
+
                 </div>
 
                 <div className="mb-3">
@@ -80,7 +89,9 @@ export default function CreateStudent() {
                   <input type="number" className="form-control" id="inputName" 
                   placeholder="Enter GRNo" 
                   onChange={e=>{setGRNo(e.target.value)}}
-                  autoComplete='off'/>
+                  autoComplete='off'
+                  required
+                  />
                 </div>
 
                 <div className="mb-3">
@@ -88,7 +99,9 @@ export default function CreateStudent() {
                   <input type="date" className="form-control" id="inputName" 
                   placeholder="Date of Admission" 
                   onChange={e=>{setDateOfAdmission(e.target.value)}}
-                  autoComplete='off'/>
+                  autoComplete='off'
+                  required
+                  />
                 </div>
 
                 <div className="mb-3">
@@ -96,7 +109,9 @@ export default function CreateStudent() {
                   <input type="date" className="form-control" id="inputName" 
                   placeholder="Date of Birth" 
                   onChange={e=>{setDOB(e.target.value)}}
-                  autoComplete='off'/>
+                  autoComplete='off'
+                  required
+                  />
                 </div>
 
                 <div className="mb-3">
@@ -104,7 +119,9 @@ export default function CreateStudent() {
                   <input type="text" className="form-control" id="inputName" 
                   placeholder="Gender" 
                   onChange={e=>{setGender(e.target.value)}}
-                  autoComplete='off'/>
+                  autoComplete='off'
+                  required
+                  />
                 </div>
 
                 <div className="mb-3">
@@ -112,7 +129,12 @@ export default function CreateStudent() {
                   <input type="number" className="form-control" id="inputName" 
                   placeholder="Phone No." 
                   onChange={e=>{setPhoneNo(e.target.value)}}
-                  autoComplete='off'/>
+                  autoComplete='off'
+                  pattern='^03\d{9}$'
+                  required
+                  />
+                  <small className='hints'>Phone number should look like 03XXXXXXXXX</small>
+
                 </div>
 
                 <div className="mb-3">
@@ -120,15 +142,24 @@ export default function CreateStudent() {
                   <input type="text" className="form-control" id="inputName" 
                   placeholder="CNIC" 
                   onChange={e=>{setCNIC(e.target.value)}}
-                  autoComplete='off'/>
+                  autoComplete='off'
+                  pattern='^\d{5}-\d{7}-\d$'
+                  required
+                  />                
+                  <small className='hints'>CNIC should look like XXXXX-XXXXXXX-X</small>
+
                 </div>
+
+                {/* {cnicError && <div className='validation-error'>{cnicError}</div>} */}
 
                 <div className="mb-3">
                   <label htmlFor="inputName" className="form-label">Address</label>
                   <input type="text" className="form-control" id="inputName" 
                   placeholder="Address" 
                   onChange={e=>{setAddress(e.target.value)}}
-                  autoComplete='off'/>
+                  autoComplete='off'
+                  required
+                  />
                 </div>
 
                 <div className="mb-3">

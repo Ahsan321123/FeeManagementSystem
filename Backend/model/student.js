@@ -44,7 +44,7 @@ const studentSchema = new mongoose.Schema({
         required:true
     },
     CNIC:{
-        type:Number,
+        type:String,
         required:true
     },
     address:{
