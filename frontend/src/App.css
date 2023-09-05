@@ -120,7 +120,7 @@
   cursor: pointer;
   width: 60%;
   margin: auto;
-  margin-left: 22rem;
+  margin-left: 21.4rem;
 
 }
 
@@ -155,7 +155,7 @@
 }
 .csv-btn{
   float: right;
-  margin-right: 12rem;
+  margin-right: 12.5rem;
   margin-top: 2rem;
   text-decoration: none;
   padding: 1rem;
@@ -163,4 +163,21 @@
   color: white;
   border-radius: 50px;
   margin-bottom: 2rem;
+}
+.msg-container{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 50vh;
+}
+.no-data-message {
+  width: 100%;
+  background-color: #f7f7f7; /* Light grey background color */
+  border: 1px solid #ddd; /* Light grey border */
+  padding: 10px; /* Padding around the message */
+  text-align: center; /* Center-align text */
+  font-size: 18px; /* Font size */
+  color: #666; /* Text color */
+  margin-top: 20px; /* Space it from other content */
+  border-radius: 5px; /* Rounded corners */
 }

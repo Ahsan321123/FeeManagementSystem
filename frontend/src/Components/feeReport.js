@@ -22,7 +22,10 @@ const FeeReport = () => {
         await axios.get(`http://localhost:5000/api/v1/student/feeReport?startDate=${startDate}&endDate=${endDate}`)
         .then((res)=>{
           setStudents(res.data.data)
-          setDisplayStudents(res.data.data)}  )   
+          setDisplayStudents(res.data.data)
+          setStartDate("")
+          setEndDate("")   
+        }  )   
     }
     else{
         console.log( "undefined start and end Date")
@@ -38,80 +41,77 @@ const FeeReport = () => {
 
     }
 
-    const handleReset=()=>{
-        setStartDate("")
-        setEndDate("") 
-    }
-
     const headers = ['Name','GRNO','Fee Status','Date']
 
   return (
-    <>
+  <>
+  {students.length > 2 && (
+    <div className="w-50 mx-auto my-3">
+      
+      <label htmlFor="grNum" className="ms-2 mb-2">
+                  Filter by Gr:
+      </label>
         
-    <div className="row justify-content-end mx-5 my-4">
-    <div className="col-md-3">
-  
-    { students.length>2 && 
+      <form onSubmit={handleGrNum} className="form-inline d-flex justify-content-between">
+          
+          <input
+          required
+            id="grNum"
+            className="form-control mx-2"
+            type="number"
+            value={grNum}
+            onChange={(e) => setGrNum(e.target.value)}
+          />
+
+            <button className="btn btn-primary" type="submit">
+            Search
+          </button>
+        </form>
+    </div>
+  )}
     
-    <div className="col-md-4">
-            
-            <label htmlFor="grNum" className="d-block mb-1">
-              Filter by Gr:
-            </label>
-            
-            <form onSubmit={handleGrNum} className="d-flex align-items-center">
-              <input
-              required
-                id="grNum"
-                className="form-control mx-2"
-                style={{ flex: "1 0 60%" }}
-                type="number"
-                value={grNum}
-                onChange={(e) => setGrNum(e.target.value)}
-              />
-
-               <button className="btn btn-primary" type="submit">
-                Search
-              </button>
-              </form>
-
-              </div> }
+        
+    <div className="row my-4">
+    
+    <div className="col">
+  
    
-    <form onSubmit={(e)=>handleDate(e)} >
-    <div className="mb-3">
- 
-    <label htmlFor="inputName" className="form-label">
-      Date
-    </label>
-    <input
-      type="date"
-      value={startDate}
-      onChange={(e) => setStartDate(e.target.value)}
-      className="form-control"
-      id="inputName"
-      autoComplete="off"
-    />
-  </div>
-  <div className="mb-3">
-    <label htmlFor="inputName" className="form-label">
-      Date
-    </label>
-    <input
-      type="date"
-      value={endDate}
-      onChange={(e) => setEndDate(e.target.value)}
-      className="form-control"
-      id="inputName"
-      autoComplete="off"
-    />
-         <button className="btn btn-primary" type="submit">
-                Generate Report
-              </button>
+    <form onSubmit={(e)=>handleDate(e)}  className="w-50 mx-auto d-flex align-items-end">
+    
+      <div className="col">
+  
+      <label htmlFor="inputName" className="form-label">
+        Start Date
+      </label>
+      <input
+        type="date"
+        value={startDate}
+        onChange={(e) => setStartDate(e.target.value)}
+        className="form-control"
+        id="inputName"
+        autoComplete="off"
+      />
+    </div>
 
-              <button className="btn btn-primary" onClick={handleReset }>
-                Reset
-              </button>
-  </div>
+    <div className="col ms-2">
+      <label htmlFor="inputName" className="form-label">
+        End Date
+      </label>
+      <input
+        type="date"
+        value={endDate}
+        onChange={(e) => setEndDate(e.target.value)}
+        className="form-control"
+        id="inputName"
+        autoComplete="off"
+      /> 
+    </div>
+
+    <div>
+      <div class="col ms-2">
+        <button class="btn btn-primary">Generate Report</button>
+      </div>
+    </div>
   </form>
   </div>
   </div>
@@ -152,7 +152,11 @@ const FeeReport = () => {
   
   : 
 
-(  <div className="text-center">no data</div>
+(  
+  <div className="msg-container">
+    <div className="no-data-message">Select start and end date to display data</div>
+  </div>
+
 )  
 }  
 
