@@ -6,9 +6,6 @@ exports.createStudent = async( req,res,next )=>{
 try{
 
     const receivedClass= req.body.class
-    // splitting the class and section 
-    // const studentClass= receivedClass.slice(0,-1)
-    // const studentSection = receivedClass.slice(-1)
     
 const studentBody={
 ...req.body,
@@ -24,10 +21,17 @@ success: true,
 studentData
 })}
 catch(err){
+if(err.code === 11000){
 
+    return  res.status(400).json({ 
+        success:"false",
+        message:"student with this GrNo# already exist"
+     })
+
+}
     console.log(err)
     res.status(400).json({
-    err:err.message
+    message:err.message
 })
 
 }
@@ -119,25 +123,28 @@ exports.createClass=async(req,res,next)=>{
 
 // Reports 
 
-exports.studentDefaulterList=(req,res,next)=>{
-try{
-const students= studentSchema.find({status:"pending"})
+exports.studentDefaulterList = async (req, res, next) => {
+    try {
+        const students = await studentSchema.find({ status: "pending" });
 
-if( !students){
-console.log("no students found  ")
-}
+        if (students.length === 0) {
+            return res.status(404).json({
+                success: false,
+                message: "No students found"
+            });
+        }
 
-
-res.status(200).json({
-    students
-})
-}catch(err){
-
-}
-
-
-}
-
+        res.status(200).json({
+            success: true,
+            students
+        });
+    } catch (err) {
+        res.status(400).json({
+            success: false,
+            message: "Error retrieving students"
+        });
+    }
+};
 
 
 

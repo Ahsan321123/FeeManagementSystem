@@ -4,42 +4,39 @@ const paymentSchema = require('../model/payment');
 
 
 
-exports.getAllStudents=async(req,res,next)=>{
-  try{
-const allStudents= await studentSchema.find()
+exports.getAllStudents = async (req, res, next) => {
+  try {
+    const page = parseInt(req.query.page, 10) || 1;
+    const limit = parseInt(req.query.limit, 10) || 10;
+    const skip = (page - 1) * limit;
+    
+    let query = {};
 
+    if (req.query.className) {
+      query.className = req.query.className;
+    }
 
-if(req.query.className){
-    student = await studentSchema.find({className:req.query.className}) 
+    if (req.query.GRNo) {
+      query.GRNo = req.query.GRNo;
+    }
 
-   return  res.status(200).json({
-        success:true,
-        student
-        })
-}
+    const allStudents = await studentSchema.find(query).skip(skip).limit(limit);
 
-if(req.query.GRNo){
-    student = await studentSchema.find({GRNo:req.query.GRNo}) 
+    // Count students based on the applied filters
+    const totalStudents = await studentSchema.countDocuments(query);
 
-   return  res.status(200).json({
-        success:true,
-        student
-        })
-}
-
-
- res.status(200).json({
+    res.status(200).json({
       success: true,
-      allStudents
-      })
+      allStudents,
+      totalStudents
+    });
+  } catch (err) {
+    res.status(400).json({
+      err: err.message
+    });
   }
-  catch(err){
-  res.status(400).json({
-          err:err.message
-          })   }
-  
-  }
-   
+};
+
   // **** Generate Voucher for Specifice student logic 
 
   let nowInPakistan = new Date(new Intl.DateTimeFormat('en-US', {
@@ -189,17 +186,3 @@ console.log(err)
 
 
 
-// VoucherFromBackend 
-     //   const doc = new PDFDocument;
-        //   res.setHeader('Content-Type', 'application/pdf');
-        //   res.setHeader('Content-Disposition', 'inline; filename=paymentVoucher.pdf');
-
-        //   doc.pipe(res);
-  
-        //   doc.fontSize(25).text('Payment Voucher', 50, 50);
-        //   doc.fontSize(16).text(`Student Name: ${student.name}`, 50, 100);
-        //   doc.fontSize(16).text(`Fee: ${student.fee}`, 50, 150);
-        //   doc.fontSize(16).text(`Payment Status: ${payment.status}`, 50, 200);
-        //   doc.fontSize(16).text(`Date: ${payment.date}`, 50, 250);
-  
-        //   doc.end();

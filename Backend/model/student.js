@@ -21,7 +21,8 @@ const studentSchema = new mongoose.Schema({
     },
     GRNo:{
         type:String,
-        required:true
+        required:true,
+        unique:true,
     },
     DOB:{
         type:Date,
@@ -45,7 +46,8 @@ const studentSchema = new mongoose.Schema({
     },
     CNIC:{
         type:String,
-        required:true
+        required:true,
+        maxlength: [13, "CNIC Number should be 13 digits"]
     },
     address:{
         type:String,

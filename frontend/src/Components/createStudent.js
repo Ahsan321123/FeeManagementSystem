@@ -18,7 +18,8 @@ export default function CreateStudent() {
     const [GRNo,setGRNo]=useState('')
     const [classes,setClasses ]=useState()
     const [loading,setLoading] = useState(false)
- 
+    const [ grError,setGrError]=useState(null)
+    
     useEffect(()=>{
       axios.get('http://localhost:5000/api/v1/classes')
       .then(res=>{
@@ -28,7 +29,9 @@ export default function CreateStudent() {
 },[])
 
 
+
     const handleSubmit = (e)=>{
+   
       setLoading(true)
         e.preventDefault();
         const data={name,class:studentClass,fee,DOB,fatherName,dateOfAdmission,gender,
@@ -36,15 +39,25 @@ export default function CreateStudent() {
         axios.post('http://localhost:5000/api/v1/students',data).then(res=>{
             console.log(res.data);
             setLoading(false)
+            setGrError(null)
             toast.success("Student created",{
               position: toast.POSITION.TOP_CENTER,
               autoClose: 2000 
             })
         }).catch(e=>{
-          toast.error("Student not created",{
-            position: toast.POSITION.TOP_CENTER,
-            autoClose: 2000 
-          })
+          if(e.response && e.response.data.message ==="student with this GrNo# already exist" ){
+            setGrError(e.response.data.message)
+            toast.error(e.response.data.message,{
+              position: toast.POSITION.TOP_CENTER,
+              autoClose: 2000 
+            })
+          }else{
+            toast.error("Student not created",{
+              position: toast.POSITION.TOP_CENTER,
+              autoClose: 2000 
+            })
+          }
+          
         })   
     }
 
@@ -71,18 +84,25 @@ export default function CreateStudent() {
                   <label htmlFor="inputName" className="form-label">Father Name</label>
                   <input type="text" className="form-control" id="inputName" 
                   placeholder="Enter Father name" 
-                  onChange={e=>{setFatherName(e.target.value)}}
+                  onChange={e=>{ 
+                  
+                    setFatherName(e.target.value)}}
                   autoComplete='off'/>
                 </div>
 
                 <div className="mb-3">
                   <label htmlFor="inputName" className="form-label">GRNo.</label>
-                  <input type="number" className="form-control" id="inputName" 
+                  <input type="number" 
+                  className={`form-control ${grError ? "is-invalid" : ""}`}
+                  id="inputName" 
                   placeholder="Enter GRNo" 
-                  onChange={e=>{setGRNo(e.target.value)}}
+                  onChange={e=>{
+                    setGrError(null)
+                    setGRNo(e.target.value)}}
                   autoComplete='off'/>
+                       {grError && <div className="text-danger">{grError}</div>}
                 </div>
-
+           
                 <div className="mb-3">
                   <label htmlFor="inputName" className="form-label">Date of Admission</label>
                   <input type="date" className="form-control" id="inputName" 

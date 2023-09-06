@@ -14,19 +14,16 @@ console.log(displayStudents)
     if(startDate,endDate){
         await axios.get(`http://localhost:5000/api/v1/student/feeReport?startDate=${startDate}&endDate=${endDate}`).then((res)=>{
             setStudents(res.data.data)
-             setDisplayStudents(res.data.data)}  )   }else{
+             setDisplayStudents(res.data.data)}) }else{
             console.log( "undefined start and end Date")
-        }
-     
-    
-    }
+        }   
+      }
     const handleGrNum=(e)=>{
         e.preventDefault()
      if(students){const student= students.filter((s)=>s.GRNo  == grNum )
         setFilterByGr(student)
         setDisplayStudents(student)
 } 
-
     }
 
     const handleReset=()=>{
@@ -92,7 +89,6 @@ console.log(displayStudents)
          <button className="btn btn-primary" type="submit">
                 Generate Report
               </button>
-
               <button className="btn btn-primary" onClick={handleReset }>
                 Reset
               </button>

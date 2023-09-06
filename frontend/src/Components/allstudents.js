@@ -5,6 +5,8 @@ import { useNavigate } from "react-router-dom";
 import UpdateStudent from "./updateStudent";
 import Loader from '../Components/Loader'
 import { toast } from "react-toastify";
+import PaginationComp from "./paginationComp";
+
 
 export default function Allstudents() {
   const [allStudent, setAllStudent] = useState([]);
@@ -24,39 +26,61 @@ export default function Allstudents() {
   const [classes, setClasses] = useState([]);
   const [studentStatus, setStudentStatus] = useState("");
   const [loading,setLoading]= useState(false);
+  const [ currentPage ,setCurrentPage]=useState(1)
+    const [ totalPages,setTotalPages]=useState()
+    const [totalStudentsCount,setTotalStudentsCount]=useState(0)
+
+// PAgination handle 
 
 
-  const fetchStudents = async () => {
+const handlePage=(pageNumber)=>{
+  setCurrentPage(pageNumber)
+}
+  const fetchStudents = async (page) => {
     setLoading(true)
-    const { data } = await axios.get("http://localhost:5000/api/v1/students");
+    const { data } = await axios.get(`http://localhost:5000/api/v1/students?page=${page}`);
+  
     setAllStudent(data.allStudents);
+  
+    setTotalStudentsCount(data.totalStudents)   
+    
+    const studentPerPage=10
+    const pages=Math.ceil(totalStudentsCount/studentPerPage) 
+    setTotalPages(pages)
     setLoading(false)
   };
 
+  
   const fetchClasses = async () => {
     const { data } = await axios.get("http://localhost:5000/api/v1/classes");
     setClasses(data.classData);
   };
 
-  const fetchFilteredStudentsByClass = async (className) => {
+  const fetchFilteredStudentsByClass = async (className, page = 1) => {
     const { data } = await axios.get(
-      `http://localhost:5000/api/v1/students?className=${className}`
+      `http://localhost:5000/api/v1/students?className=${className}&page=${page}`
     );
-    setFilterData(data.student);
+    
+    setFilterData(data.allStudents);
+    setTotalStudentsCount(data.totalStudents)   
+      
+    const studentPerPage=10;
+    const pages=Math.ceil(data.totalStudents/studentPerPage); 
+    setTotalPages(pages);
   };
 
   useEffect(() => {
-    fetchStudents();
+    fetchStudents(currentPage);
     fetchClasses()
-  }, []); // Yeh useEffect sirf component mount hone par run hoga.
+  }, [currentPage]); // Yeh useEffect sirf component mount hone par run hoga.
 
   useEffect(() => {
     if (classFilter && classFilter !== "All Classes") {
-      fetchFilteredStudentsByClass(classFilter);
+      fetchFilteredStudentsByClass(classFilter,currentPage);
     } else {
       setFilterData([]);
     }
-  }, [classFilter]); // Yeh useEffect sirf classFilter change hone par run hoga.
+  }, [classFilter,currentPage]); // Yeh useEffect sirf classFilter change hone par run hoga.
 
   useEffect(() => {
     if (grNum) {
@@ -93,9 +117,9 @@ export default function Allstudents() {
   // **********
   const handleClassFilterChange = (e) => {
     setClassFilter(e.target.value);
-    console.log(  "handleClassFilter", e.target.value)
+    setCurrentPage(1)
 
-  };
+      };
   /////// Update Student
   const handleStudentUpdate = (student) => {
     setUpdateStudent(student);
@@ -253,27 +277,29 @@ export default function Allstudents() {
 
 
 // rendering 
-let studentsToRender = allStudent;
 
-// Pehle class filter
-if (classFilter && classFilter !== "") {
-  studentsToRender = studentsToRender.filter(s => s.className === classFilter);
+const getFilteredStudents = () => {
+  let students = filterData.length > 0 ? filterData : allStudent;
+
+  // Class filter
+  if (classFilter && classFilter !== "") {
+    students = students.filter(s => s.className === classFilter);
+  }
+
+  // Status filter
+  if (studentStatus) {
+    students = students.filter(s => s.status === studentStatus);
+  }
+
+  // GR number filter
+  if (filterByGr.length > 0) {
+    students = filterByGr;
+  }
+
+  return students;
 }
 
-// Phir status filter
-if (studentStatus) {
-studentsToRender = studentsToRender.filter(s => s.status === studentStatus);
-if(studentsToRender.length === 0 ){
-  console.log("not found")
-}
-
-}
-
-// Phir GR number filter
-if (filterByGr.length > 0) {
-  studentsToRender = filterByGr;
-}
-
+let studentsToRender=getFilteredStudents()
 
   return (
     <>
@@ -444,6 +470,15 @@ if (filterByGr.length > 0) {
           classes={classes}
         />
       )}
+      <PaginationComp 
+      currentPage={currentPage}
+        students={allStudent}
+         totalStudentsCount={totalStudentsCount}
+          pages={totalPages}
+          setCurrentPage={setCurrentPage}
+          handlePage={handlePage}
+          classFilter={classFilter}
+          />
     </>
   );
 }
