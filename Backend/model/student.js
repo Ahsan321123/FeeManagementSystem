@@ -53,6 +53,13 @@ const studentSchema = new mongoose.Schema({
         type:String,
         required:true
     },
+    campus:{
+        type:String,
+        required:true
+    },
+    createdBy:{
+        type:String,
+    }
 
 }
 )

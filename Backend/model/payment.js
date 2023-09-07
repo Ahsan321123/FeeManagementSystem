@@ -6,7 +6,6 @@ studentId:{
 type:mongoose.Schema.Types.ObjectId,
 ref:"studentSchema"
 },
-
 studentName:{
 type:String,
 },
@@ -29,6 +28,13 @@ bankName:{
     type: String,
     required:true
 },
+month:{
+    type:String
+},
+campus:{
+    type:String,
+    required:true
+}
 });
 
 module.exports=mongoose.model("paymentSchema",paymentSchema)

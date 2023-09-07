@@ -1,6 +1,7 @@
 const studentSchema = require('../model/student')
 const paymentSchema= require('../model/payment')
 const classSchema= require('../model/class')
+const staffSchema= require('../model/staff')
 
 exports.createStudent = async( req,res,next )=>{
 try{
@@ -10,12 +11,14 @@ try{
 const studentBody={
 ...req.body,
 className:receivedClass,
+campus: req.staff.campus,
+createdBy:req.staff.userName 
 }
 
 
     const studentData = await studentSchema.create(studentBody)
 
-studentData.save()
+
 res.status(200).json({
 success: true,
 studentData
@@ -30,7 +33,8 @@ if(err.code === 11000){
 
 }
     console.log(err)
-    res.status(400).json({
+
+   return res.status(400).json({
     message:err.message
 })
 
@@ -125,7 +129,7 @@ exports.createClass=async(req,res,next)=>{
 
 exports.studentDefaulterList = async (req, res, next) => {
     try {
-        const students = await studentSchema.find({ status: "pending" });
+        const students = await studentSchema.find({ status: "pending",campus: req.staff.campus });
 
         if (students.length === 0) {
             return res.status(404).json({

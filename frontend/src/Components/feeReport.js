@@ -32,12 +32,16 @@ const FeeReport = () => {
         setDisplayStudents(student)
 } 
     }
-
+    
+    const handleReset=()=>{
+      setStartDate(null)
+      setEndDate(null)
+    }
     const headers = ['Name','GRNO','Fee Status','Date']
 
   return (
   <>
-  {students.length > 2 && (
+  {students.length >0  && (
     <div className="w-50 mx-auto my-3">
       
       <label htmlFor="grNum" className="ms-2 mb-2">

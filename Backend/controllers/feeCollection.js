@@ -9,9 +9,10 @@ exports.getAllStudents = async (req, res, next) => {
     const page = parseInt(req.query.page, 10) || 1;
     const limit = parseInt(req.query.limit, 10) || 10;
     const skip = (page - 1) * limit;
-    
-    let query = {};
 
+    let query = {};
+    // get filter data only from that campus
+    query.campus = req.staff.campus;
     if (req.query.className) {
       query.className = req.query.className;
     }
@@ -90,15 +91,39 @@ const voucherDetails=await calculateFee(student)
           next(err);
       }
   };
+  function getMonthName(monthIndex) {
+    const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+    return monthNames[monthIndex];
+  }
 
 exports.updateFeeStatus=async(req,res,next)=>{
 const id= req.params.id
     try{
-const payment = await paymentSchema.create(req.body)
-const student = await studentSchema.findById(id)
+      const student = await studentSchema.findById(id)
+      if(!student){
+        res.status(400).json({
+          success:false,
+          message:"no student found"
+        })
+      }
+    
+ 
+     const existingPayment= await paymentSchema.findOne({studentId:student._id})
+     if( existingPayment && existingPayment.status === "Paid"){
+       return res.status(400).json({
+         success:false,
+         message: "already Paid"
+     
+       })
+     }
+     
+     const payment = await paymentSchema.create(req.body)
+     const currentMonth=getMonthName(new Date().getMonth())
+     payment.studentId=student._id
 payment.studentName=student.name;
 payment.className=student.className;
 payment.GRNo=student.GRNo;
+payment.month=currentMonth,
 student.status= payment.status;
 
 await payment.save()
@@ -127,7 +152,7 @@ exports.generateBatchVouchers = async (req, res, next) => {
           return res.status(400).json({ error: 'Invalid studentIds' });
       }
 
-      const students = await studentSchema.find({ '_id': { $in: studentIds } });
+      const students = await studentSchema.find({ '_id': { $in: studentIds }, 'campus': req.staff.campus });
 
       if(students.length === 0) {
           return res.status(404).json({ error: 'No students found' });
@@ -155,7 +180,8 @@ const payment = await paymentSchema.find({
 date:{
   $gte:startDate,
   $lte:endDate
-  }
+  },
+  campus: req.staff.campus, 
 })
 
 
@@ -180,7 +206,7 @@ res.status(200).json({
 console.log(err)
 }} 
 
-
+const Name="staff"
 
 
 

@@ -34,7 +34,7 @@ export default function Allstudents() {
 
 
 const handlePage=(pageNumber)=>{
-  setCurrentPage(pageNumber)
+  setCurrentPage(pageNumber) 
 }
   const fetchStudents = async (page) => {
     setLoading(true)
@@ -43,12 +43,15 @@ const handlePage=(pageNumber)=>{
     setAllStudent(data.allStudents);
   
     setTotalStudentsCount(data.totalStudents)   
-    
-    const studentPerPage=10
-    const pages=Math.ceil(totalStudentsCount/studentPerPage) 
-    setTotalPages(pages)
+
     setLoading(false)
   };
+// Total pages 
+useEffect(()=>{
+   const studentPerPage=10
+  const pages=Math.ceil(totalStudentsCount/studentPerPage) 
+  setTotalPages(pages)
+},[totalStudentsCount]) 
 
   
   const fetchClasses = async () => {
@@ -131,18 +134,21 @@ const handlePage=(pageNumber)=>{
 
     let url = `http://localhost:5000/api/v1/students?GRNo=${grNum}`;
     axios.get(url).then((res) => setFilterByGr(res.data.student));
+    
   };
+
+//! Update Student By Status
 
   const handleModalSubmit = (e) => {
     e.preventDefault();
+    
     const id = studentId;
     const data = { bankName, date, status };
     let url = `http://localhost:5000/api/v1/student/${id}/updateStatus`;
     axios
-      .post(url, data)
+      .patch(url, data)
       .then((response) => {
         const updatedStudent = response.data.student;
-        console.log(response.data)
         const updateList = (list) =>
           list.map((student) => {
             if (student._id === updatedStudent._id) {
@@ -158,10 +164,26 @@ const handlePage=(pageNumber)=>{
         setShowModal(false);
      
       })
-      .catch((error) => {
-        console.error("Error updating status:", error);
+      .catch((e) => {
+        console.log(e.response)
+          if(e.response && e.response.data.message =='already Paid' ){
+            toast.error(e.response.data.message,{
+              position: toast.POSITION.TOP_CENTER,
+              autoClose: 2000 
+            })
+          }else{
+            toast.error("Student not created",{
+              position: toast.POSITION.TOP_CENTER,
+              autoClose: 2000 
+            })
+          }
+        
+        
+        // console.error("Error updating status:", error);
+
       });
-  };
+    }
+  
 
   // delete
   const handleStudentDelete = (student) => {
@@ -478,7 +500,11 @@ let studentsToRender=getFilteredStudents()
           setCurrentPage={setCurrentPage}
           handlePage={handlePage}
           classFilter={classFilter}
-          />
+          filterData={filterData}
+    
+    />
+    {console.log(totalStudentsCount)}
     </>
+    
   );
 }

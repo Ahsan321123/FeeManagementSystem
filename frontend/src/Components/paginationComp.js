@@ -8,11 +8,12 @@ const PaginationComp = ({
   currentPage,
   setCurrentPage,
   handlePage,
-  classFilter
+  classFilter,
+  filterData
 }) => {
   return (
     <div className="PaginationContainer">
-      {pages > 1  && 
+      {   totalStudentsCount>10 &&
         <div className="paginationWrapper">
           <Pagination
             activePage={currentPage}
