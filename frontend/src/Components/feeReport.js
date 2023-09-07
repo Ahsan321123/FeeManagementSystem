@@ -1,63 +1,72 @@
 import { useState } from "react"
 import React from 'react'
 import axios from 'axios'
+import {CSVLink} from 'react-csv'
+
 const FeeReport = () => {
-   const[startDate,setStartDate]=useState("")
+  
+  const[startDate,setStartDate]=useState("")
    const[endDate,setEndDate]=useState("")
     const [students,setStudents]=useState([])
    const [ grNum,setGrNum]=useState()
    const [filterByGr,setFilterByGr]=useState([])
    const [displayStudents,setDisplayStudents]=useState([])
-console.log(displayStudents)
+  
+   console.log(displayStudents)
+  
    const handleDate= async(e)=>{
     e.preventDefault()
     if(startDate,endDate){
         await axios.get(`http://localhost:5000/api/v1/student/feeReport?startDate=${startDate}&endDate=${endDate}`).then((res)=>{
             setStudents(res.data.data)
-             setDisplayStudents(res.data.data)}) }else{
+             setDisplayStudents(res.data.data)}  )   }else{
             console.log( "undefined start and end Date")
-        }   
-      }
+        }
+     
+    
+    }
     const handleGrNum=(e)=>{
         e.preventDefault()
-     if(students){const student= students.filter((s)=>s.GRNo  == grNum )
+      if(students){const student= students.filter((s)=>s.GRNo  == grNum )
         setFilterByGr(student)
         setDisplayStudents(student)
 } 
     }
 
-    const handleReset=()=>{
-        setStartDate("")
-        setEndDate("") 
-    }
-
-
+    const headers = ['Name','GRNO','Fee Status','Date']
 
   return (
-    <>
+  <>
+  {students.length > 2 && (
+    <div className="w-50 mx-auto my-3">
+      
+      <label htmlFor="grNum" className="ms-2 mb-2">
+                  Filter by Gr:
+      </label>
         
-    <div className="row justify-content-end mx-5 my-4">
-    <div className="col-md-3">
-    {students.length>0 && <div className="col-md-4">
-            <label htmlFor="grNum" className="d-block mb-1">
-              Filter by Gr:
-            </label>
-            <form onSubmit={handleGrNum} className="d-flex align-items-center">
-              <input
-              required
-                id="grNum"
-                className="form-control mx-2"
-                style={{ flex: "1 0 60%" }}
-                type="number"
-                value={grNum}
-                onChange={(e) => setGrNum(e.target.value)}
-              />
-               <button className="btn btn-primary" type="submit">
-                Search
-              </button>
-              </form>
+      <form onSubmit={handleGrNum} className="form-inline d-flex justify-content-between">
+          
+          <input
+          required
+            id="grNum"
+            className="form-control mx-2"
+            type="number"
+            value={grNum}
+            onChange={(e) => setGrNum(e.target.value)}
+          />
 
-              </div> }
+            <button className="btn btn-primary" type="submit">
+            Search
+          </button>
+        </form>
+    </div>
+  )}
+    
+        
+    <div className="row my-4">
+    
+    <div className="col">
+  
    
     <form onSubmit={(e)=>handleDate(e)} >
     <div className="mb-3">
@@ -89,6 +98,7 @@ console.log(displayStudents)
          <button className="btn btn-primary" type="submit">
                 Generate Report
               </button>
+
               <button className="btn btn-primary" onClick={handleReset }>
                 Reset
               </button>
@@ -97,29 +107,49 @@ console.log(displayStudents)
   </div>
   </div>
 
+{
+  displayStudents.length > 0 ? (
+  <> 
+    <table className="table-container">
+      <thead>
+        <tr>
+          {headers.map((header, index) => (
+            <th scope="col" key={index}>{header}</th>
+          ))}
+        </tr>
+      </thead>
 
+      <tbody>
+        {displayStudents.map(student=>(
+          <tr key={student._id}>
+            <th scope="row">{student.studentName}</th>
+            <th scope="row">{student.GRNo}</th>
+            <th scope="row">{student.status}</th>
+            <th scope="row">{student.date}</th>
 
- {
- 
- displayStudents.map((s)=>(
-    <div className="card w-50 mx-auto my-3" >
-    <h5 className="card-header d-flex justify-content-between">
-      Name: {s.studentName}
-      <span> Date:{new Date(s.date).toISOString().split('T')[0]} </span>
-    </h5>
-    <div className="card-body">
-     
-  </div>
-  <div className="card-body">
-  <h5 className="card-title">Bank {s.bankName}</h5> 
+          </tr>
+        ))}
+      </tbody>
+
+  </table>
   
-      
-          </div>
+  
+  <CSVLink data={displayStudents}filename="paid_student.csv" className="csv-btn btn-primary">
+            Download
+ </CSVLink>
+
+
+  </>)
+  
+  : 
+
+(  
+  <div className="msg-container">
+    <div className="no-data-message">Select start and end date to display data</div>
   </div>
-))
 
+)  
 }  
-
 
  </>
   )
