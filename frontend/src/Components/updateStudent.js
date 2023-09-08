@@ -30,7 +30,11 @@ const UpdateStudent = ({
       .post(
         `http://localhost:5000/api/v1/studentnew/${student._id}/updateStudent`,
         studentData
-      )
+      ,{
+        headers:{
+          "x-auth-token":localStorage.getItem('token')
+        }
+      })
       .then((res) => {
         console.log("Received from backend:", res.data);
         updatedStudent(res.data);

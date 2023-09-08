@@ -30,19 +30,27 @@ export default function Allstudents() {
     const [ totalPages,setTotalPages]=useState()
     const [totalStudentsCount,setTotalStudentsCount]=useState(0)
 
+    console.log(localStorage.getItem('token'))
 // PAgination handle 
 
 
 const handlePage=(pageNumber)=>{
   setCurrentPage(pageNumber) 
 }
-  const fetchStudents = async (page) => {
+
+const fetchStudents = async (page) => {
     setLoading(true)
-    const { data } = await axios.get(`http://localhost:5000/api/v1/students?page=${page}`);
+    const res= await axios.get(`http://localhost:5000/api/v1/students?page=${page}`,{
+      headers:{
+        "x-auth-token":localStorage.getItem('token')
+      }
+
+    })
+    console.log(res.data);
+
+    setAllStudent(res.data.allStudents);
   
-    setAllStudent(data.allStudents);
-  
-    setTotalStudentsCount(data.totalStudents)   
+    setTotalStudentsCount(res.data.totalStudents)   
 
     setLoading(false)
   };
@@ -55,13 +63,23 @@ useEffect(()=>{
 
   
   const fetchClasses = async () => {
-    const { data } = await axios.get("http://localhost:5000/api/v1/classes");
+    const { data } = await axios.get("http://localhost:5000/api/v1/classes",{
+      headers:{
+            "x-auth-token":localStorage.getItem('token')
+          }
+    }).then(res=>{
+      console.log(res.data)
+    });
     setClasses(data.classData);
   };
 
   const fetchFilteredStudentsByClass = async (className, page = 1) => {
     const { data } = await axios.get(
-      `http://localhost:5000/api/v1/students?className=${className}&page=${page}`
+      `http://localhost:5000/api/v1/students?className=${className}&page=${page}`,{
+        headers:{
+          "x-auth-token":localStorage.getItem('token')
+        }
+      }
     );
     
     setFilterData(data.allStudents);
@@ -88,7 +106,11 @@ useEffect(()=>{
   useEffect(() => {
     if (grNum) {
       axios
-        .get(`http://localhost:5000/api/v1/students?GRNo=${grNum}`)
+        .get(`http://localhost:5000/api/v1/students?GRNo=${grNum}`,{
+          headers:{
+            "x-auth-token":localStorage.getItem('token')
+          }
+        })
         .then((res) => setFilterByGr(res.data.student));
     }
   }, [grNum]);
@@ -102,7 +124,11 @@ useEffect(()=>{
   const navigate = useNavigate();
   const handleVoucher = async (id, student) => {
     await axios
-      .get(`http://localhost:5000/api/v1/student/${id}/voucher`)
+      .get(`http://localhost:5000/api/v1/student/${id}/voucher`,{
+        headers:{
+            "x-auth-token":localStorage.getItem('token')
+          }
+      })
       .then((res) => {
         // passing student data and navigating
         console.log(res.data);
@@ -133,7 +159,9 @@ useEffect(()=>{
     e.preventDefault();
 
     let url = `http://localhost:5000/api/v1/students?GRNo=${grNum}`;
-    axios.get(url).then((res) => setFilterByGr(res.data.student));
+    axios.get(url,{headers:{
+      "x-auth-token":localStorage.getItem('token')
+    }}).then((res) => setFilterByGr(res.data.student));
     
   };
 
@@ -145,8 +173,9 @@ useEffect(()=>{
     const id = studentId;
     const data = { bankName, date, status };
     let url = `http://localhost:5000/api/v1/student/${id}/updateStatus`;
-    axios
-      .patch(url, data)
+    axios.patch(url, data,{headers:{
+      "x-auth-token":localStorage.getItem('token')
+    }})
       .then((response) => {
         const updatedStudent = response.data.student;
         const updateList = (list) =>
@@ -188,7 +217,11 @@ useEffect(()=>{
   // delete
   const handleStudentDelete = (student) => {
     axios
-      .get(`http://localhost:5000/api/v1/student/${student._id}/delete`)
+      .get(`http://localhost:5000/api/v1/student/${student._id}/delete`,{
+        headers:{
+          "x-auth-token":localStorage.getItem('token')
+        }
+      })
       .then((res) => {
         toast.success('Student removed',{
           position:toast.POSITION.TOP_CENTER,
@@ -268,7 +301,9 @@ useEffect(()=>{
     await axios
       .post("http://localhost:5000/api/v1/student/generateBatchVouchers", {
         StudentIds,
-      })
+      },{headers:{
+        "x-auth-token":localStorage.getItem('token')
+      }})
       .then((res) => {
         // console.log(res.data.students)
         // console.log(res.data.vouchers)

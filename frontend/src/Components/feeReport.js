@@ -19,7 +19,11 @@ const FeeReport = () => {
 
     if(startDate,endDate)
     {
-        await axios.get(`http://localhost:5000/api/v1/student/feeReport?startDate=${startDate}&endDate=${endDate}`)
+        await axios.get(`http://localhost:5000/api/v1/student/feeReport?startDate=${startDate}&endDate=${endDate}`,{
+          headers:{
+            "x-auth-token":localStorage.getItem('token')
+          }
+        })
         .then((res)=>{
           setStudents(res.data.data)
           setDisplayStudents(res.data.data)
