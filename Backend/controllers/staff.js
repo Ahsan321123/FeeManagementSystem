@@ -1,8 +1,9 @@
 const staffSchema= require('../model/staff')
 const bcrypt= require ('bcrypt')
-const { json } = require('express')
+
 const jwt= require('jsonwebtoken')
 const staff = require('../model/staff')
+
 
 
 
@@ -21,7 +22,7 @@ campus
 })
 
 
-
+console.log(userName,password,campus )
 
 res.status(200).json({
 
@@ -72,10 +73,16 @@ let isMatch = await bcrypt.compare(password,staff.password)
 
 if(isMatch){
 const token =  jwt.sign({ staff:staff },process.env.Jwt_Secret,{expiresIn:"1h"} )
+
+res.cookie("token",token,{
+    expires: new Date(Date.now() + 1 * 60 * 60 * 1000), 
+    //1 hour me expire
+    httpOnly: true,
+})
 return  res.json({
     sucess:true,
     message: `${staff.userName} logged in`,
-    token
+   token
 })
 }else{
     return res.status(400).json({ message: 'Invalid credentials' });
@@ -91,3 +98,11 @@ return  res.json({
 
 }
 
+// exports.logout=(req,res,next)=>{
+
+// const jwtLogout=jwt.
+
+
+
+    
+// }

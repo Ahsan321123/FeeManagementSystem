@@ -16,8 +16,7 @@ createdBy:req.staff.userName
 }
 
 
-    const studentData = await studentSchema.create(studentBody)
-
+const studentData = await studentSchema.create(studentBody)
 
 res.status(200).json({
 success: true,
@@ -78,6 +77,30 @@ exports.createClass=async(req,res,next)=>{
         })
         }
         
+        }
+
+ exports.deleteClass=async(req,res,next)=>{
+            try{
+           let  classId=req.params.id
+           const classes=await classSchema.findOneAndDelete({_id:classId})
+            if(!classes){
+                res.status(400).json({
+                    success:false,
+                    message:"no class found"
+                })
+            }
+    
+            res.status(200).json({
+                success:true,
+                message:"class deleted"
+            })}catch(err){
+                res.status(200).json({
+                    success:false,
+                    message:err.message
+                })
+
+            }
+
         }
 
 

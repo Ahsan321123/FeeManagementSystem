@@ -7,14 +7,16 @@ import Loader from './Loader';
 const CreateClass = () => {
   const [classes, setClasses] = useState('');
   const [loading,setLoading]= useState(false);
+  const [showClasses,setShowClasses]=useState([])
 
   const handleSubmit = (e) => {
     setLoading(true)
     e.preventDefault();
     const url = 'http://localhost:5000/api/v1/create/class';
     axios.post(url, { className: classes })
-    .then(()=>{
+    .then((res)=>{
       setLoading(false)
+      setShowClasses(res.data)   
       toast.success('Class created',{
         position:toast.POSITION.TOP_CENTER,
         autoClose:2000
@@ -26,7 +28,7 @@ const CreateClass = () => {
       })
     });  // Assuming you want to send data as an object
   };
-
+console.log(showClasses)
   return (
     <div className="container mt-5">
          {loading && (<Loader/>)}

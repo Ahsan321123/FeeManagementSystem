@@ -2,7 +2,7 @@ import { useState } from "react"
 import React from 'react'
 import axios from 'axios'
 import {CSVLink} from 'react-csv'
-
+import './App.css'
 const FeeReport = () => {
   
   const[startDate,setStartDate]=useState("")
@@ -16,36 +16,32 @@ const FeeReport = () => {
   
    const handleDate= async(e)=>{
     e.preventDefault()
-
-    if(startDate,endDate)
-    {
-        await axios.get(`http://localhost:5000/api/v1/student/feeReport?startDate=${startDate}&endDate=${endDate}`)
-        .then((res)=>{
-          setStudents(res.data.data)
-          setDisplayStudents(res.data.data)
-          setStartDate("")
-          setEndDate("")   
-        }  )   
+    if(startDate,endDate){
+        await axios.get(`http://localhost:5000/api/v1/student/feeReport?startDate=${startDate}&endDate=${endDate}`).then((res)=>{
+            setStudents(res.data.data)
+             setDisplayStudents(res.data.data)}  )   }else{
+            console.log( "undefined start and end Date")
+        }
+     
+    
     }
-    else{
-        console.log( "undefined start and end Date")
-        }    
-    }
-
     const handleGrNum=(e)=>{
         e.preventDefault()
       if(students){const student= students.filter((s)=>s.GRNo  == grNum )
         setFilterByGr(student)
         setDisplayStudents(student)
 } 
-
     }
-
+    
+    const handleReset=()=>{
+      setStartDate(null)
+      setEndDate(null)
+    }
     const headers = ['Name','GRNO','Fee Status','Date']
 
   return (
   <>
-  {students.length > 2 && (
+  {students.length >0  && (
     <div className="w-50 mx-auto my-3">
       
       <label htmlFor="grNum" className="ms-2 mb-2">
@@ -76,44 +72,41 @@ const FeeReport = () => {
     <div className="col">
   
    
-    <form onSubmit={(e)=>handleDate(e)}  className="w-50 mx-auto d-flex align-items-end">
-    
-      <div className="col">
-  
-      <label htmlFor="inputName" className="form-label">
-        Start Date
-      </label>
-      <input
-        type="date"
-        value={startDate}
-        onChange={(e) => setStartDate(e.target.value)}
-        className="form-control"
-        id="inputName"
-        autoComplete="off"
-        required
-      />
-    </div>
+    <form onSubmit={(e)=>handleDate(e)} >
+    <div className="mb-3">
+ 
+    <label htmlFor="inputName" className="form-label">
+      Date
+    </label>
+    <input
+      type="date"
+      value={startDate}
+      onChange={(e) => setStartDate(e.target.value)}
+      className="form-control"
+      id="inputName"
+      autoComplete="off"
+    />
+  </div>
+  <div className="mb-3">
+    <label htmlFor="inputName" className="form-label">
+      Date
+    </label>
+    <input
+      type="date"
+      value={endDate}
+      onChange={(e) => setEndDate(e.target.value)}
+      className="form-control"
+      id="inputName"
+      autoComplete="off"
+    />
+         <button className="btn btn-primary" type="submit">
+                Generate Report
+              </button>
 
-    <div className="col ms-2">
-      <label htmlFor="inputName" className="form-label">
-        End Date
-      </label>
-      <input
-        type="date"
-        value={endDate}
-        onChange={(e) => setEndDate(e.target.value)}
-        className="form-control"
-        id="inputName"
-        autoComplete="off"
-        required
-      /> 
-    </div>
-
-    <div>
-      <div class="col ms-2">
-        <button class="btn btn-primary">Generate Report</button>
-      </div>
-    </div>
+              <button className="btn btn-primary" onClick={handleReset }>
+                Reset
+              </button>
+  </div>
   </form>
   </div>
   </div>

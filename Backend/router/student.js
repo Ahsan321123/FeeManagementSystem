@@ -2,7 +2,7 @@ const { verifyCampus,verifyToken }=require( '../middleware/middleware')
 
 const express= require('express')
 const router= express.Router()
-const {createStudent,createClass,getAllclasses, updateStudent, deleteStudent, studentDefaulterList}= require('../controllers/student')
+const {createStudent,createClass,getAllclasses, updateStudent, deleteStudent, studentDefaulterList, deleteClass}= require('../controllers/student')
 const {getAllStudents,generateVoucher,updateFeeStatus, generateBatchVouchers, studentFeeReport}=require('../controllers/feeCollection')
 const { createStaff,loginStaff}=require('../controllers/staff')
 
@@ -20,4 +20,5 @@ router.route('/student/feeReport').get(verifyToken,verifyCampus,studentFeeReport
 router.route('/student/defaulterList').get(verifyToken,verifyCampus,studentDefaulterList)
 router.route('/staff/create').post(createStaff)
 router.route('/staff/login').post(loginStaff)
+router.route('/class/:id/delete').get(deleteClass)
 module.exports=router;
