@@ -25,7 +25,7 @@ export default function CreateStudent() {
       axios.get('http://localhost:5000/api/v1/classes')
       .then(res=>{
             setClasses(res.data.classData)
-            console.log(localStorage.getItem('token'))
+         
         
 })
 },[])
