@@ -29,7 +29,7 @@ export default function Allstudents() {
     const [ totalPages,setTotalPages]=useState()
     const [totalStudentsCount,setTotalStudentsCount]=useState(0)
 
-    console.log(localStorage.getItem('token'))
+  
 // PAgination handle 
 
 const token = document.cookie.split('=')[1];
@@ -48,14 +48,16 @@ const handlePage=(pageNumber)=>{
     
     }
     
-    );
+    )
+      console.log(data)
+      setAllStudent(data.allStudents);
+    
+      setTotalStudentsCount(data.totalStudents)   
   
-    console.log(data)
-    setAllStudent(data.allStudents);
+      setLoading(false)
+    
   
-    setTotalStudentsCount(res.data.totalStudents)   
-
-    setLoading(false)}catch(e){
+   }catch(e){
       console.log(e.response.data.messsage)
     }
   };
@@ -70,12 +72,11 @@ useEffect(()=>{
   const fetchClasses = async () => {
     const { data } = await axios.get("http://localhost:5000/api/v1/classes",{
       headers:{
-            "x-auth-token":localStorage.getItem('token')
+            "x-auth-token":token
           }
-    }).then(res=>{
-      console.log(res.data)
-    });
-    setClasses(data.classData);
+    })
+      setClasses(data.classData);
+    
   };
 
   const fetchFilteredStudentsByClass = async (className, page = 1) => {
