@@ -6,6 +6,7 @@ import UpdateStudent from "./updateStudent";
 import Loader from '../Components/Loader'
 import { toast } from "react-toastify";
 import PaginationComp from "./paginationComp";
+import { CSVLink } from "react-csv";
 
 
 export default function Allstudents() {
@@ -19,8 +20,6 @@ export default function Allstudents() {
   const [bankName, setBankName] = useState("");
   const [date, setDate] = useState();
   const [status, setStatus] = useState();
-  const [batchVouchers, setBatchVouchers] = useState([]);
-  const [batchStudents, setBatchStudents] = useState([]);
   const [updateStudent, setUpdateStudent] = useState();
   const [updateModal, setUpdateModal] = useState(false);
   const [classes, setClasses] = useState([]);
@@ -32,19 +31,32 @@ export default function Allstudents() {
 
 // PAgination handle 
 
-
+const token = document.cookie.split('=')[1];
+console.log(token)
+// console.log(token)
 const handlePage=(pageNumber)=>{
   setCurrentPage(pageNumber) 
 }
   const fetchStudents = async (page) => {
+    try{
     setLoading(true)
-    const { data } = await axios.get(`http://localhost:5000/api/v1/students?page=${page}`);
+    const { data } = await axios.get(`http://localhost:5000/api/v1/students?page=${page}`,{
+    headers:{
+      'x-auth-token': token
+    }
+    
+    }
+    
+    );
   
+    console.log(data)
     setAllStudent(data.allStudents);
   
     setTotalStudentsCount(data.totalStudents)   
 
-    setLoading(false)
+    setLoading(false)}catch(e){
+      console.log(e.response.data.messsage)
+    }
   };
 // Total pages 
 useEffect(()=>{
@@ -61,7 +73,12 @@ useEffect(()=>{
 
   const fetchFilteredStudentsByClass = async (className, page = 1) => {
     const { data } = await axios.get(
-      `http://localhost:5000/api/v1/students?className=${className}&page=${page}`
+      `http://localhost:5000/api/v1/students?className=${className}&page=${page}`,{
+          headers:{
+            'x-auth-token': token
+          }
+        
+      }
     );
     
     setFilterData(data.allStudents);
@@ -88,8 +105,16 @@ useEffect(()=>{
   useEffect(() => {
     if (grNum) {
       axios
-        .get(`http://localhost:5000/api/v1/students?GRNo=${grNum}`)
-        .then((res) => setFilterByGr(res.data.student));
+        .get(`http://localhost:5000/api/v1/students?GRNo=${grNum}`,{
+          headers:{
+            'x-auth-token': token
+          }
+        
+      })
+        .then((res) =>{
+
+          setFilterByGr(res.data.allStudents)
+      });
     }
   }, [grNum]);
 
@@ -101,8 +126,14 @@ useEffect(()=>{
   //**** Generate Voucher for specific Student  */
   const navigate = useNavigate();
   const handleVoucher = async (id, student) => {
+    try{
     await axios
-      .get(`http://localhost:5000/api/v1/student/${id}/voucher`)
+      .get(`http://localhost:5000/api/v1/student/${id}/voucher`,{
+        headers:{
+          'x-auth-token': token
+        }
+      
+    })
       .then((res) => {
         // passing student data and navigating
         console.log(res.data);
@@ -115,7 +146,12 @@ useEffect(()=>{
         });
       });
 
-    setStudentID(id);
+    setStudentID(id);}catch(err){
+      toast.error(err.response.data.message,{
+        position: toast.POSITION.TOP_CENTER,
+        autoClose: 2000 
+      })
+    }
   };
   // **********
   const handleClassFilterChange = (e) => {
@@ -133,7 +169,8 @@ useEffect(()=>{
     e.preventDefault();
 
     let url = `http://localhost:5000/api/v1/students?GRNo=${grNum}`;
-    axios.get(url).then((res) => setFilterByGr(res.data.student));
+    axios.get(url).then((res) => { 
+     setFilterByGr(res.data.student)});
     
   };
 
@@ -146,7 +183,12 @@ useEffect(()=>{
     const data = { bankName, date, status };
     let url = `http://localhost:5000/api/v1/student/${id}/updateStatus`;
     axios
-      .patch(url, data)
+      .patch(url, data,{
+        headers:{
+          'x-auth-token': token
+        }
+      
+    })
       .then((response) => {
         const updatedStudent = response.data.student;
         const updateList = (list) =>
@@ -188,7 +230,12 @@ useEffect(()=>{
   // delete
   const handleStudentDelete = (student) => {
     axios
-      .get(`http://localhost:5000/api/v1/student/${student._id}/delete`)
+      .get(`http://localhost:5000/api/v1/student/${student._id}/delete`,{
+        headers:{
+          'x-auth-token': token
+        }
+      
+    })
       .then((res) => {
         toast.success('Student removed',{
           position:toast.POSITION.TOP_CENTER,
@@ -224,18 +271,21 @@ useEffect(()=>{
         <div className="card-body">
           <h5 className="card-title">Class {student.className}</h5>
           <button
+          style={{   backgroundColor:'#2c3e50'}}
             className="btn btn-primary"
             onClick={() => handleUpdate(student._id)}
           >
             Update fee status
           </button>
           <button
+          style={{   backgroundColor:'#2c3e50'}}
             className="btn btn-primary mx-2"
             onClick={() => handleVoucher(student._id, student)}
           >
             Generate Voucher
           </button>
           <button
+          style={{   backgroundColor:'#2c3e50'}}
             className="btn btn-primary mx-2"
             onClick={() => handleStudentUpdate(student)}
           >
@@ -268,7 +318,12 @@ useEffect(()=>{
     await axios
       .post("http://localhost:5000/api/v1/student/generateBatchVouchers", {
         StudentIds,
-      })
+      },{
+        headers:{
+          'x-auth-token': token
+        }
+      
+    })
       .then((res) => {
         // console.log(res.data.students)
         // console.log(res.data.vouchers)
@@ -311,6 +366,7 @@ const getFilteredStudents = () => {
   // Status filter
   if (studentStatus) {
     students = students.filter(s => s.status === studentStatus);
+   
   }
 
   // GR number filter
@@ -321,7 +377,9 @@ const getFilteredStudents = () => {
   return students;
 }
 
+
 let studentsToRender=getFilteredStudents()
+
 
   return (
     <>
@@ -380,7 +438,7 @@ let studentsToRender=getFilteredStudents()
                 value={grNum}
                 onChange={(e) => setGrNum(e.target.value)}
               />
-              <button className="btn btn-primary" type="submit">
+              <button style={{   backgroundColor:'#2c3e50'}} className="btn btn-primary" type="submit">
                 Search
               </button>
             </form>
@@ -394,7 +452,23 @@ let studentsToRender=getFilteredStudents()
       <h4>No Students Found</h4>
       </div>
     ):   (renderStudents(studentsToRender))}
+{/* Conditionally render the CSVLink button when studentStatus is "pending" */}
+{
+studentStatus == "pending" &&  
+ 
+ 
+ <CSVLink 
+ style={{   backgroundColor:'#2c3e50'}} 
+ data={studentsToRender}
+ filename="pending_students.csv" 
+ className="csv-btn btn-primary mx-4">
+   Download Pending Students
+</CSVLink>
 
+}
+
+
+     
 
         {showModal && (
           <div className="modal show d-block blurred-background" tabIndex="-1">
@@ -452,7 +526,7 @@ let studentsToRender=getFilteredStudents()
                       </select>
                     </div>
                     <div className="modal-footer">
-                      <button type="submit" className="btn btn-primary">
+                      <button style={{   backgroundColor:'#2c3e50'}} type="submit" className="btn btn-primary">
                         Save changes
                       </button>
                       <button
@@ -474,7 +548,8 @@ let studentsToRender=getFilteredStudents()
         <div className="d-flex justify-content-end mt-1">
           {filterData.length > 0 && (
             <button
-              className="btn btn-primary mx-2 "
+            style={{   backgroundColor:'#2c3e50'}} 
+              className="btn btn-primary mx-1 "
               onClick={() => handleVouchersAll(filterData)}
             >
               Generate All Vouchers
@@ -483,13 +558,13 @@ let studentsToRender=getFilteredStudents()
         </div>
       )}
 
-     
       {updateModal && (
         <UpdateStudent
           student={updateStudent}
           setUpdateModal={setUpdateModal}
           updatedStudent={updatedStudent}
           classes={classes}
+          token={token}
         />
       )}
       <PaginationComp 
@@ -501,6 +576,8 @@ let studentsToRender=getFilteredStudents()
           handlePage={handlePage}
           classFilter={classFilter}
           filterData={filterData}
+          token={token} 
+          
     
     />
     {console.log(totalStudentsCount)}

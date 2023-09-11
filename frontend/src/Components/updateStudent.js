@@ -5,6 +5,7 @@ const UpdateStudent = ({
   setUpdateModal,
   updatedStudent,
   classes,
+  token
 }) => {
   const [studentId, setStudentId] = useState(student.Id);
   const [studentData, setStudentData] = useState({
@@ -19,8 +20,8 @@ const UpdateStudent = ({
     phoneNo: student.phoneNo,
     CNIC: student.CNIC,
     DOB:student.DOB,
-    dateOfAdmission:student.dateOfAdmission
-  
+    dateOfAdmission:student.dateOfAdmission,
+    campus:student.campus
   });
 
   const handleModalSubmit = async (e) => {
@@ -29,7 +30,11 @@ const UpdateStudent = ({
     await axios
       .post(
         `http://localhost:5000/api/v1/studentnew/${student._id}/updateStudent`,
-        studentData
+        studentData,{
+          headers:{
+            'x-auth-token': token
+          }
+        }
       )
       .then((res) => {
         console.log("Received from backend:", res.data);
@@ -238,8 +243,23 @@ const UpdateStudent = ({
                   />
                 </div>
 
+                
+                <div className="mb-3">
+                  <label htmlFor="inputName" className="form-label">
+                    Campus
+                  </label>
+                  <input
+                    type="text"
+                    className="form-control"
+                    id="inputName"
+                    disabled
+                    value={studentData.campus}
+                    autoComplete="off"
+                  />
+                </div>
+
                 <div className="modal-footer">
-                  <button type="submit" className="btn btn-primary">
+                  <button style={{   backgroundColor:'#2c3e50'}} type="submit" className="btn btn-primary">
                     Save changes
                   </button>
                   <button

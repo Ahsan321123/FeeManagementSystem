@@ -9,7 +9,8 @@ const PaginationComp = ({
   setCurrentPage,
   handlePage,
   classFilter,
-  filterData
+  filterData,
+  
 }) => {
   return (
     <div className="PaginationContainer">

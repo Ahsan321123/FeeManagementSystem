@@ -28,6 +28,10 @@ function verifyToken ( req,res,next){
 async function verifyCampus (req,res,next){
 
 const student= await studentSchema.findById(req.params.id)
+console.log(student)
+if(!student){
+    return res.status(403).json({ message: "no students found" });
+}
 
 if(student.campus !== req.staff.campus) {
     return res.status(403).json({ message: "You are not authorized to access this campus's data" });

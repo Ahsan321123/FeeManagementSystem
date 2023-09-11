@@ -83,7 +83,9 @@ exports.createClass=async(req,res,next)=>{
             try{
            let  classId=req.params.id
            const classes=await classSchema.findOneAndDelete({_id:classId})
-            if(!classes){
+ 
+            const updatedClasses = await classSchema.find()       
+           if(!classes){
                 res.status(400).json({
                     success:false,
                     message:"no class found"
@@ -92,7 +94,8 @@ exports.createClass=async(req,res,next)=>{
     
             res.status(200).json({
                 success:true,
-                message:"class deleted"
+                message:"class deleted",
+                updatedClasses
             })}catch(err){
                 res.status(200).json({
                     success:false,

@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useState,useEffect } from "react"
 import React from 'react'
 import axios from 'axios'
 import {CSVLink} from 'react-csv'
@@ -12,14 +12,19 @@ const FeeReport = () => {
    const [filterByGr,setFilterByGr]=useState([])
    const [displayStudents,setDisplayStudents]=useState([])
   
-   console.log(displayStudents)
-  
+
+const token = document.cookie.split("=")[1]
+
    const handleDate= async(e)=>{
     e.preventDefault()
-
+    try{
     if(startDate,endDate)
     {
-        await axios.get(`http://localhost:5000/api/v1/student/feeReport?startDate=${startDate}&endDate=${endDate}`)
+        await axios.get(`http://localhost:5000/api/v1/student/feeReport?startDate=${startDate}&endDate=${endDate}`,{
+          headers:{
+            "x-auth-token":token
+          }
+        }  )
         .then((res)=>{
           setStudents(res.data.data)
           setDisplayStudents(res.data.data)
@@ -29,11 +34,17 @@ const FeeReport = () => {
     }
     else{
         console.log( "undefined start and end Date")
+        }}catch(err){
+          console.log(err)
         }    
     }
 
     const handleGrNum=(e)=>{
         e.preventDefault()
+if( grNum === ""){
+  setDisplayStudents(students)
+}
+
       if(students){const student= students.filter((s)=>s.GRNo  == grNum )
         setFilterByGr(student)
         setDisplayStudents(student)
@@ -45,7 +56,7 @@ const FeeReport = () => {
 
   return (
   <>
-  {students.length > 2 && (
+  {students.length > 0 && (
     <div className="w-50 mx-auto my-3">
       
       <label htmlFor="grNum" className="ms-2 mb-2">
@@ -111,7 +122,7 @@ const FeeReport = () => {
 
     <div>
       <div class="col ms-2">
-        <button class="btn btn-primary">Generate Report</button>
+        <button   style={{   backgroundColor:'#2c3e50'}}class="btn btn-primary">Generate Report</button>
       </div>
     </div>
   </form>

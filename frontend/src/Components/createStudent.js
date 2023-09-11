@@ -30,13 +30,19 @@ export default function CreateStudent() {
 
 
 
+const token = document.cookie.split('=')[1];
+console.log(token)
     const handleSubmit = (e)=>{
    
       setLoading(true)
         e.preventDefault();
         const data={name,class:studentClass,fee,DOB,fatherName,dateOfAdmission,gender,
                         phoneNo,address,CNIC,GRNo}
-        axios.post('http://localhost:5000/api/v1/students',data).then(res=>{
+        axios.post('http://localhost:5000/api/v1/students',data,{
+          headers:{
+            'x-auth-token': token
+          }
+        },).then(res=>{
             console.log(res.data);
             setLoading(false)
             setGrError(null)
@@ -56,6 +62,7 @@ export default function CreateStudent() {
               position: toast.POSITION.TOP_CENTER,
               autoClose: 2000 
             })
+            console.log(e.response.data.message)
           }
           
         })   
@@ -176,7 +183,7 @@ export default function CreateStudent() {
                 </div>
                 
                 <div className="d-grid gap-2">
-                  <button type="submit" className="btn btn-primary">Save Student</button>
+                  <button  style={{   backgroundColor:'#2c3e50'}} type="submit" className="btn btn-primary">Save Student</button>
                 </div>
               </form>
             </div>

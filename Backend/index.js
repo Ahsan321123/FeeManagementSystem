@@ -8,7 +8,13 @@ const feeRoutes = require('./router/student')
 const cookieParser=require('cookie-parser')
 
 // middleware 
-app.use(cors())
+
+const corsOptions = {
+    origin: 'http://localhost:3000',  // frontend ka address
+    credentials: true  // this allows the session cookie to be sent to the client
+}
+
+app.use(cors(corsOptions))
 app.use(bodyparser.json())
 app.use(cookieParser()); 
 app.use(express.json())

@@ -77,12 +77,14 @@ const token =  jwt.sign({ staff:staff },process.env.Jwt_Secret,{expiresIn:"1h"} 
 res.cookie("token",token,{
     expires: new Date(Date.now() + 1 * 60 * 60 * 1000), 
     //1 hour me expire
-    httpOnly: true,
+
 })
 return  res.json({
     sucess:true,
     message: `${staff.userName} logged in`,
+   user:staff,
    token
+
 })
 }else{
     return res.status(400).json({ message: 'Invalid credentials' });
@@ -98,11 +100,25 @@ return  res.json({
 
 }
 
-// exports.logout=(req,res,next)=>{
+exports.logoutStaff=async(req,res,next)=>{
+    try{
+res.cookie("token","", {
+    expiresIn: new Date(0)
 
-// const jwtLogout=jwt.
+}) 
+
+res.status(200).json({
+    sucess:true,
+    message:"user logout sucessfully"
+})
+ }catch(err){
+
+    res.status(500).json({
+        success:false,
+        message:err.message})
 
 
+ }
 
     
-// }
+}

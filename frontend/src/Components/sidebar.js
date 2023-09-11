@@ -1,38 +1,51 @@
-import React from 'react'
-import {BrowserRouter as Router, Routes,Route,Link} from 'react-router-dom';
-import Allstudents from './allstudents';
-import CreateStudent from './createStudent';
-import CreateClass from './createClass';
-import Voucher from './voucher';
-import FeeReport from './feeReport';
-import StaffLogin from './StaffLogin';
+import React from 'react';
+import { Link } from 'react-router-dom';
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
 
 export default function Sidebar() {
-  return (
-    
-   <Router>
+    const navigate = useNavigate();
+    const dispatch = useDispatch();
+    const { userName, campus } = useSelector(state => state.root);
 
-    <div className="sidebar">
-        <nav>
-            <Link className='link' to='/'>Create Student</Link>
-            <Link className='link' to='/allstudents'>All Students</Link>
-            <Link className='link' to='/createclass'>Create Class</Link>
-            <Link className='link' to='/feeReport'>Fee Report</Link>
-            <Link className='link' to='/stafflogin'>Staff Login</Link>
+    const name = userName || "";
+    const newName = name ? (name[0].toUpperCase() + name.slice(1)) : "";
 
-        </nav>
-    </div>
-    <Routes>
-        <Route path='/' element={<CreateStudent/>} ></Route>
-        <Route path='/allstudents' element={<Allstudents/>} ></Route>
-        <Route path='/createclass' element={<CreateClass/>} ></Route>
-        <Route path='/voucher' element={<Voucher/>} ></Route>
-        <Route path='/feeReport' element={<FeeReport/>} ></Route>
-        <Route path='/stafflogin' element={<StaffLogin/>} ></Route>
+    const handleLogout = async (e) => {
+        e.preventDefault();
+        try {
+            const response = await axios.get('http://localhost:5000/api/v1/staff/logout', { withCredentials: true });
+            if (response.data.sucess === true) {
+                dispatch({ type: "logout" });
+                navigate('/stafflogin');
+            }
+        } catch (err) {
+            console.log(err.message);
+        }
+    }
 
-        {/* CreateClass */}
-    </Routes>
-   </Router>
-
-  )
+    return (
+        <div className="sidebar p-4 "style={{ backgroundColor: '#2c3e50', height: '100vh', color: '#ecf0f1' }}>
+            <div className="profile mb-5">
+                <div className="avatar mb-3 d-flex justify-content-center align-items-center" style={{ width: '100px', height: '100px', borderRadius: '50%', backgroundColor: 'white', color: '#2c3e50', fontSize: '40px', margin: '0 auto' }}>
+                    {newName[0]}
+                </div>
+                <h4 className="text-center mb-1">{newName}</h4>
+                <p className="text-center"> Campus : {campus}</p>
+            </div>
+            <nav className="mb-4">
+                <Link className='link d-block mb-3 ' to='/createStudent' style={{ color: '#bdc3c7' }}>Create Student</Link>
+                <Link className='link d-block mb-3 d' to='/allstudents'  style={{ color: '#bdc3c7' }} >All Students</Link>
+                <Link className='link d-block mb-3 ' to='/createclass' style={{ color: '#bdc3c7' }}>Create Class</Link>
+                <Link className='link d-block mb-3 d' to='/feeReport' style={{ color: '#bdc3c7' }}>Fee Report</Link>
+            </nav>
+            <button
+                className="btn btn-danger w-100"
+                onClick={(e) => handleLogout(e)}
+            >
+                Logout
+            </button>
+        </div>
+    );
 }

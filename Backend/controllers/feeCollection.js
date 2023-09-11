@@ -72,10 +72,10 @@ return{
 
 
 }
-
+//* Single Voucher  
   exports.generateVoucher = async  (req, res, next) => {
       try {
-          const student = await studentSchema.findById(req.params.studentId);
+          const student = await studentSchema.findById(req.params.id);
         //  const {data}=req.body.data 
         
         if(!student){
@@ -116,8 +116,13 @@ const id= req.params.id
      
        })
      }
-     
-     const payment = await paymentSchema.create(req.body)
+  const paymentBody={
+    ...req.body,
+    campus:req.staff.campus
+  }    
+     const payment = await paymentSchema.create(paymentBody)
+     req.staff.campus=payment.campus
+ 
      const currentMonth=getMonthName(new Date().getMonth())
      payment.studentId=student._id
 payment.studentName=student.name;
@@ -174,6 +179,9 @@ exports.studentFeeReport= async(req,res,next)=>{
   
   const startDate =  new Date( req.query.startDate)
   const endDate= new Date(req.query.endDate) 
+  if (!req.query.startDate || !req.query.endDate) {
+    return res.status(400).json({ message: "Start and end dates are required." });
+  }
   endDate.setHours(23, 59, 59, 999);
 const payment = await paymentSchema.find({
   status:"Paid",
@@ -181,7 +189,7 @@ date:{
   $gte:startDate,
   $lte:endDate
   },
-  campus: req.staff.campus, 
+  campus:req.staff.campus
 })
 
 
@@ -203,7 +211,11 @@ res.status(200).json({
  data:payment ,
  groupPayments
 })}catch(err){
-console.log(err)
+ res.status(400).json({
+    success:"false",
+    message:err.message
+   
+  })
 }} 
 
 const Name="staff"

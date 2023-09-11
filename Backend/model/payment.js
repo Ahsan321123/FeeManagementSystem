@@ -34,7 +34,8 @@ month:{
 campus:{
     type:String,
     required:true
-}
+},
+
 });
 
 module.exports=mongoose.model("paymentSchema",paymentSchema)
