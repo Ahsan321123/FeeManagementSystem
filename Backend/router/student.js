@@ -4,7 +4,7 @@ const express= require('express')
 const router= express.Router()
 const {createStudent,createClass,getAllclasses, updateStudent, deleteStudent, studentDefaulterList, deleteClass}= require('../controllers/student')
 const {getAllStudents,generateVoucher,updateFeeStatus, generateBatchVouchers, studentFeeReport}=require('../controllers/feeCollection')
-const { createStaff,loginStaff, logoutStaff}=require('../controllers/staff')
+const { loginStaff, logoutStaff}=require('../controllers/staff')
 
 
 router.route('/students').get( verifyToken, getAllStudents).post( verifyToken,createStudent )
@@ -18,7 +18,6 @@ router.route('/student/generateBatchVouchers').post(verifyToken,generateBatchVou
 router.route( '/student/:id/delete').get(verifyToken,verifyCampus,deleteStudent)
 router.route('/student/feeReport').get(verifyToken, studentFeeReport)
 router.route('/student/defaulterList').get(studentDefaulterList)
-router.route('/staff/create').post(createStaff)
 router.route('/staff/login').post(loginStaff)
 router.route('/staff/logout').get(logoutStaff)
 router.route('/class/:id/delete').get(deleteClass)

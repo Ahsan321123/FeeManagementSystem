@@ -3,15 +3,15 @@ import { toast } from "react-toastify";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
-import './Select.css'
-export default function StaffLogin() {
+
+export default function AdminLogin() {
   const [password, setPassword] = useState("");
   const [userName, setUserName] = useState("");
-  const [campus, setCampus] = useState("");
+
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const AllCampuses = ["1", "2", "3", "4"];
+
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -19,32 +19,32 @@ export default function StaffLogin() {
       const data = {
         userName,
         password,
-        campus,
-      };
+        };
 
       const response = await axios.post(
-        "http://localhost:5000/api/v1/staff/login",
+        "http://localhost:5000/api/v1/admin/login",
         data,
         { withCredentials: true }
       );
- 
+if(response.data.success == true){
 
-      if (response.data.user) {
-    console.log(response.data.user)
-        dispatch({
-          type: "login",
-          payload: {
-            userName: response.data.user.userName,
-            campus: response.data.user.campus,
-         
-          },
- 
-        });
+    localStorage.setItem('role','admin')
+console.log(  response.data)
+dispatch({
+    type:"setRole",
+    payload:{
+        userName:"admin"
+    }
+})
+
+console.log("good")
+
+}
+navigate('/createStaff')
+
+
       
-          navigate("/createStudent");
-     
-   
-      }
+      
     } catch (err) {
       toast.error("Login failed", {
         position: toast.POSITION.TOP_CENTER,
@@ -62,7 +62,7 @@ export default function StaffLogin() {
               className="card-title text-center mb-4"
               style={{ color: "#2c3e50" }}
             >
-              Staff Login
+           Admin Login
             </h4>
             <form onSubmit={handleLogin}>
               <div className="mb-3">
@@ -91,19 +91,7 @@ export default function StaffLogin() {
                   autoComplete="off"
                 />
               </div>
-              <div className="mb-3">
-                <label htmlFor="inputClass" className="form-label">
-                  Select Campus
-                </label>
-                <select id="inputClass" className="form-control enhanced-select" onChange={e => setCampus(e.target.value)}>
-    <option value="">Select Campus</option>
-    {AllCampuses.map((campus, index) => (
-        <option key={index} value={campus}>
-            {campus}
-        </option>
-    ))}
-</select>
-              </div>
+           
               <div className="d-grid gap-2">
                 <button
                   style={{ backgroundColor: "#2c3e50" }}

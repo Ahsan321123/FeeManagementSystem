@@ -5,6 +5,7 @@ const cors = require('cors')
 // Routes import 
 const studentRoutes= require('./router/student')
 const feeRoutes = require('./router/student')
+const adminRoutes= require('./router/admin')
 const cookieParser=require('cookie-parser')
 
 // middleware 
@@ -19,7 +20,7 @@ app.use(bodyparser.json())
 app.use(cookieParser()); 
 app.use(express.json())
 app.use('/api/v1',studentRoutes)
-
+app.use('/api/v1',adminRoutes)
 
 
 

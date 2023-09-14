@@ -6,47 +6,6 @@ const staff = require('../model/staff')
 
 
 
-
-
-
-exports.createStaff= async(req,res,next)=>{
-
-try{
-const {userName,password,campus }=req.body
-const salt=await bcrypt.genSalt(10)
-const hashPassword=  await bcrypt.hash(password,salt)
-const staffData = await staffSchema.create({
- userName,
- password:hashPassword,
-campus
-})
-
-
-console.log(userName,password,campus )
-
-res.status(200).json({
-
-sucess: true,
-message:"staff created",
-staffData
-
-})
-
-
-
-}
-catch(err){
-res.status(400).json({
-    sucess:false,
-    message:err.message
-})
-
-
-}
-
-
-}
-
 exports.loginStaff= async (req,res,next)=>{
 
 try{
@@ -108,13 +67,13 @@ res.cookie("token","", {
 }) 
 
 res.status(200).json({
-    sucess:true,
+    sucess :true,
     message:"user logout sucessfully"
 })
  }catch(err){
 
     res.status(500).json({
-        success:false,
+        sucess :false,
         message:err.message})
 
 

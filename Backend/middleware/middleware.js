@@ -14,6 +14,7 @@ function verifyToken ( req,res,next){
         })
     }
     const decoded= jwt.verify(token,process.env.Jwt_Secret)
+
     req.staff=decoded.staff
     next()
 }catch(err){
@@ -42,4 +43,33 @@ next()
 }
 
 
-module.exports={verifyToken,verifyCampus}
+
+const verifyAdmin=async(req,res,next)=>{
+
+try{
+const token = req.header('x-auth-token')
+if(!token){
+    res.status(400).json({
+        success:false,
+        message:"not authorize"
+    })
+}
+
+const decoded= jwt.verify(token,process.env.jwt_Secret)
+req.role=decoded.role
+if(decoded.role !== "admin"){
+
+res.status(400).json({ message: "Access denied. Only admins are allowed."})
+}
+next()
+
+}catch (err) {
+    res.status(401).json({ message: "Token is not valid" });
+}
+
+
+}
+
+
+
+module.exports={verifyToken,verifyCampus,verifyAdmin}

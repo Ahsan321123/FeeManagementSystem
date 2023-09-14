@@ -11,6 +11,10 @@ password:{
 },
 campus:{
     type:String
+},
+role:{
+    type:String,
+    default:"staff"
 }
 
 })

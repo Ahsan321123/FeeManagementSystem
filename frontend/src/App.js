@@ -16,29 +16,32 @@ import { useEffect } from 'react';
 import axios from 'axios'
 import { useDispatch } from 'react-redux';
 import { useState } from 'react';
+import AdminLogin from './Components/admin/AdminLogin';
+import CreateStaff from './Components/admin/CreateStaff';
 
 
 function App() {
  
-    
-
-
-     
-  
-        
+      
 
 const {isAuthenticated}= useSelector(state=>state.root)
+const {role}= useSelector(state=>state.root)
+
+
 
     return (
         <Router>
-            <AppContent  isAuthenticated={isAuthenticated} />
+            <Routes>
+              <Route path='/adminLogin' element={<AdminLogin/>}  />
+
+              </Routes>
+            <AppContent  role={role}  isAuthenticated={isAuthenticated} />
         </Router>
     );
 }
 
 
-
-function AppContent({ isAuthenticated }) {
+function AppContent({ role, isAuthenticated }) {
     const [loading,setLoading]=useState(false)
     const location = useLocation();
 
@@ -50,12 +53,23 @@ function AppContent({ isAuthenticated }) {
                 const token = document.cookie.split("=")[1];
                 if (token) {
                     setLoading(true);
-               const response=  await axios.get('http://localhost:5000/api/v1/auth/verify', {
+                    let savedRole= localStorage.getItem("role") 
+                    const endpoint= savedRole === "admin" ?  'http://localhost:5000/api/v1/auth/verifyAdmin' : 'http://localhost:5000/api/v1/auth/verify'
+               const response=  await axios.get(endpoint, {
                         headers: {
                             'x-auth-token': token
                         }
                     })
                         if (response.data.success == true) {
+                            if(response.data.message=="Admin Token is valid"){
+                                dispatch({
+                                    type:"setRole",
+                                    payload:{
+                                        userName:"admin"
+                                    }
+                                })
+                                
+                            }
                         dispatch({
                                 type: "login",
                                 payload: {
@@ -88,13 +102,23 @@ function AppContent({ isAuthenticated }) {
         return <div>Loading...</div>;
     }
     
+    if (role === "admin" ) {
+        return (
+            <div className="App">
+                <Sidebar className="sidebar" />
+                <ToastContainer />
+            
+            </div>
+        );
+    }
     if (!isAuthenticated) {
         return (
             <div className="App">
                 <ToastContainer />
                 <Routes>
+              
                     <Route path='/' element={<StaffLogin />} />
-                    <Route path="*" element={<Navigate to="/" replace />} />
+                    {/* <Route path="*" element={<Navigate to="/" replace />} /> */}
                 </Routes>
             </div>
         );
@@ -108,6 +132,7 @@ function AppContent({ isAuthenticated }) {
             { isAuthenticated && location.pathname !== '/stafflogin' && <Sidebar className="sidebar" />}
             <ToastContainer />
             <Routes>
+      
                 <Route element={<ProtactedRoutes isAuthenticated={isAuthenticated} />}>
              {/* agr protected route me hain to access na krpain staff login  */}
                 <Route path='/' element={<Navigate to="/createStudent" replace />} />
