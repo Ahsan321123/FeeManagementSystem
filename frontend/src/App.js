@@ -18,6 +18,8 @@ import { useDispatch } from 'react-redux';
 import { useState } from 'react';
 import AdminLogin from './Components/admin/AdminLogin';
 import CreateStaff from './Components/admin/CreateStaff';
+import AllStaff from './Components/admin/AllStaff';
+import StudentCount from './Components/admin/studentCount';
 
 
 function App() {
@@ -32,7 +34,6 @@ const {role}= useSelector(state=>state.root)
     return (
         <Router>
             <Routes>
-              <Route path='/adminLogin' element={<AdminLogin/>}  />
 
               </Routes>
             <AppContent  role={role}  isAuthenticated={isAuthenticated} />
@@ -47,6 +48,7 @@ function AppContent({ role, isAuthenticated }) {
 
 
     const dispatch=useDispatch()
+    
     useEffect(() => {
         async function verifyToken(){
             try {
@@ -107,7 +109,12 @@ function AppContent({ role, isAuthenticated }) {
             <div className="App">
                 <Sidebar className="sidebar" />
                 <ToastContainer />
-            
+                <Routes>
+                    <Route path='/createStaff' element={<CreateStaff/>} />
+                    <Route path='/allStaff' element={<AllStaff/>} />
+                    <Route path='/studentCount' element={<StudentCount/>} />
+
+                </Routes>
             </div>
         );
     }
@@ -116,10 +123,14 @@ function AppContent({ role, isAuthenticated }) {
             <div className="App">
                 <ToastContainer />
                 <Routes>
-              
-                    <Route path='/' element={<StaffLogin />} />
+                <Route path='/' element={<StaffLogin/>} />
+
+                    <Route path='/adminlogin' element={<AdminLogin/>} />
                     {/* <Route path="*" element={<Navigate to="/" replace />} /> */}
                 </Routes>
+                
+                {/* <Sidebar className="sidebar" /> */}
+
             </div>
         );
     }
@@ -129,7 +140,8 @@ function AppContent({ role, isAuthenticated }) {
           
 
 
-            { isAuthenticated && location.pathname !== '/stafflogin' && <Sidebar className="sidebar" />}
+            { isAuthenticated && location.pathname !== '/stafflogin' && 
+            <Sidebar className="sidebar" />}
             <ToastContainer />
             <Routes>
       

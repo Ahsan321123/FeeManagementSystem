@@ -33,6 +33,7 @@ export default function CreateStudent() {
 
 
 const token = document.cookie.split('=')[1];
+
 console.log(token)
     const handleSubmit = (e)=>{
    
