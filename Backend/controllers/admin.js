@@ -2,6 +2,8 @@ const staffSchema= require('../model/staff')
 const bcrypt= require ('bcrypt')
 const jwt = require('jsonwebtoken')
 
+const studentSchema = require('../model/student')
+
 
 
 
@@ -174,12 +176,57 @@ res.status(400).json({
     message:`staff with id ${id} name${staff.userName} has been deleted `
 })
 
-}catch(err){}
-res.status(400).json({
-    success:false,
-    message:err.message
-})
+}catch(err){
+    res.status(400).json({
+        success:false,
+        message:err.message
+    })
+    
+}
 
 
 }
+
+exports.totalStudentsCount=async(req,res,next)=>{
+try{
+
+    const campus= [ "1","2","3"]
+const count = await Promise.all( campus.map( async(campus)=>{
+ const totalStudents= await studentSchema.count({campus})
+ const totalStudentsPaid= await studentSchema.count({campus,status:"Paid"})
+ const totalStudentsPending= await studentSchema.count({campus,status:"pending"})
+
+
+ return{
+campus,
+totalStudents,
+totalStudentsPaid,
+totalStudentsPending,
+
+}
+
+}))
+
+const allCampusStudents= await studentSchema.count({})
+
+    
+res.status(200).json({
+    success:true,
+    count,
+    allCampusStudents
+
+})
+
+}catch(err){
+
+ res.status(400).json({
+        success:false,
+        message:err.message
+    })
+    
+}
+
+
+}
+
 

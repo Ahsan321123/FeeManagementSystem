@@ -1,7 +1,7 @@
 const express= require('express')
 
 const router = express.Router()
-const {createStaff, deleteStaff, updateStaff, allStaff, loginAdmin, logoutAdmin}= require('../controllers/admin')
+const {createStaff, deleteStaff, updateStaff, allStaff, loginAdmin, logoutAdmin, totalStudentsCount}= require('../controllers/admin')
 const { verifyAdmin ,verifyToken} = require('../middleware/middleware')
 
 router.route ('/admin/login').post(loginAdmin)
@@ -22,5 +22,6 @@ router.route('/auth/verifyAdmin').get(verifyAdmin,(req,res,next)=>{
 })
 
 
+router.route ('/admin/students').get (totalStudentsCount)
 
 module.exports=router;
