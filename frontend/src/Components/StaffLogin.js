@@ -11,6 +11,7 @@ export default function StaffLogin() {
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
+
   const AllCampuses = ["1", "2", "3", "4"];
 
   const handleLogin = async (e) => {
@@ -30,7 +31,8 @@ export default function StaffLogin() {
  
 
       if (response.data.user) {
-    console.log(response.data.user)
+  
+        console.log(response.data.user)
         dispatch({
           type: "login",
           payload: {

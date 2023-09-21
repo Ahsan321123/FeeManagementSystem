@@ -4,6 +4,12 @@ import { all } from 'axios';
 import StaffLogin from '../StaffLogin';
 import axios from 'axios';
 import AllStaff from './AllStaff';
+import React, { useState } from 'react'
+import Loader from '../Loader';
+import { all } from 'axios';
+import StaffLogin from '../StaffLogin';
+import axios from 'axios';
+import AllStaff from './AllStaff';
 
 const CreateStaff = () => {
 

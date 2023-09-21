@@ -5,9 +5,9 @@ import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 
 export default function AdminLogin() {
+
   const [password, setPassword] = useState("");
   const [userName, setUserName] = useState("");
-
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -26,23 +26,29 @@ export default function AdminLogin() {
         data,
         { withCredentials: true }
       );
-if(response.data.success == true){
 
+      if(response.data.success == true){
+
+    localStorage.setItem('adminToken',response.data.token);    
     localStorage.setItem('role','admin')
+
 console.log(  response.data)
+
 dispatch({
     type:"login",
     payload:{
       userName:"admin",
         role:"admin"
     }
+
 })}
 navigate('/admin/createStaff')
 
 
-      
-      
-    } catch (err) {
+
+console.log("good")
+
+       } catch (err) {
       toast.error("Login failed", {
         position: toast.POSITION.TOP_CENTER,
         autoClose: 2000,

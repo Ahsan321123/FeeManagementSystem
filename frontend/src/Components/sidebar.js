@@ -4,10 +4,12 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
+import AdminLogin from './admin/AdminLogin';
 
 export default function Sidebar() {
     const navigate = useNavigate();
     const dispatch = useDispatch();
+
     const { userName, campus } = useSelector(state => state.root);
     
     const {role }=useSelector(state => state.root)
@@ -50,8 +52,7 @@ const savedRole =localStorage.getItem('role')
 
     return (
         <>
-       
-   
+
         <div className="sidebar p-4 "style={{ backgroundColor: '#2c3e50', height: '100vh', color: '#ecf0f1' }}>
             <div className="profile mb-5">
                 <div className="avatar mb-3 d-flex justify-content-center align-items-center" style={{ width: '100px', height: '100px', borderRadius: '50%', backgroundColor: 'white', color: '#2c3e50', fontSize: '40px', margin: '0 auto' }}>
