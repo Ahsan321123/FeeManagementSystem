@@ -36,11 +36,11 @@ export default function StaffLogin() {
           payload: {
             userName: response.data.user.userName,
             campus: response.data.user.campus,
-         
+            role:response.data.user.role
           },
  
         });
-      
+        localStorage.setItem('role','staff')
           navigate("/createStudent");
      
    

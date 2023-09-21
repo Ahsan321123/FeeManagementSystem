@@ -19,7 +19,8 @@ export default function CreateStudent() {
     const [classes,setClasses ]=useState()
     const [loading,setLoading] = useState(false)
     const [ grError,setGrError]=useState(null)
-    
+    const [ phoneError ,setPhoneError]=useState(null )
+    const [ cnicError ,setCnicError]=useState(null )
 
     useEffect(()=>{
       axios.get('http://localhost:5000/api/v1/classes')
@@ -53,23 +54,21 @@ console.log(token)
               position: toast.POSITION.TOP_CENTER,
               autoClose: 2000 
             })
-        }).catch(e=>{
-
-          if(e.response && e.response.data.message ==="student with this GrNo# already exist" ){
-            setGrError(e.response.data.message)
-            toast.error(e.response.data.message,{
-              position: toast.POSITION.TOP_CENTER,
-              autoClose: 2000 
-            })
-          }else{
-            toast.error("Student not created",{
-              position: toast.POSITION.TOP_CENTER,
-              autoClose: 2000 
-            })
-            console.log(e.response.data.message)
+        }).catch(e => {
+          if (e.response) {
+              if (e.response.data.message.includes("CNIC Number should be 13 digits")) {
+                  setCnicError(e.response.data.message.split(': phoneNo: Phone Number incorrect ')[1]);
+              } else if (e.response.data.message.includes("some other error")) {
+                  setPhoneError(e.response.data.message);
+              } else if (e.response.data.message === "student with this GrNo# already exist") {
+                  setGrError(e.response.data.message );
+              }
+              toast.error(e.response.data.message, {
+                  position: toast.POSITION.TOP_CENTER,
+                  autoClose: 2000
+              });
           }
-          
-        })   
+      });
     }
 
   return (
@@ -144,6 +143,7 @@ console.log(token)
                   placeholder="Phone No." 
                   onChange={e=>{setPhoneNo(e.target.value)}}
                   autoComplete='off'/>
+                      {phoneError && <div className="text-danger">{phoneError}</div>}
                 </div>
 
                 <div className="mb-3">
@@ -152,6 +152,7 @@ console.log(token)
                   placeholder="CNIC" 
                   onChange={e=>{setCNIC(e.target.value)}}
                   autoComplete='off'/>
+                  {cnicError && <div className="text-danger">{cnicError}</div>}
                 </div>
 
                 <div className="mb-3">

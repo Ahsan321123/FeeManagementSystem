@@ -30,7 +30,7 @@ export default function Allstudents() {
     const [totalStudentsCount,setTotalStudentsCount]=useState(0)
 
   
-// PAgination handle 
+//! PAgination handle 
 
 const token = document.cookie.split('=')[1];
 console.log(token)
@@ -131,7 +131,8 @@ useEffect(()=>{
     setShowModal(true);
   };
 
-  //**** Generate Voucher for specific Student  */
+  //! Generate Voucher for specific Student  */
+
   const navigate = useNavigate();
   const handleVoucher = async (id, student) => {
     try{
@@ -347,7 +348,7 @@ useEffect(()=>{
 
   // ***********
 
-  // Student Update
+  //! Student Update
 
   const updatedStudent = (updatedStudentData) => {
     let newUpdateStudents = allStudent.map((student) =>
@@ -361,7 +362,7 @@ useEffect(()=>{
 
 
 
-// rendering 
+//! rendering 
 
 const getFilteredStudents = () => {
   let students = filterData.length > 0 ? filterData : allStudent;
@@ -415,7 +416,7 @@ let studentsToRender=getFilteredStudents()
             </select>
           </div>
 
-          {/* Filter By Status */}
+          {/*! Filter By Status */}
 
         <div className="col-md-3">
             <label htmlFor="classFilter" className="d-block mb-1">

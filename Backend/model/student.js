@@ -4,7 +4,10 @@ const mongoose= require("mongoose")
 const studentSchema = new mongoose.Schema({
     name: {
         type:String,
-        required:[true,"please enter stundent name"]
+        required:[true,"please enter stundent name"],
+        trim:true,
+        
+
     }
 ,
     className:{
@@ -34,7 +37,8 @@ const studentSchema = new mongoose.Schema({
     },
     phoneNo:{
         type:String,
-        required:true
+        required:true,
+        minlength: [11, "Phone Number incorrect "]
     },
     dateOfAdmission:{
         type:Date,
@@ -47,7 +51,7 @@ const studentSchema = new mongoose.Schema({
     CNIC:{
         type:String,
         required:true,
-        maxlength: [13, "CNIC Number should be 13 digits"]
+        minlength: [13, "CNIC Number should be 13 digits"]
     },
     address:{
         type:String,

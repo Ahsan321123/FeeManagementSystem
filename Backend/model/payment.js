@@ -8,6 +8,7 @@ ref:"studentSchema"
 },
 studentName:{
 type:String,
+
 },
 GRNo:{
     type:Number,

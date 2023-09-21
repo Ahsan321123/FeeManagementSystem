@@ -14,6 +14,7 @@ const Voucher = () => {
 
 const batchVocuhers= location.state?.vouchersData
 console.log(batchVocuhers)
+
 const styles = StyleSheet.create({
     page: {
         padding: 40,
@@ -22,122 +23,332 @@ const styles = StyleSheet.create({
     header: {
         flexDirection: 'row',
         justifyContent: 'space-between',
-        marginBottom: 20,
+        marginBottom: 4,
     },
     title: {
-        fontSize: 24,
+        fontSize: 16,
         fontWeight: 'bold',
+        border: '1px solid black',
+        textAlign:'center',
+        
     },
     subtitle: {
-        fontSize: 16,
+        fontSize: 12,
     },
-    copyLabel: {
-        fontSize: 18,
-        marginTop: 10,
-        textAlign: 'center',
+    table: {
+        width: '100%',
+        border: '1px solid black',
+        borderCollapse: 'collapse',
+        marginBottom:4,
     },
     tableRow: {
         flexDirection: 'row',
-        justifyContent: 'space-between',
         borderBottomWidth: 1,
         borderBottomColor: '#666',
-        padding: 10,
     },
     tableCell: {
         flex: 1,
-        padding: 10,
+        border: '1px solid black',
+        padding: 12.6,
+        textAlign: 'center',
+        fontSize: 12,
     },
     tableHeader: {
         backgroundColor: '#f4f4f4',
     },
-    totalRow: {
-        fontWeight: 'bold',
-        backgroundColor: '#e0e0e0',
-    },
-    footer: {
-        marginTop: 20,
-        fontSize: 16,
+    tableFooter: {
+        borderTopWidth: 1,
+        borderTopColor: '#666',
     },
 });
 
+
+
+
 const renderIndividualVoucher = () => {
-    return (
-        <Page size="A4" style={styles.page}>
-            <View style={styles.header}>
-                <View>
-                    <Text style={styles.title}>Green Peace School</Text>
-                    <Text style={styles.subtitle}>Model Campus</Text>
-                </View>
-                <View>
-                    <Text style={styles.subtitle}>Bank:{individualvoucherData.schoolBank}</Text>
-                    <Text style={styles.subtitle}>Acc#: 123-456-789</Text>
-                </View>
-            </View>
-            <Text style={styles.copyLabel}>Monthly Bill for {individualvoucherData.month}</Text>
-            <View style={styles.tableRow}>
-                <Text style={styles.tableCell}>Student Name: {individualvoucherData.studentName}</Text>
-                <Text style={styles.tableCell}>Class: {individualvoucherData.className}</Text>
-                <Text style={styles.tableCell}>Date</Text>
-            </View>
-            <View style={[styles.tableRow, styles.tableHeader]}>
-                <Text style={styles.tableCell}>Description</Text>
-                <Text style={styles.tableCell}>Amount</Text>
-            </View>
-            <View style={styles.tableRow}>
-                <Text style={styles.tableCell}>School Fee</Text>
-                <Text style={styles.tableCell}>{individualvoucherData.baseFee}</Text>
-            </View>
-            <View style={styles.tableRow}>
-                <Text style={styles.tableCell}>Late Fee</Text>
-                <Text style={styles.tableCell}>{individualvoucherData.lateFee}</Text>
-            </View>
+        // Current Date
+        let currentDate= Date.now()
+        let timeStamp= new Date( currentDate)
     
-         <View style={[styles.tableRow, styles.totalRow]}>
-                <Text style={styles.tableCell}>Total</Text>
-                <Text style={styles.tableCell}>{individualvoucherData.totalFee}</Text>
-            </View>
-            <Text style={styles.footer}>Payment Details: XYZ School Bank Account: 123-456-789</Text>
-        </Page>
-    );
-};
-const renderBatchVouchers = () => {
-    return batchVocuhers.map((data, index) => {
-     return (
-        <Page size="A4" style={styles.page}>
+       let date=  timeStamp.toISOString().split("T")[0]
+    // Due Date
+       let dateNow= new Date()
+        let dueTimeStamp = new Date(dateNow.getTime() + (24 * 60 * 60 * 1000));
+        let due = dueTimeStamp.toISOString().split("T")[0]
+    return (
+<>
+        <View>
         <View style={styles.header}>
+        
             <View>
                 <Text style={styles.title}>Green Peace School</Text>
                 <Text style={styles.subtitle}>Model Campus</Text>
             </View>
-            <View>
-                <Text style={styles.subtitle}>Bank:{data.schoolBank}</Text>
-                <Text style={styles.subtitle}>Acc#: 123-456-789</Text>
+          
+        </View>
+        <Text style={styles.title}>Monthly Bill for {individualvoucherData.month}</Text>
+        <View style={styles.table}>
+            <View style={styles.tableRow}>
+                <Text style={[styles.tableCell, {flex: 1}]}>Gr No</Text>
+                <Text style={[styles.tableCell, {flex: 2}]}>Student Name</Text>
+                <Text style={[styles.tableCell, {flex: 1}]}>Class</Text>
+                <Text style={[styles.tableCell, {flex: 2}]}>Fee Desc</Text>
+                <Text style={styles.tableCell}>Amount</Text>
+            </View>
+            <View style={styles.tableRow}>
+                <Text style={[styles.tableCell, {flex: 1}]} rowspan="6">531</Text>
+                <Text style={[styles.tableCell, {flex: 2}]} rowspan="4">{individualvoucherData.studentName}</Text>
+                <Text style={[styles.tableCell, {flex: 1}]} rowspan="6">{individualvoucherData.className}</Text>
+                <Text style={[styles.tableCell, {flex: 2}]} rowspan="3">Tuition Fee of {individualvoucherData.month}</Text>
+                <Text style={[styles.tableCell]} rowspan="3">{individualvoucherData.baseFee} {individualvoucherData.month}</Text>
+            </View>
+            <View style={styles.tableRow}>
+                <Text style={[styles.tableCell, {flex: 1}]}>Issue Date</Text>
+                <Text style={[styles.tableCell, {flex: 2}]}> 
+                {date}
+                </Text>
+                <Text rowspan="3" style={[styles.tableCell,{flex:1}]}>Payable Within Due Date</Text>
+                <Text style={[styles.tableCell]}>{individualvoucherData.baseFee}</Text>
+            </View>
+            <View style={styles.tableRow}>
+                <Text style={[styles.tableCell, {flex: 1}]}>Due Date</Text>
+                <Text style={[styles.tableCell, {flex: 2}]}> 
+                {due}</Text>
+                <Text style={[styles.tableCell]}>Payable After Due Date</Text>
+                <Text style={[styles.tableCell]}>{parseInt(individualvoucherData.baseFee) + parseInt(individualvoucherData.lateFee)}</Text>
             </View>
         </View>
-        <Text style={styles.copyLabel}>Monthly Bill for {data.month}</Text>
-        <View style={styles.tableRow}>
-            <Text style={styles.tableCell}>Student Name: {data.studentName}</Text>
-            <Text style={styles.tableCell}>Class: {data.className}</Text>
-            <Text style={styles.tableCell}>Date</Text>
+    </View>
+// 2nd copy 
+
+<View>
+<View style={styles.header}>
+        
+        <View>
+            <Text style={styles.title}>Green Peace School</Text>
+            <Text style={styles.subtitle}>Model Campus</Text>
         </View>
-        <View style={[styles.tableRow, styles.tableHeader]}>
-            <Text style={styles.tableCell}>Description</Text>
-            <Text style={styles.tableCell}>Amount</Text>
+      
+    </View>
+<Text style={styles.title}>Monthly Bill for {individualvoucherData.month}</Text>
+<View style={styles.table}>
+<View style={styles.tableRow}>
+    <Text style={[styles.tableCell, {flex: 1}]}>Gr No</Text>
+    <Text style={[styles.tableCell, {flex: 2}]}>Student Name</Text>
+    <Text style={[styles.tableCell, {flex: 1}]}>Class</Text>
+    <Text style={[styles.tableCell, {flex: 2}]}>Fee Desc</Text>
+    <Text style={styles.tableCell}>Amount</Text>
+</View>
+<View style={styles.tableRow}>
+    <Text style={[styles.tableCell, {flex: 1}]} rowspan="6">531</Text>
+    <Text style={[styles.tableCell, {flex: 2}]} rowspan="4">{individualvoucherData.studentName}</Text>
+    <Text style={[styles.tableCell, {flex: 1}]} rowspan="6">{individualvoucherData.className}</Text>
+    <Text style={[styles.tableCell, {flex: 2}]} rowspan="3">Tuition Fee of {individualvoucherData.month}</Text>
+    <Text style={[styles.tableCell]} rowspan="3">{individualvoucherData.baseFee} {individualvoucherData.month}</Text>
+</View>
+<View style={styles.tableRow}>
+    <Text style={[styles.tableCell, {flex: 1}]}>Issue Date</Text>
+    <Text style={[styles.tableCell, {flex: 2}]}>{date} </Text>
+    <Text rowspan="3" style={[styles.tableCell,{flex:1}]}>Payable Within Due Date</Text>
+    <Text style={[styles.tableCell]}>{individualvoucherData.baseFee}</Text>
+</View>
+<View style={styles.tableRow}>
+    <Text style={[styles.tableCell, {flex: 1}]}>Due Date</Text>
+    <Text style={[styles.tableCell, {flex: 2}]}>{due} </Text>
+    <Text style={[styles.tableCell]}>Payable After Due Date</Text>
+    <Text style={[styles.tableCell]}>{parseInt(individualvoucherData.baseFee) + parseInt(individualvoucherData.lateFee)}</Text>
+</View>
+</View>
+</View>
+//3rd copy 
+
+<View>
+<View style={styles.header}>
+        
+        <View>
+            <Text style={styles.title}>Green Peace School</Text>
+            <Text style={styles.subtitle}>Model Campus</Text>
         </View>
-        <View style={styles.tableRow}>
-            <Text style={styles.tableCell}>School Fees</Text>
-            <Text style={styles.tableCell}>{data.baseFee}</Text>
+      
+    </View>
+<Text style={styles.title}>Monthly Bill for {individualvoucherData.month}</Text>
+
+<View style={styles.table}>
+<View style={styles.tableRow}>
+    <Text style={[styles.tableCell, {flex: 1}]}>Gr No</Text>
+    <Text style={[styles.tableCell, {flex: 2}]}>Student Name</Text>
+    <Text style={[styles.tableCell, {flex: 1}]}>Class</Text>
+    <Text style={[styles.tableCell, {flex: 2}]}>Fee Desc</Text>
+    <Text style={styles.tableCell}>Amount</Text>
+</View>
+<View style={styles.tableRow}>
+    <Text style={[styles.tableCell, {flex: 1}]} rowspan="6">531</Text>
+    <Text style={[styles.tableCell, {flex: 2}]} rowspan="4">{individualvoucherData.studentName}</Text>
+    <Text style={[styles.tableCell, {flex: 1}]} rowspan="6">{individualvoucherData.className}</Text>
+    <Text style={[styles.tableCell, {flex: 2}]} rowspan="3">Tuition Fee of {individualvoucherData.month}</Text>
+    <Text style={[styles.tableCell]} rowspan="3">{individualvoucherData.baseFee} {individualvoucherData.month}</Text>
+</View>
+<View style={styles.tableRow}>
+    <Text style={[styles.tableCell, {flex: 1}]}>Issue Date</Text>
+    <Text style={[styles.tableCell, {flex: 2}]}>{date} </Text>
+    <Text rowspan="3" style={[styles.tableCell,{flex:1}]}>Payable Within Due Date</Text>
+    <Text style={[styles.tableCell]}>{individualvoucherData.baseFee}</Text>
+</View>
+<View style={styles.tableRow}>
+    <Text style={[styles.tableCell, {flex: 1}]}>Due Date</Text>
+    <Text style={[styles.tableCell, {flex: 2}]}>{due} </Text>
+    <Text style={[styles.tableCell]}>Payable After Due Date</Text>
+    <Text style={[styles.tableCell]}>{parseInt(individualvoucherData.baseFee) + parseInt(individualvoucherData.lateFee)}</Text>
+</View>
+</View>
+</View>
+
+</>
+    );
+};
+const renderBatchVouchers = () => {
+    // Current Date
+    let currentDate= Date.now()
+    let timeStamp= new Date( currentDate)
+
+   let date=  timeStamp.toISOString().split("T")[0]
+// Due Date
+   let dateNow= new Date()
+    let dueTimeStamp = new Date(dateNow.getTime() + (24 * 60 * 60 * 1000));
+    let due = dueTimeStamp.toISOString().split("T")[0]
+    return batchVocuhers.map((individualvoucherData, index) => {
+     return (
+<>
+           <View>
+            <View style={styles.header}>
+            
+                <View>
+                    <Text style={styles.title}>Green Peace School</Text>
+                    <Text style={styles.subtitle}>Model Campus</Text>
+                </View>
+              
+            </View>
+            <Text style={styles.title}>Monthly Bill for {individualvoucherData.month}</Text>
+            <View style={styles.table}>
+                <View style={styles.tableRow}>
+                    <Text style={[styles.tableCell, {flex: 1}]}>Gr No</Text>
+                    <Text style={[styles.tableCell, {flex: 2}]}>Student Name</Text>
+                    <Text style={[styles.tableCell, {flex: 1}]}>Class</Text>
+                    <Text style={[styles.tableCell, {flex: 2}]}>Fee Desc</Text>
+                    <Text style={styles.tableCell}>Amount</Text>
+                </View>
+                <View style={styles.tableRow}>
+                    <Text style={[styles.tableCell, {flex: 1}]} rowspan="6">531</Text>
+                    <Text style={[styles.tableCell, {flex: 2}]} rowspan="4">{individualvoucherData.studentName}</Text>
+                    <Text style={[styles.tableCell, {flex: 1}]} rowspan="6">{individualvoucherData.className}</Text>
+                    <Text style={[styles.tableCell, {flex: 2}]} rowspan="3">Tuition Fee of {individualvoucherData.month}</Text>
+                    <Text style={[styles.tableCell]} rowspan="3">{individualvoucherData.baseFee} {individualvoucherData.month}</Text>
+                </View>
+                <View style={styles.tableRow}>
+                    <Text style={[styles.tableCell, {flex: 1}]}>Issue Date</Text>
+                    <Text style={[styles.tableCell, {flex: 2}]}> 
+                    {date}
+                    </Text>
+                    <Text rowspan="3" style={[styles.tableCell,{flex:1}]}>Payable Within Due Date</Text>
+                    <Text style={[styles.tableCell]}>{individualvoucherData.baseFee}</Text>
+                </View>
+                <View style={styles.tableRow}>
+                    <Text style={[styles.tableCell, {flex: 1}]}>Due Date</Text>
+                    <Text style={[styles.tableCell, {flex: 2}]}> 
+                    {due}</Text>
+                    <Text style={[styles.tableCell]}>Payable After Due Date</Text>
+                    <Text style={[styles.tableCell]}>{parseInt(individualvoucherData.baseFee) + parseInt(individualvoucherData.lateFee)}</Text>
+                </View>
+            </View>
         </View>
-        <View style={styles.tableRow}>
-            <Text style={styles.tableCell}>Late Fee</Text>
-            <Text style={styles.tableCell}>{data.lateFee}</Text>
+// 2nd copy 
+
+<View>
+<View style={styles.header}>
+            
+            <View>
+                <Text style={styles.title}>Green Peace School</Text>
+                <Text style={styles.subtitle}>Model Campus</Text>
+            </View>
+          
         </View>
-        <View style={[styles.tableRow, styles.totalRow]}>
-            <Text style={styles.tableCell}>Total</Text>
-            <Text style={styles.tableCell}>{data.totalFee}</Text>
+<Text style={styles.title}>Monthly Bill for {individualvoucherData.month}</Text>
+<View style={styles.table}>
+    <View style={styles.tableRow}>
+        <Text style={[styles.tableCell, {flex: 1}]}>Gr No</Text>
+        <Text style={[styles.tableCell, {flex: 2}]}>Student Name</Text>
+        <Text style={[styles.tableCell, {flex: 1}]}>Class</Text>
+        <Text style={[styles.tableCell, {flex: 2}]}>Fee Desc</Text>
+        <Text style={styles.tableCell}>Amount</Text>
+    </View>
+    <View style={styles.tableRow}>
+        <Text style={[styles.tableCell, {flex: 1}]} rowspan="6">531</Text>
+        <Text style={[styles.tableCell, {flex: 2}]} rowspan="4">{individualvoucherData.studentName}</Text>
+        <Text style={[styles.tableCell, {flex: 1}]} rowspan="6">{individualvoucherData.className}</Text>
+        <Text style={[styles.tableCell, {flex: 2}]} rowspan="3">Tuition Fee of {individualvoucherData.month}</Text>
+        <Text style={[styles.tableCell]} rowspan="3">{individualvoucherData.baseFee} {individualvoucherData.month}</Text>
+    </View>
+    <View style={styles.tableRow}>
+        <Text style={[styles.tableCell, {flex: 1}]}>Issue Date</Text>
+        <Text style={[styles.tableCell, {flex: 2}]}>{date} </Text>
+        <Text rowspan="3" style={[styles.tableCell,{flex:1}]}>Payable Within Due Date</Text>
+        <Text style={[styles.tableCell]}>{individualvoucherData.baseFee}</Text>
+    </View>
+    <View style={styles.tableRow}>
+        <Text style={[styles.tableCell, {flex: 1}]}>Due Date</Text>
+        <Text style={[styles.tableCell, {flex: 2}]}>{due} </Text>
+        <Text style={[styles.tableCell]}>Payable After Due Date</Text>
+        <Text style={[styles.tableCell]}>{parseInt(individualvoucherData.baseFee) + parseInt(individualvoucherData.lateFee)}</Text>
+    </View>
+</View>
+</View>
+//3rd copy 
+
+<View>
+<View style={styles.header}>
+            
+            <View>
+                <Text style={styles.title}>Green Peace School</Text>
+                <Text style={styles.subtitle}>Model Campus</Text>
+            </View>
+          
         </View>
-        <Text style={styles.footer}>Payment Details: XYZ School Bank Account: 123-456-789</Text>
-    </Page>
+<Text style={styles.title}>Monthly Bill for {individualvoucherData.month}</Text>
+
+<View style={styles.table}>
+    <View style={styles.tableRow}>
+        <Text style={[styles.tableCell, {flex: 1}]}>Gr No</Text>
+        <Text style={[styles.tableCell, {flex: 2}]}>Student Name</Text>
+        <Text style={[styles.tableCell, {flex: 1}]}>Class</Text>
+        <Text style={[styles.tableCell, {flex: 2}]}>Fee Desc</Text>
+        <Text style={styles.tableCell}>Amount</Text>
+    </View>
+    <View style={styles.tableRow}>
+        <Text style={[styles.tableCell, {flex: 1}]} rowspan="6">531</Text>
+        <Text style={[styles.tableCell, {flex: 2}]} rowspan="4">{individualvoucherData.studentName}</Text>
+        <Text style={[styles.tableCell, {flex: 1}]} rowspan="6">{individualvoucherData.className}</Text>
+        <Text style={[styles.tableCell, {flex: 2}]} rowspan="3">Tuition Fee of {individualvoucherData.month}</Text>
+        <Text style={[styles.tableCell]} rowspan="3">{individualvoucherData.baseFee} {individualvoucherData.month}</Text>
+    </View>
+    <View style={styles.tableRow}>
+        <Text style={[styles.tableCell, {flex: 1}]}>Issue Date</Text>
+        <Text style={[styles.tableCell, {flex: 2}]}>{date} </Text>
+        <Text rowspan="3" style={[styles.tableCell,{flex:1}]}>Payable Within Due Date</Text>
+        <Text style={[styles.tableCell]}>{individualvoucherData.baseFee}</Text>
+    </View>
+    <View style={styles.tableRow}>
+        <Text style={[styles.tableCell, {flex: 1}]}>Due Date</Text>
+        <Text style={[styles.tableCell, {flex: 2}]}>{due} </Text>
+        <Text style={[styles.tableCell]}>Payable After Due Date</Text>
+        <Text style={[styles.tableCell]}>{parseInt(individualvoucherData.baseFee) + parseInt(individualvoucherData.lateFee)}</Text>
+    </View>
+</View>
+</View>
+
+
+
+
+</>
       );
     });
   }
@@ -157,10 +368,19 @@ if( location.state.from==="generateAll"){
 
 
   return (
+
     <PDFViewer width="100%" height="600">
+ 
     <Document>
-      {renderContent()}
+    <Page size="A4" style={styles.page}>
+
+                    {renderContent()}
+                 
+
+   
+      </Page>
     </Document>
+
   </PDFViewer>
 
    

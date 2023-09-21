@@ -3,11 +3,19 @@ import { Navigate,Outlet } from 'react-router-dom'
 
 
 
-export const ProtactedRoutes = ({isAuthenticated,children }) => {
+export const ProtactedRoutes = ({isAuthenticated,children,role }) => {
     
 if(!isAuthenticated){
-    return <Navigate to ='/stafflogin'/>
+    return <Navigate to ='/'/>
 }
+
+// if( role !=="admin"  && window.location.pathname.startsWith('/admin')){
+//   return <Navigate to ='/adminLogin'/>
+
+// }
+
+
+
   return <Outlet/>
 }
 

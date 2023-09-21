@@ -63,7 +63,7 @@ try{
     expiresIn:Date.now(0)
   })
   res.status(200).json({
-    success:true,
+    sucess:true,
     message:"Admin logged out",
 
 })
@@ -135,9 +135,23 @@ exports.createStaff = async (req, res, next) => {
 exports.updateStaff= async(req,res,next)=>{
 try{
     const staffId= req.params.id
-    const updatedStaff= req.body
-const staff= await staffSchema.findOneAndUpdate({_id:staffId},
-updatedStaff,
+    const {userName,password,campus}= req.body
+    
+    const data= {
+        userName,
+        campus,
+        
+    }
+if(password){
+    const salt = await bcrypt.genSalt(10);
+    const hashPassword= await bcrypt.hash(password,salt)
+    console.log(hashPassword)
+    data.password=hashPassword
+}
+    
+
+const staff= await staffSchema.findByIdAndUpdate(staffId,
+data,
 {new:true}    
 )
 if(!staff){
@@ -146,7 +160,10 @@ if(!staff){
         message:"no staff found to update"
     })
 }
-
+res.status(200).json({
+    success:true,
+    staff
+})
 
 }catch(err){
     res.status(400).json({
@@ -163,7 +180,7 @@ try{
 const{id}= req.params  
 
 const staff =await staffSchema.findOneAndDelete({_id:id})
-
+const newStaff= await staffSchema.find()
 if(!staff){
     res.status(400).json({
         success:false,
@@ -171,9 +188,10 @@ if(!staff){
     })
 }
 
-res.status(400).json({
+res.status(200).json({
     success:true,
-    message:`staff with id ${id} name${staff.userName} has been deleted `
+    message:`staff with id ${id} name${staff.userName} has been deleted `,
+    newStaff
 })
 
 }catch(err){
@@ -190,7 +208,7 @@ res.status(400).json({
 exports.totalStudentsCount=async(req,res,next)=>{
 try{
 
-    const campus= [ "1","2","3"]
+    const campus= [ "1","2","3","4"]
 const count = await Promise.all( campus.map( async(campus)=>{
  const totalStudents= await studentSchema.count({campus})
  const totalStudentsPaid= await studentSchema.count({campus,status:"Paid"})

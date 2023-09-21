@@ -31,16 +31,13 @@ if(response.data.success == true){
     localStorage.setItem('role','admin')
 console.log(  response.data)
 dispatch({
-    type:"setRole",
+    type:"login",
     payload:{
-        userName:"admin"
+      userName:"admin",
+        role:"admin"
     }
-})
-
-console.log("good")
-
-}
-navigate('/createStaff')
+})}
+navigate('/admin/createStaff')
 
 
       

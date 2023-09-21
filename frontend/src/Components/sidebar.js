@@ -11,24 +11,37 @@ export default function Sidebar() {
     const { userName, campus } = useSelector(state => state.root);
     
     const {role }=useSelector(state => state.root)
+const savedRole =localStorage.getItem('role')
 
-    const name = userName || "";
+    const name = savedRole === 'admin'? 'admin': userName || "";
     const newName = name ? (name[0].toUpperCase() + name.slice(1)) : "";
+
+
 
     const handleLogout = async (e) => {
         e.preventDefault();
 
      
         try {
-      
-            const response = await axios.get('http://localhost:5000/api/v1/staff/logout', { withCredentials: true });
+             const endPoint= role === "admin" ? 'http://localhost:5000/api/v1/admin/logout':'http://localhost:5000/api/v1/staff/logout'      
+            const response = await axios.get(endPoint, { withCredentials: true });
             if (response.data.sucess === true) {
+                localStorage.removeItem('role')
                 toast.success("Logout Sucess", {
                     position: toast.POSITION.TOP_CENTER,
                     autoClose: 2000,
                   });
-                dispatch({ type: "logout" });
-                navigate('/');
+                dispatch({ type: "logout",
+                  payload:{
+                    userName:null,
+                    role:null,
+                    campus:null,
+                  }
+            },
+               
+                );
+                localStorage.setItem('logoutEvent', Date.now().toString());
+                savedRole == "admin" ?  navigate('/adminLogin'): navigate('/');
             }
         } catch (err) {
             console.log(err.message);
@@ -45,28 +58,26 @@ export default function Sidebar() {
                     {newName[0]}
                 </div>
                 <h4 className="text-center mb-1">{newName}</h4>
-                { role !== "admin" &&
+                { savedRole !== "admin" &&
                 <p className="text-center"> Campus : {campus}</p>}
             </div>
             <nav className="mb-4">
                 <>
-                 { role === "admin" &&
-                 <>
-            <Link className='link d-block mb-3 ' to='/createStaff' style={{ color: '#bdc3c7' }}>Create Staff</Link>  
-            
-            <Link className='link d-block mb-3 ' to='/createStaff' style={{ color: '#bdc3c7' }}> All Staff</Link>
-            </>
-            }
-            {
-                role !== "admin" &&
-                <>
-            <Link className='link d-block mb-3 ' to='/createStudent' style={{ color: '#bdc3c7' }}>Create Student</Link>
-            <Link className='link d-block mb-3 d' to='/allstudents'  style={{ color: '#bdc3c7' }} >All Students</Link>
-            <Link className='link d-block mb-3 ' to='/createclass' style={{ color: '#bdc3c7' }}>Create Class</Link>
-            <Link className='link d-block mb-3 d' to='/feeReport' style={{ color: '#bdc3c7' }}>Fee Report</Link> 
-            </>
-            }
-        
+                { savedRole === "admin" ?
+    <>
+        <Link className='link d-block mb-3 ' to='/admin/createStaff' style={{ color: '#bdc3c7' }}>Create Staff</Link>  
+        <Link className='link d-block mb-3 ' to='/admin/allStaff' style={{ color: '#bdc3c7' }}> All Staff</Link>
+        <Link className='link d-block mb-3 ' to='/admin/studentCount' style={{ color: '#bdc3c7' }}>Student Data</Link>  
+    </>
+    :
+    <>
+        <Link className='link d-block mb-3 ' to='/createStudent' style={{ color: '#bdc3c7' }}>Create Student</Link>
+        <Link className='link d-block mb-3 d' to='/allstudents'  style={{ color: '#bdc3c7' }} >All Students</Link>
+        <Link className='link d-block mb-3 ' to='/createclass' style={{ color: '#bdc3c7' }}>Create Class</Link>
+        <Link className='link d-block mb-3 d' to='/feeReport' style={{ color: '#bdc3c7' }}>Fee Report</Link> 
+    </>
+}
+
             
             </>
             </nav>

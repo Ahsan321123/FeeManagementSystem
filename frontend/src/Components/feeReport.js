@@ -2,7 +2,7 @@ import { useState,useEffect } from "react"
 import React from 'react'
 import axios from 'axios'
 import {CSVLink} from 'react-csv'
-
+import { toast } from "react-toastify";
 const FeeReport = () => {
   
   const[startDate,setStartDate]=useState("")
@@ -28,6 +28,12 @@ const token = document.cookie.split("=")[1]
         .then((res)=>{
           setStudents(res.data.data)
           setDisplayStudents(res.data.data)
+          if(res.data.data.length=== 0 ){
+            toast.error("No Students Found",{
+              position: toast.POSITION.TOP_CENTER,
+              autoClose: 2000,
+            })
+          }
           setStartDate("")
           setEndDate("")   
         }  )   
@@ -147,7 +153,7 @@ if( grNum === ""){
             <th scope="row">{student.studentName}</th>
             <th scope="row">{student.GRNo}</th>
             <th scope="row">{student.status}</th>
-            <th scope="row">{student.date}</th>
+            <th scope="row">  { ( student.date.split("T")[0] )}</th>
 
           </tr>
         ))}
@@ -156,7 +162,7 @@ if( grNum === ""){
   </table>
   
   
-  <CSVLink data={displayStudents}filename="paid_student.csv" className="csv-btn btn-primary">
+  <CSVLink       style={{ backgroundColor: "#2c3e50" }} data={displayStudents}filename="paid_student.csv" className="csv-btn btn-primary">
             Download
  </CSVLink>
 
