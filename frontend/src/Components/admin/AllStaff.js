@@ -1,6 +1,6 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react'
-
+import { toast } from 'react-toastify';
 
 export default function AllStaff() {
 
@@ -85,7 +85,10 @@ export default function AllStaff() {
             }
         })
     if(response.data.success===true){
-        
+      toast.success('Updated Success', {
+        position: toast.POSITION.TOP_CENTER,
+        autoClose: 2000
+      });
             const updatedStaff= response.data.staff
           const newStaff= allStaff.map((s)=>{
                 if(s._id=== updatedStaff._id){
@@ -101,7 +104,15 @@ setModal(false)
 
 
         
-        } 
+        } else if(response.data.success===false) {
+          
+          toast.error('Something went wrong', {
+            position: toast.POSITION.TOP_CENTER,
+            autoClose: 2000
+          });
+
+
+        }
         
 
     }

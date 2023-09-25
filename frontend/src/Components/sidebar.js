@@ -4,7 +4,7 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
-import AdminLogin from './admin/AdminLogin';
+// import AdminLogin from './admin/AdminLogin';
 
 export default function Sidebar() {
     const navigate = useNavigate();
@@ -27,12 +27,14 @@ const savedRole =localStorage.getItem('role')
         try {
              const endPoint= role === "admin" ? 'http://localhost:5000/api/v1/admin/logout':'http://localhost:5000/api/v1/staff/logout'      
             const response = await axios.get(endPoint, { withCredentials: true });
+            console.log(response.data)
             if (response.data.sucess === true) {
                 localStorage.removeItem('role')
                 toast.success("Logout Sucess", {
                     position: toast.POSITION.TOP_CENTER,
                     autoClose: 2000,
                   });
+            
                 dispatch({ type: "logout",
                   payload:{
                     userName:null,

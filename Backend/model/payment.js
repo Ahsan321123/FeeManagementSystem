@@ -16,21 +16,31 @@ GRNo:{
 className:{
     type:String,
 },
-status:{
-    type:String,
+feeStatus:[{
+ 
+    month :{
+        type:String,
     required:true
-},
-date:{
-    type:Date,
-    default:Date.now,
+    },
+    year:{
+        type:String,
     required:true
-},
+    },
+    status:{
+        type:String,
+        required:true
+    },
+    date:{
+        type:Date,
+        default:Date.now,
+        required:true
+    },
+    
+}],
+
 bankName:{
     type: String,
-    required:true
-},
-month:{
-    type:String
+
 },
 campus:{
     type:String,

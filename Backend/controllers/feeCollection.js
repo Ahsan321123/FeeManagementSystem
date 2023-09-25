@@ -106,37 +106,57 @@ const id= req.params.id
           message:"no student found"
         })
       }
-    
- 
-     const existingPayment= await paymentSchema.findOne({studentId:student._id})
-     if( existingPayment && existingPayment.status === "Paid"){
-       return res.status(400).json({
-         success:false,
-         message: "already Paid"
-     
-       })
-     }
-  const paymentBody={
-    ...req.body,
-    campus:req.staff.campus
-  }    
-     const payment = await paymentSchema.create(paymentBody)
-     req.staff.campus=payment.campus
- 
-     const currentMonth=getMonthName(new Date().getMonth())
-     payment.studentId=student._id
-payment.studentName=student.name;
-payment.className=student.className;
-payment.GRNo=student.GRNo;
-payment.month=currentMonth,
-student.status= payment.status;
+    //  Month bhi receive krna hai request body
+      const currentMonth= req.body.month || getMonthName(new Date().getMonth()) 
+      const currentYear= new Date().getFullYear()
+      //  is fee already paid for this month
+     let existingPayment= await paymentSchema.findOne({studentId:student._id})
 
-await payment.save()
+
+     if( !existingPayment){
+      existingPayment = new paymentSchema({
+        studentId: student._id,
+        studentName: student.name,
+        GRNo: student.GRNo,
+        className: student.className,
+        campus: req.staff.campus
+    });
+    await existingPayment.save(); 
+     }
+      
+// checking kay current Month ka fee status object hai ya nhi 
+
+let currentMonthFeeStatus = existingPayment.feeStatus.find( status=> status.month== currentMonth && status.year== currentYear  )  
+
+if(currentMonthFeeStatus && currentMonthFeeStatus.status === "Paid"   ){
+  return res.status(400).json({
+    success:false,
+    message: "Fee is already Paid for this month"
+
+  })
+}
+
+ else if( !currentMonthFeeStatus){
+  currentMonthFeeStatus= {
+    month: currentMonth,
+    year:currentYear.toString(),
+    status:req.body.status || 'pending'
+  }
+// pushing payment object to feeStatus array 
+existingPayment.feeStatus.push(currentMonthFeeStatus)
+}
+
+existingPayment.date= req.body.date;
+existingPayment.bankName= req.body.bankName;
+ 
+
+await existingPayment.save()
+student.status= req.body.status
 await student.save()    
     
   res.status(200).json({
   message:"payment status updated successfully",
-  payment,
+  existingPayment,
   student
 })
 }catch(err){
@@ -175,41 +195,30 @@ exports.generateBatchVouchers = async (req, res, next) => {
 
 exports.studentFeeReport= async(req,res,next)=>{
   try{
-  
-  
   const startDate =  new Date( req.query.startDate)
   const endDate= new Date(req.query.endDate) 
   if (!req.query.startDate || !req.query.endDate) {
     return res.status(400).json({ message: "Start and end dates are required." });
   }
   endDate.setHours(23, 59, 59, 999);
+
 const payment = await paymentSchema.find({
-  status:"Paid",
-date:{
-  $gte:startDate,
-  $lte:endDate
-  },
-  campus:req.staff.campus
-})
+  feeStatus: {
+    $elemMatch: {
+        status: "Paid",
+        date: { $gte: startDate, $lte: endDate } 
+    }
+},
+campus: req.staff.campus
+});
 
-
-
-let groupPayments= {}
-payment.forEach((p)=>{
-let dateStr= p.date.toISOString().split('T')[0];
-if(!groupPayments[dateStr]){
-  groupPayments[dateStr]=[]
-}
-groupPayments[dateStr].push(p)
-
-})
 
 
 
 res.status(200).json({
   success:"true",
  data:payment ,
- groupPayments
+
 })}catch(err){
  res.status(400).json({
     success:"false",
@@ -223,4 +232,13 @@ const Name="staff"
 
 
 
+// let groupPayments= {}
+// payment.forEach((p)=>{
+// let dateStr= p.date.toISOString().split('T')[0];
+// if(!groupPayments[dateStr]){
+//   groupPayments[dateStr]=[]
+// }
+// groupPayments[dateStr].push(p)
+
+// })
 

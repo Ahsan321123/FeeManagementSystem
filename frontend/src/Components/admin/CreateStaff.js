@@ -1,15 +1,11 @@
 import React, { useState } from 'react'
 import Loader from '../Loader';
-import { all } from 'axios';
-import StaffLogin from '../StaffLogin';
 import axios from 'axios';
-import AllStaff from './AllStaff';
-import React, { useState } from 'react'
-import Loader from '../Loader';
-import { all } from 'axios';
-import StaffLogin from '../StaffLogin';
-import axios from 'axios';
-import AllStaff from './AllStaff';
+
+import { toast } from 'react-toastify';
+
+
+
 
 const CreateStaff = () => {
 
@@ -33,6 +29,13 @@ const CreateStaff = () => {
         }
       })
       console.log(res.data)
+      if( res.data.sucess == true ){
+        toast.success("Staff created",{
+          position: toast.POSITION.TOP_CENTER,
+          autoClose: 2000 
+        })
+
+      }
     }
 
     catch(e){

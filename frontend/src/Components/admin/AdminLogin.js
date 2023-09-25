@@ -28,7 +28,10 @@ export default function AdminLogin() {
       );
 
       if(response.data.success == true){
-
+        toast.success('Login Success', {
+          position: toast.POSITION.TOP_CENTER,
+          autoClose: 2000
+        });
     localStorage.setItem('adminToken',response.data.token);    
     localStorage.setItem('role','admin')
 
