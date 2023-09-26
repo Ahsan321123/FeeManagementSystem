@@ -8,9 +8,10 @@ const FeeReport = () => {
   const[startDate,setStartDate]=useState("")
    const[endDate,setEndDate]=useState("")
     const [students,setStudents]=useState([])
-   const [ grNum,setGrNum]=useState()
+   const [ grNum,setGrNum]=useState('')
    const [filterByGr,setFilterByGr]=useState([])
    const [displayStudents,setDisplayStudents]=useState([])
+   const [feeStatus,setFeeStatus]=useState()
   
 
 const token = document.cookie.split("=")[1]
@@ -26,6 +27,9 @@ const token = document.cookie.split("=")[1]
           }
         }  )
         .then((res)=>{
+          const allFeeStatus = res.data.data.map((student)=>student.feeStatus )
+          setFeeStatus(allFeeStatus)
+
           setStudents(res.data.data)
           setDisplayStudents(res.data.data)
           if(res.data.data.length=== 0 ){
@@ -34,8 +38,7 @@ const token = document.cookie.split("=")[1]
               autoClose: 2000,
             })
           }
-          setStartDate("")
-          setEndDate("")   
+       
         }  )   
     }
     else{
@@ -58,7 +61,20 @@ if( grNum === ""){
 
     }
 
-    const headers = ['Name','GRNO','Fee Status','Date']
+
+    // convert Date Format 
+
+    function convertDate(inputFormat) {
+      function pad(s) { return (s < 10) ? '0' + s : s; }
+      var d = new Date(inputFormat);
+      return [d.getFullYear(), pad(d.getMonth()+1), pad(d.getDate())].join('-');
+    }
+    
+    const formattedStartDate = convertDate(startDate);
+const formattedEndDate = convertDate(endDate);
+
+
+    const headers = ['Name', 'GRNO', 'Month', 'Fee Status', 'Date','Month', 'Fee Status', 'Date','Month', 'Fee Status', 'Date'];
 
   return (
   <>
@@ -139,27 +155,48 @@ if( grNum === ""){
   displayStudents.length > 0 ? (
   <> 
     <table className="table-container">
-      <thead>
-        <tr>
-          {headers.map((header, index) => (
-            <th scope="col" key={index}>{header}</th>
-          ))}
-        </tr>
-      </thead>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>GRNO</th>
+      <th>Fee Details</th>
+    </tr>
+  </thead>
+  <tbody>
+    {displayStudents.map(student => (
+      <tr key={student._id}>
+        <td>{student.studentName}</td>
+        <td>{student.GRNo}</td>
+        <td>
+          <table>
+            <thead>
+              <tr>
+                <th>Month</th>
+                <th>Fee Status</th>
+                <th>Date</th>
+              </tr>
+            </thead>
+            <tbody>
+              {student.feeStatus
+                .filter(status => {
+                  const paymentDate = status.date && new Date(status.date.split('T')[0]);
+                  return paymentDate >= new Date(formattedStartDate) && paymentDate <= new Date(formattedEndDate);
+                })
+                .map(status => (
+                  <tr key={status._id}>
+                    <td>{status.month}</td>
+                    <td>{status.status}</td>
+                    <td>   {  status.date.split("T")[0]}</td>
+                  </tr>
+                ))}
+            </tbody>
+          </table>
+        </td>
+      </tr>
+    ))}
+  </tbody>
+</table>
 
-      <tbody>
-        {displayStudents.map(student=>(
-          <tr key={student._id}>
-            <th scope="row">{student.studentName}</th>
-            <th scope="row">{student.GRNo}</th>
-            <th scope="row">{student.status}</th>
-            <th scope="row">  { ( student.date.split("T")[0] )}</th>
-
-          </tr>
-        ))}
-      </tbody>
-
-  </table>
   
   
   <CSVLink       style={{ backgroundColor: "#2c3e50" }} data={displayStudents}filename="paid_student.csv" className="csv-btn btn-primary">

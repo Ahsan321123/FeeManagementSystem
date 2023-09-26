@@ -140,7 +140,8 @@ if(currentMonthFeeStatus && currentMonthFeeStatus.status === "Paid"   ){
   currentMonthFeeStatus= {
     month: currentMonth,
     year:currentYear.toString(),
-    status:req.body.status || 'pending'
+    status:req.body.status || 'pending',
+    date: req.body.date
   }
 // pushing payment object to feeStatus array 
 existingPayment.feeStatus.push(currentMonthFeeStatus)
@@ -227,7 +228,38 @@ res.status(200).json({
   })
 }} 
 
-const Name="staff"
+
+
+// Check Status api 
+
+exports.checkStatus=async(req,res,next)=>{
+// student ID 
+const {id}=req.params
+try{
+
+  
+let student=  await paymentSchema.findOne({studentId:id})
+
+if(!student){
+res.status(400).json({message:"no student found " })
+}
+const feeStatus= student.feeStatus
+
+res.status(200).json({
+   success: true,
+   feeStatus
+})
+}catch(err){
+  res.status(200).json({
+    success: false,
+    message:err.message
+ })
+}
+
+
+
+}
+
 
 
 
