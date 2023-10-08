@@ -1,6 +1,15 @@
 
 const studentSchema= require ('../model/student')
 const paymentSchema = require('../model/payment');
+const cron = require('node-cron')
+
+
+
+
+
+// cron taks scheduler
+
+
 
 
 
@@ -67,11 +76,13 @@ return{
     lateFee: lateFeeApplied ? lateFee : 0,
     totalFee: totalFee,
     dueDate: dueDateString,
-    currentDate: currentDate
+    currentDate: currentDate,
+    month:getMonthName(new Date( Date.now()).getMonth())
 }
 
 
 }
+
 //* Single Voucher  
   exports.generateVoucher = async  (req, res, next) => {
       try {
@@ -134,18 +145,23 @@ if(currentMonthFeeStatus && currentMonthFeeStatus.status === "Paid"   ){
     message: "Fee is already Paid for this month"
 
   })
-}
-
- else if( !currentMonthFeeStatus){
+}else if(!currentMonthFeeStatus){
   currentMonthFeeStatus= {
     month: currentMonth,
     year:currentYear.toString(),
+    feeReceived:req.body.feeReceived,
     status:req.body.status || 'pending',
     date: req.body.date
   }
 // pushing payment object to feeStatus array 
 existingPayment.feeStatus.push(currentMonthFeeStatus)
+}else if ( currentMonthFeeStatus.status === "Due"  ){
+
+  currentMonthFeeStatus.status = req.body.status
+  currentMonthFeeStatus.feeReceived = req.body.feeReceived
+  currentMonthFeeStatus.date = req.body.date
 }
+
 
 existingPayment.date= req.body.date;
 existingPayment.bankName= req.body.bankName;
@@ -241,7 +257,8 @@ try{
 let student=  await paymentSchema.findOne({studentId:id})
 
 if(!student){
-res.status(400).json({message:"no student found " })
+  return res.status(200).json({ success: false,  message:"no payments found"}) 
+
 }
 const feeStatus= student.feeStatus
 
@@ -250,7 +267,7 @@ res.status(200).json({
    feeStatus
 })
 }catch(err){
-  res.status(200).json({
+  res.status(400).json({
     success: false,
     message:err.message
  })
@@ -260,9 +277,111 @@ res.status(200).json({
 
 }
 
+cron.schedule(' */2 * * * *', async () => {
+  const students = await paymentSchema.find();
 
+  if (!students || students.length === 0) {
+    console.log("No students found");
+    return;
+  }
 
+  
+  let dueStudents= []
+  let currentMonth = new Date().getMonth();
 
+  // Loop through all previous months starting from the last month
+  for (let lastMonth = currentMonth - 1; lastMonth >= 0; lastMonth--) {
+    let allStudentsUpdated = true;
+    students.forEach(student => {
+      // Check if the student has a fee status for the last month
+      const feeStatusForLastMonth = student.feeStatus.find(s => s.month === getMonthName(lastMonth));
+    
+      // Check if there's already a "Due" status for the last month
+      const alreadyDue = student.feeStatus.some(s => s.month === getMonthName(lastMonth) && s.status === "Due");
+      
+    
+      if (!feeStatusForLastMonth && feeStatusForLastMonth !== "Paid" && !alreadyDue) {
+        student.feeStatus.push({
+          month: getMonthName(lastMonth),
+          status: "Due",
+          year: '2023'
+        });
+        student.save();
+        dueStudents.push(student);
+        allStudentsUpdated = false;
+      }
+    });
+    
+
+    // If all students have a fee status for the current month being checked, move to the next month
+    if (allStudentsUpdated) {
+      continue;
+    } else {
+      // If not all students were updated for the current month, break out of the loop
+      break;
+    }
+  }
+
+ 
+});
+
+exports.defaulterList= async (req,res,next)=>{
+
+try{
+const students= await paymentSchema.find()
+
+const dueStatusStudents = students
+.filter(student => student.feeStatus.some(s => s.status === 'Due'))
+.map(student => {
+    // Clone the student object to avoid mutating the original
+    const studentClone = { ...student._doc };
+    // Filter only 'Due' statuses
+    studentClone.feeStatus = student.feeStatus.filter(s => s.status === 'Due');
+    return studentClone;
+});
+
+res.status(200).json({
+  success: true,
+  data:dueStatusStudents,
+})
+
+}catch(error){
+res.status(400).json({
+success: false,
+message:error.message
+})
+}
+
+}
+
+// function generatePDF(students) {
+//   const doc = new PDFDocument();
+
+//   // PDF ka title
+//   doc.fontSize(20).text('Students with Due Fees', { align: 'center' }).moveDown();
+// console.log( students)
+//   students.forEach(student => {
+//     doc.fontSize(14).text(`Name: ${student.name}`);
+//     doc.text(`Class: ${student.className}`);
+//     doc.text(`GR No: ${student.GRNo}`);
+//     doc.text(`Due Month: ${getDueMonth(student)}`);
+//     doc.moveDown();
+//   });
+
+//   // PDF ko file mein save karna
+//   doc.pipe(fs.createWriteStream('students_due_fees.pdf'));
+//   doc.end();
+// }
+
+// function getDueMonth(student){
+//   let dueMonth= student.feeStatus.find(student=>student.status === 'Due');
+//   return dueMonth ? dueMonth.month :" not Found";
+// }
+
+// exports.defaulterList = (req, res, next) => {
+//   const pdfDefaulterList = path.join(__dirname, 'students_due_fees.pdf');
+//   res.sendFile(pdfDefaulterList);
+// }
 
 // let groupPayments= {}
 // payment.forEach((p)=>{

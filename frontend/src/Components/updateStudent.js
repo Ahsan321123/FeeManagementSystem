@@ -16,11 +16,15 @@ const UpdateStudent = ({
     address: student.address,
     dateOfAdmission: student.dateOfAdmission,
     fatherName: student.fatherName,
-    fee: student.fee,
     gender: student.gender,
     phoneNo: student.phoneNo,
     CNIC: student.CNIC,
     DOB:student.DOB,
+    fee:student.fee,
+    lateFee:student.lateFee,
+    annualCharges:student.annualCharges,
+    labCharges:student.labCharges,
+
     dateOfAdmission:student.dateOfAdmission,
     campus:student.campus
   });
@@ -244,7 +248,70 @@ const UpdateStudent = ({
                   />
                 </div>
 
-                
+                <div className="mb-3">
+                  <label htmlFor="inputName" className="form-label">
+                    tution fee
+                  </label>
+                  <input
+                    type="text"
+                    className="form-control"
+                    id="inputName"
+                    placeholder="Tution fee"
+                    value={studentData.fee}
+                    onChange={(e) => {
+                      setStudentData((prev) => ({
+                        ...prev,
+                        fee: e.target.value,
+                      }));
+                    }}
+                    autoComplete="off"
+                  />
+                </div>
+
+{/* lab charges */}
+<div className="mb-3">
+                  <label htmlFor="inputName" className="form-label">
+                    Lab Charges
+                  </label>
+                  <input
+                    type="text"
+                    className="form-control"
+                    id="inputName"
+                    placeholder="Tution fee"
+                    value={studentData.labCharges}
+                    onChange={(e) => {
+                      setStudentData((prev) => ({
+                          ...prev,
+                        labCharges: e.target.value,
+                      }));
+                    }}
+                    autoComplete="off"
+                  />
+                </div>
+
+
+                <div className="mb-3">
+                  <label htmlFor="inputName" className="form-label">
+                    Annual Charges
+                  </label>
+                  <input
+                    type="text"
+                    className="form-control"
+                    id="inputName"
+                    placeholder="Tution fee"
+                    value={studentData.annualCharges}
+                    onChange={(e) => {
+                      setStudentData((prev) => ({
+                          ...prev,
+                        annualCharges: e.target.value,
+                      }));
+                    }}
+                    autoComplete="off"
+                  />
+                </div>
+
+
+
                 <div className="mb-3">
                   <label htmlFor="inputName" className="form-label">
                     Campus

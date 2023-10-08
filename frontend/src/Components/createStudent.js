@@ -21,13 +21,15 @@ export default function CreateStudent() {
     const [ grError,setGrError]=useState(null)
     const [ phoneError ,setPhoneError]=useState(null )
     const [ cnicError ,setCnicError]=useState(null )
+    const [annualCharges,setAnnualCharges]=useState('');
+    const [lateFee,setLateFee]=useState('');
+    const [labCharges,setLabCharges]=useState('');
 
+  
     useEffect(()=>{
       axios.get('http://localhost:5000/api/v1/classes')
       .then(res=>{
-            setClasses(res.data.classData)
-         
-        
+            setClasses(res.data.classData)       
 })
 },[])
 
@@ -35,13 +37,12 @@ export default function CreateStudent() {
 
 const token = document.cookie.split('=')[1];
 
-console.log(token)
     const handleSubmit = (e)=>{
    
       setLoading(true)
         e.preventDefault();
         const data={name,class:studentClass,fee,DOB,fatherName,dateOfAdmission,gender,
-                        phoneNo,address,CNIC,GRNo}
+                        phoneNo,address,CNIC,GRNo,lateFee,annualCharges,labCharges}
         axios.post('http://localhost:5000/api/v1/students',data,{
           headers:{
             'x-auth-token': token
@@ -181,16 +182,42 @@ console.log(token)
 </div>
 
                 <div className="mb-3">
-                  <label htmlFor="inputFees" className="form-label">Fees</label>
+                  <label htmlFor="inputFees" className="form-label">Tuition Fee</label>
                   <input type="number" className="form-control" id="inputFees" 
                   placeholder="Enter fees" 
                   onChange={e=>{setFees(e.target.value)}}
                   autoComplete='off'/>
                 </div>
+               
+                <div className="mb-3">
+                  <label htmlFor="inputFees" className="form-label">Annual Charges</label>
+                  <input type="number" className="form-control" id="inputFees" 
+                  placeholder="Enter fees" 
+                  onChange={e=>{setAnnualCharges(e.target.value)}}
+                  autoComplete='off'/>
+                </div>
+               
+                <div className="mb-3">
+                  <label htmlFor="inputFees" className="form-label">Lab Charges</label>
+                  <input type="number" className="form-control" id="inputFees" 
+                  placeholder="Enter Lab charges" 
+                  onChange={e=>{setLabCharges(e.target.value)}}
+                  autoComplete='off'/>
+                </div>
+               
+                <div className="mb-3">
+                  <label htmlFor="inputFees" className="form-label">Late charges</label>
+                  <input type="number" className="form-control" id="inputFees" 
+                  placeholder="Enter Late fees" 
+                  onChange={e=>{setLateFee(e.target.value)}}
+                  autoComplete='off'/>
+                </div>
                 
                 <div className="d-grid gap-2">
-                  <button  style={{   backgroundColor:'#2c3e50'}} type="submit" className="btn btn-primary">Save Student</button>
+                  <button  style={{   backgroundColor:'#2c3e50'}} type="submit" 
+                    className="btn btn-primary">Save Student</button>
                 </div>
+
               </form>
             </div>
           </div>

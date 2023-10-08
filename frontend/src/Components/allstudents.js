@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import axios from "axios";
 import Voucher from "../Components/voucher";
 import { useNavigate } from "react-router-dom";
@@ -7,6 +7,7 @@ import Loader from '../Components/Loader'
 import { toast } from "react-toastify";
 import PaginationComp from "./paginationComp";
 import { CSVLink } from "react-csv";
+import { CheckStatus } from "./CheckStatus";
 
 
 export default function Allstudents() {
@@ -28,8 +29,19 @@ export default function Allstudents() {
   const [ currentPage ,setCurrentPage]=useState(1)
     const [ totalPages,setTotalPages]=useState()
     const [totalStudentsCount,setTotalStudentsCount]=useState(0)
+    const [ studentFeeData,setStudentFeeData]=useState([])
+    const [showFeeModal,setShowFeeModal]=useState(false)
+    const [feeReceived,setFeeReceived]=useState("")
+    const [month,setMonth]=useState()
+    const [ voucherModal,setVoucherModal]=useState(false)
+    const [ vocuherData ,setVocherData]= useState(
+      {
+        voucherId:"",
+        voucherStud:{}
+      }
 
-  
+    )
+
 //! PAgination handle 
 
 const token = document.cookie.split('=')[1];
@@ -134,10 +146,32 @@ useEffect(()=>{
   //! Generate Voucher for specific Student  */
 
   const navigate = useNavigate();
-  const handleVoucher = async (id, student) => {
-    try{
+  const handleVoucher = async () => {
+
+    setVoucherModal(true)
+      
+   };
+
+   const handleVoucherButtonClick=(id,student)=>{
+    handleVoucher()
+    setVocherData(
+      {
+        voucherId: id,
+        voucherStud: student
+      }
+
+    ) 
+   }
+
+  const  handleVoucherModalSubmit= async(e )=>{
+    e.preventDefault()
+    const data= {
+    studentId: vocuherData.voucherId,
+    student : vocuherData.voucherStud
+    }
+   try{
     await axios
-      .get(`http://localhost:5000/api/v1/student/${id}/voucher`,{
+      .get(`http://localhost:5000/api/v1/student/${data.studentId}/voucher`,{
         headers:{
           'x-auth-token': token
         }
@@ -145,24 +179,27 @@ useEffect(()=>{
     })
       .then((res) => {
         // passing student data and navigating
-        console.log(res.data);
+
+        console.log("navigating ")
         navigate("/voucher", {
           state: {
-            studentData: student,
+            studentData: data.student,
             voucherData: res.data,
+            month,
             from: "generateSingle",
           },
         });
       });
 
-    setStudentID(id);}catch(err){
+    setStudentID(data.studentId);}catch(err){
       toast.error(err.response.data.message,{
         position: toast.POSITION.TOP_CENTER,
         autoClose: 2000 
       })
     }
-  };
-  // **********
+   }
+
+  // // **********
   const handleClassFilterChange = (e) => {
     setClassFilter(e.target.value);
     setCurrentPage(1)
@@ -189,7 +226,7 @@ useEffect(()=>{
     e.preventDefault();
     
     const id = studentId;
-    const data = { bankName, date, status };
+    const data = { bankName, date, status,month,feeReceived};
     let url = `http://localhost:5000/api/v1/student/${id}/updateStatus`;
     axios
       .patch(url, data,{
@@ -234,8 +271,28 @@ useEffect(()=>{
 
       });
     }
-  
+  // ! Check Status of fee 
 
+
+  const handleCheckStatus =async(e,id)=>{
+    e.preventDefault();
+    setShowFeeModal(true)
+    setLoading(true)
+    const response = await axios.get(`http://localhost:5000/api/v1/student/${id}/checkStatus`)
+  if ( response.success === false ){
+    setStudentFeeData([])
+
+  }
+
+    setStudentFeeData(response.data.feeStatus)
+    setLoading(false)
+
+
+  }
+
+
+
+ 
   // delete
   const handleStudentDelete = (student) => {
     axios
@@ -274,7 +331,13 @@ useEffect(()=>{
       <div className="card w-50 mx-auto my-3" key={student._id}>
         <h5 className="card-header d-flex justify-content-between">
           {student.name}
-          <span>Fee Status : {student.status}</span>
+          <span>Fee Status : <button 
+    onClick={(e) => handleCheckStatus(e, student._id)}
+ className="checkStatusBtn"
+>
+    Check Status
+</button>
+</span>
         </h5>
 
         <div className="card-body">
@@ -289,10 +352,13 @@ useEffect(()=>{
           <button
           style={{   backgroundColor:'#2c3e50'}}
             className="btn btn-primary mx-2"
-            onClick={() => handleVoucher(student._id, student)}
+            onClick={() => handleVoucherButtonClick(
+               student._id,student 
+            )  }
           >
             Generate Voucher
           </button>
+
           <button
           style={{   backgroundColor:'#2c3e50'}}
             className="btn btn-primary mx-2"
@@ -323,7 +389,15 @@ useEffect(()=>{
     generateAllVouchers(stundetIds);
   };
 
+  const generateBatchVoucher=(data)=>{
+setVoucherModal(true)
+handleVouchersAll(data)
+
+  }
+
   const generateAllVouchers = async (StudentIds) => {
+
+
     await axios
       .post("http://localhost:5000/api/v1/student/generateBatchVouchers", {
         StudentIds,
@@ -340,6 +414,7 @@ useEffect(()=>{
           state: {
             studentsData: res.data.students,
             vouchersData: res.data.vouchers,
+            month,
             from: "generateAll",
           },
         });
@@ -389,6 +464,9 @@ const getFilteredStudents = () => {
 
 let studentsToRender=getFilteredStudents()
 
+//  Alll Months 
+
+const allMonths= ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 
   return (
     <>
@@ -507,6 +585,59 @@ studentStatus == "pending" &&
                         autoComplete="off"
                       />
                     </div>
+                    {/* Fee Received */}
+                  
+                    <div className="mb-3">
+                      <label htmlFor="inputName" className="form-label">
+                        Fee Received
+                      </label>
+                      <input
+                        type="text"
+                        value={feeReceived}
+                        onChange={(e) => setFeeReceived(e.target.value)}
+                        className="form-control"
+                        id="inputName"
+                        placeholder="Enter Fee"
+                        autoComplete="off"
+                      />
+                    </div>
+
+                    <div className="mb-3">
+                      <label htmlFor="inputName" className="form-label">
+                        Month
+                      </label>
+                      {/* <select
+
+                        <option></option>
+
+                        // type="text"
+                        // value={month}
+                        // onChange={(e) => setMonth(e.target.value)}
+                        // className="form-control"
+                        // id="inputName"
+                        // placeholder="Enter Month"
+                        // autoComplete="off"
+                      /> */}
+
+<select
+            className="form-select"
+            id="classFilter"
+            onChange={(e) => setMonth(e.target.value)}
+          >
+            <option value="">Select Month</option>
+            {allMonths.map((m) => (
+          
+              <option key={m} value={m}>
+                {m}
+      
+              </option>
+                     
+            ))}
+                      
+          </select>
+
+                    </div>
+
                     <div className="mb-3">
                       <label htmlFor="inputName" className="form-label">
                         Date
@@ -559,13 +690,92 @@ studentStatus == "pending" &&
             <button
             style={{   backgroundColor:'#2c3e50'}} 
               className="btn btn-primary mx-1 "
-              onClick={() => handleVouchersAll(filterData)}
+              onClick={() => generateBatchVoucher(filterData)}
             >
               Generate All Vouchers
             </button>
           )}
         </div>
       )}
+{/* voucher Modal */}
+
+{ voucherModal && 
+
+<div className="modal show d-block blurred-background" tabIndex="-1">
+<div className="modal-dialog">
+  <div className="modal-content">
+    <div className="modal-header">
+      <h5 className="modal-title">Create Voucher</h5>
+      <button
+        type="button"
+        className="btn-close"
+        onClick={() => setVoucherModal(false)}
+      ></button>
+    </div>
+    <div className="modal-body">
+      <form onSubmit={(e)=>  handleVoucherModalSubmit(e) }>
+      
+
+        <div className="mb-3">
+          <label htmlFor="inputName" className="form-label">
+            Month
+          </label>
+        
+
+<select
+className="form-select"
+id="classFilter"
+onChange={(e) => setMonth(e.target.value)}
+>
+<option value="">Select Month</option>
+{allMonths.map((m) => (
+
+  <option key={m} value={m}>
+    {m}
+
+  </option>
+         
+))}
+          
+</select>
+
+        </div>
+
+        <div className="mb-3">
+          <label htmlFor="inputName" className="form-label">
+            Date
+          </label>
+          <input
+            type="date"
+            value={date}
+            onChange={(e) => setDate(e.target.value)}
+            className="form-control"
+            id="inputName"
+            autoComplete="off"
+          />
+        </div>
+        
+        <div className="modal-footer">
+          <button style={{   backgroundColor:'#2c3e50'}} type="submit" className="btn btn-primary">
+            Save changes
+          </button>
+          <button
+            type="button"
+            className="btn btn-secondary"
+            onClick={() => setShowModal(false)}
+          >
+            Close
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+</div>
+
+}
+
+
 
       {updateModal && (
         <UpdateStudent
@@ -590,7 +800,14 @@ studentStatus == "pending" &&
     
     />
     {console.log(totalStudentsCount)}
-    </>
+
+
+    {showFeeModal && <CheckStatus
+      studentFeeData={studentFeeData}
+      setShowFeeModal={setShowFeeModal}
+      loading={loading}
+    
+    /> }    </>
     
   );
 }

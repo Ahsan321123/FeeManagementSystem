@@ -117,6 +117,15 @@ exports.createClass=async(req,res,next)=>{
                     {new:true}
                     
                     )
+
+
+                    await paymentSchema.updateMany({ studentId: studentsId }, {
+                        studentName: updatedStudent.name,
+                        className: updatedStudent.className,
+                        GRNo: updatedStudent.GRNo,
+                        campus: updatedStudent.campus
+                        // Add any other fields you want to update in paymentSchema
+                    });
            res.status(200).json({
             student
            })

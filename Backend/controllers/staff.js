@@ -31,7 +31,7 @@ let isMatch = await bcrypt.compare(password,staff.password)
 
 
 if(isMatch){
-const token =  jwt.sign({ staff:staff },process.env.Jwt_Secret,{expiresIn:"1h"} )
+const token =  jwt.sign({ staff:staff },process.env.Jwt_Secret,{expiresIn:"3h"} )
 
 res.cookie("token",token,{
     expires: new Date(Date.now() + 1 * 60 * 60 * 1000), 

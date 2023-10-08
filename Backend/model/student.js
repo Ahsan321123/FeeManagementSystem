@@ -2,12 +2,11 @@ const mongoose= require("mongoose")
 
 
 const studentSchema = new mongoose.Schema({
+
     name: {
         type:String,
         required:[true,"please enter stundent name"],
         trim:true,
-        
-
     }
 ,
     className:{
@@ -17,6 +16,15 @@ const studentSchema = new mongoose.Schema({
     fee:{
         type:Number,
         required:[true,"please enter fee "]
+    },
+    
+    annualCharges:{
+        type:Number,
+        // required:[true,"please enter fee "]
+    },
+    labCharges:{
+        type:Number,
+        // required:[true,"please enter fee "]
     },
     status:{
     type:String,
@@ -69,4 +77,3 @@ const studentSchema = new mongoose.Schema({
 )
 
 module.exports= mongoose.model('studentSchema',studentSchema)
-

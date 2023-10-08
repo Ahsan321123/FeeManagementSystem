@@ -365,3 +365,18 @@ margin-left: 5px;
 .table-container td > table tr:hover {
   background-color: #e6e6e6;
 }
+
+
+.checkStatusBtn{
+  background-color: #8cb455;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 3px 6px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+.checkStatusBtn:hover{
+color:#84a951;
+background-color: #fff;
+}

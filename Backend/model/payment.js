@@ -17,10 +17,10 @@ className:{
     type:String,
 },
 feeStatus:[{
- 
+
     month :{
         type:String,
-    required:true
+        default: allMonths(new Date(Date.now()).getMonth())
     },
     year:{
         type:String,
@@ -32,20 +32,32 @@ feeStatus:[{
     },
     date:{
         type:Date,
-        required:true
+        // required:true
     },
-    
+    feeReceived:{
+        type:Number,
+        // required:true
+    }, 
 }],
 
 bankName:{
     type: String,
 
 },
+
 campus:{
     type:String,
     required:true
 },
 
 });
+
+function allMonths( ind ){
+let months= [ "Jan", "Feb", "Mar","Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+
+return months[ ind ]
+
+
+}
 
 module.exports=mongoose.model("paymentSchema",paymentSchema)

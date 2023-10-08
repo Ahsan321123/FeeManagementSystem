@@ -78,6 +78,7 @@ const savedRole =localStorage.getItem('role')
         <Link className='link d-block mb-3 d' to='/allstudents'  style={{ color: '#bdc3c7' }} >All Students</Link>
         <Link className='link d-block mb-3 ' to='/createclass' style={{ color: '#bdc3c7' }}>Create Class</Link>
         <Link className='link d-block mb-3 d' to='/feeReport' style={{ color: '#bdc3c7' }}>Fee Report</Link> 
+        <Link className='link d-block mb-3 d' to='/defaulterList' style={{ color: '#bdc3c7' }}>Defaulter List</Link> 
     </>
 }
 
