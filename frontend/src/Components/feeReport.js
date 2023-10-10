@@ -6,6 +6,8 @@ import { toast } from "react-toastify";
 import Loader from "./Loader";
 import FeeReportPDF from "./FeeReportPDF";
 import { PDFViewer } from "@react-pdf/renderer";
+import jsPDF from "jspdf";
+import "jspdf-autotable";
 
 const FeeReport = () => {
   const [startDate, setStartDate] = useState("");
@@ -18,7 +20,6 @@ const FeeReport = () => {
   const [loading, setLoading] = useState(false);
   const [showPDF, setShowPDF] = useState(false);
 
-
   const token = document.cookie.split("=")[1];
 
   const handleDate = async (e) => {
@@ -26,7 +27,7 @@ const FeeReport = () => {
 
     try {
       setLoading(true);
-      if ((startDate, endDate)) {
+      if (startDate && endDate) {
         await axios
           .get(
             `http://localhost:5000/api/v1/student/feeReport?startDate=${startDate}&endDate=${endDate}`,
@@ -42,10 +43,23 @@ const FeeReport = () => {
             );
             setFeeStatus(allFeeStatus);
 
-            setStudents(res.data.data);
-            setDisplayStudents(res.data.data);
+            const sortedData = res.data.data
+              .map((student) => {
+                const sortedFeeStatus = student.feeStatus.sort(
+                  (a, b) => new Date(a.date) - new Date(b.date)
+                );
+                return { ...student, feeStatus: sortedFeeStatus };
+              })
+              .sort(
+                (a, b) =>
+                  new Date(a.feeStatus[0].date) - new Date(b.feeStatus[0].date)
+              );
+
+            setStudents(sortedData);
+
+            setDisplayStudents(sortedData);
             setLoading(false);
-            if (res.data.data.length === 0) {
+            if (sortedData.length === 0) {
               toast.error("No Students Found", {
                 position: toast.POSITION.TOP_CENTER,
                 autoClose: 2000,
@@ -99,6 +113,85 @@ const FeeReport = () => {
     "Fee Status",
     "Date",
   ];
+
+  const generateAndDownloadPDF = () => {
+    const doc = new jsPDF();
+    const pageWidth = doc.internal.pageSize.getWidth();
+
+    // Add the school name and campus at the top center of the page
+    doc.setFontSize(16);
+    doc.setFont("helvetica", "bold");
+    doc.text("Green Peace School", pageWidth / 2, 20, "center");
+    doc.text(
+      `Campus: ${students.map((s) => s.campus)}`,
+      pageWidth / 2,
+      30,
+      "center"
+    ); // Replace [Your Campus Name] with the actual campus name
+
+    let yPos = 40; // Adjust initial Y position after the title
+
+    // Add headers
+    doc.setFontSize(12);
+    doc.setFont("helvetica", "bold");
+    doc.text("GRNo", 10, yPos);
+    doc.text("Student Name", 40, yPos);
+    doc.text("Month", 70, yPos);
+    doc.text("Fee Status", 100, yPos);
+    doc.text("Date", 130, yPos);
+    doc.text("Fee Received", 160, yPos);
+    yPos += 10; // Adjust Y position after headers
+
+    let totalFeeReceived = 0; // To keep track of the total fee received
+
+    displayStudents.forEach((student) => {
+      doc.setFontSize(10);
+      doc.setFont("helvetica", "normal");
+      doc.text(student.GRNo ? student.GRNo.toString() : "N/A", 10, yPos);
+
+      doc.text(student.studentName, 40, yPos);
+
+      // Nested table for Fee Details
+      const feeDetails = student.feeStatus.filter((status) => {
+        const paymentDate = status.date && new Date(status.date.split("T")[0]);
+        return (
+          paymentDate >= new Date(formattedStartDate) &&
+          paymentDate <= new Date(formattedEndDate)
+        );
+      });
+
+      if (feeDetails.length > 0) {
+        feeDetails.forEach((status, index) => {
+          const fee = Number(status.feeReceived) || 0; // Convert feeReceived to a number, if it's not a valid number, use 0
+          totalFeeReceived += fee; // Add to the total fee received
+          doc.text(status.month, 70, yPos + index * 10);
+          doc.text(status.status, 100, yPos + index * 10);
+          doc.text(status.date.split("T")[0], 130, yPos + index * 10);
+          doc.text(
+            status.feeReceived ? status.feeReceived.toString() : "",
+            160,
+            yPos + index * 10
+          );
+        });
+        yPos += feeDetails.length * 10; // Adjust Y position based on the number of fee details
+      }
+      yPos += 10; // Adjust Y position for next student
+    });
+
+    // Add the total fee received at the bottom
+    doc.setFontSize(14);
+    doc.setFont("helvetica", "bold");
+    doc.text(
+      `Total Fee Received: ${totalFeeReceived}`,
+      pageWidth / 2,
+      yPos + 10,
+      "center"
+    );
+
+    // Save the PDF
+    const fileName = `school_info_${Date.now()}.pdf`;
+    doc.save(fileName);
+  };
 
   return (
     <>
@@ -232,8 +325,6 @@ const FeeReport = () => {
               ))}
             </tbody>
           </table>
-
-         
         </>
       ) : (
         <div className="msg-container">
@@ -242,18 +333,15 @@ const FeeReport = () => {
           </div>
         </div>
       )}
-{ displayStudents.length>0 && 
-<button  className="csv-btn btn-primary mx-4" onClick={()=>setShowPDF(true)} > Show pdf  </button>
-}
-{showPDF && 
-
-<PDFViewer width="100%" height="600">
-<FeeReportPDF  students={displayStudents} /> 
-
-</PDFViewer>
-}
-
-
+      {displayStudents.length > 0 && (
+        <button
+          className="csv-btn btn btn-primary"
+          style={{ backgroundColor: "#2c3e50" }}
+          onClick={generateAndDownloadPDF}
+        >
+          Download PDF
+        </button>
+      )}
     </>
   );
 };

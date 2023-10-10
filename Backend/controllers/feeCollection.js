@@ -74,6 +74,7 @@ return{
     className: student.className,
      baseFee: student.fee,
     lateFee: lateFeeApplied ? lateFee : 0,
+    annualCharges: student.annualCharges,
     totalFee: totalFee,
     dueDate: dueDateString,
     currentDate: currentDate,

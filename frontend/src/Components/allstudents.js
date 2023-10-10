@@ -41,6 +41,9 @@ export default function Allstudents() {
       }
 
     )
+ const [checkValue,setCheckValue]=useState()
+ const [batchVoucherData,setBatchVoucherdata]=useState([])
+ const [ singelVoucher,setSingelVocuher]=useState(false)
 
 //! PAgination handle 
 
@@ -180,11 +183,11 @@ useEffect(()=>{
       .then((res) => {
         // passing student data and navigating
 
-        console.log("navigating ")
         navigate("/voucher", {
           state: {
             studentData: data.student,
             voucherData: res.data,
+            annualCharges: checkValue == "on" ? res.data.annualCharges:0,
             month,
             from: "generateSingle",
           },
@@ -353,7 +356,8 @@ useEffect(()=>{
           style={{   backgroundColor:'#2c3e50'}}
             className="btn btn-primary mx-2"
             onClick={() => handleVoucherButtonClick(
-               student._id,student 
+               student._id,student ,
+               setSingelVocuher(true)
             )  }
           >
             Generate Voucher
@@ -380,20 +384,21 @@ useEffect(()=>{
     ...new Set(allStudent.map((student) => student.className)),
   ];
 
-  // Generate All Vouchers
+  //! Generate All Vouchers
 
-  const handleVouchersAll = (data) => {
-    const stundetIds = data.map((student) => {
+  const handleVouchersAll = (e) => {
+    e.preventDefault();
+    const stundetIds = batchVoucherData.map((student) => {
       return student._id;
     });
     generateAllVouchers(stundetIds);
   };
 
-  const generateBatchVoucher=(data)=>{
-setVoucherModal(true)
-handleVouchersAll(data)
+const handleVoucherModal=()=>{
+  setBatchVoucherdata(filterData)
+  setVoucherModal(true)
 
-  }
+}
 
   const generateAllVouchers = async (StudentIds) => {
 
@@ -415,9 +420,13 @@ handleVouchersAll(data)
             studentsData: res.data.students,
             vouchersData: res.data.vouchers,
             month,
+            annualCharges: checkValue == "on" ? res.data.vouchers.map(s=>s.annualCharges) : 0 ,
+           
             from: "generateAll",
           },
+          
         });
+        
       });
   };
 
@@ -690,7 +699,7 @@ studentStatus == "pending" &&
             <button
             style={{   backgroundColor:'#2c3e50'}} 
               className="btn btn-primary mx-1 "
-              onClick={() => generateBatchVoucher(filterData)}
+              onClick={ handleVoucherModal}
             >
               Generate All Vouchers
             </button>
@@ -713,7 +722,7 @@ studentStatus == "pending" &&
       ></button>
     </div>
     <div className="modal-body">
-      <form onSubmit={(e)=>  handleVoucherModalSubmit(e) }>
+      <form onSubmit={  singelVoucher ? (e)=>  handleVoucherModalSubmit(e):(e)=>{handleVouchersAll(e)}  }>
       
 
         <div className="mb-3">
@@ -736,6 +745,7 @@ onChange={(e) => setMonth(e.target.value)}
   </option>
          
 ))}
+
           
 </select>
 
@@ -754,6 +764,15 @@ onChange={(e) => setMonth(e.target.value)}
             autoComplete="off"
           />
         </div>
+
+        <label>
+  Annual Charges-1500 pkr 
+<input 
+
+type="checkbox"
+onChange={(e)=> setCheckValue(e.target.value)}
+/> 
+</label>
         
         <div className="modal-footer">
           <button style={{   backgroundColor:'#2c3e50'}} type="submit" className="btn btn-primary">
@@ -767,6 +786,7 @@ onChange={(e) => setMonth(e.target.value)}
             Close
           </button>
         </div>
+        {checkValue}
       </form>
     </div>
   </div>

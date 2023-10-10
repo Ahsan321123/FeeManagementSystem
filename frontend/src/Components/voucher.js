@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
 import { Document, Page, Text, View, StyleSheet, PDFViewer } from '@react-pdf/renderer';
 import { useLocation } from 'react-router-dom';
 
@@ -10,15 +10,28 @@ const Voucher = () => {
 
 //  Getting Data
 
- const individualvoucherData= location.state?.voucherData
+
 
 const batchVocuhers= location.state?.vouchersData
+const batchVocuhersMonth=location.state?.month
+const batchVocuhersAnnualCharges = location.state?.annualCharges 
+console.log(batchVocuhersAnnualCharges)
 
+
+// singel Vocuher
+const individualvoucherData= location.state?.voucherData
+const annualChargesIndividual=location.state?.annualCharges
 const SingelvoucherMonth = location.state?.month 
 
-console.log(SingelvoucherMonth)
- console.log(batchVocuhers)
 
+
+
+
+
+
+// console.log(SingelvoucherMonth)
+
+// console.log(annualChargesIndividual ? annualChargesIndividual:"no cheked" )
 const styles = StyleSheet.create({
     page: {
         padding: 40,
@@ -70,8 +83,12 @@ const styles = StyleSheet.create({
 
 
 
+
 const renderIndividualVoucher = () => {
         // Current Date
+
+    let totalFee = annualChargesIndividual && individualvoucherData &&  annualChargesIndividual ? annualChargesIndividual + individualvoucherData.baseFee : individualvoucherData.baseFee
+
         let currentDate= Date.now()
         let timeStamp= new Date( currentDate)
     
@@ -110,7 +127,7 @@ const renderIndividualVoucher = () => {
                 
                 
                 </Text>
-                <Text style={[styles.tableCell]} rowspan="3">{individualvoucherData.baseFee} {individualvoucherData.month}</Text>
+                <Text style={[styles.tableCell]} rowspan="3">{ annualChargesIndividual ? annualChargesIndividual + individualvoucherData.baseFee : individualvoucherData.baseFee } </Text>
             </View>
             <View style={styles.tableRow}>
                 <Text style={[styles.tableCell, {flex: 1}]}>Issue Date</Text>
@@ -125,7 +142,7 @@ const renderIndividualVoucher = () => {
                 <Text style={[styles.tableCell, {flex: 2}]}> 
                 {due}</Text>
                 <Text style={[styles.tableCell]}>Payable After Due Date</Text>
-                <Text style={[styles.tableCell]}>{parseInt(individualvoucherData.baseFee) + parseInt(individualvoucherData.lateFee)}</Text>
+                <Text style={[styles.tableCell]}>{parseInt(individualvoucherData.baseFee)+ 500}</Text>
             </View>
         </View>
     </View>
@@ -154,7 +171,7 @@ const renderIndividualVoucher = () => {
     <Text style={[styles.tableCell, {flex: 2}]} rowspan="4">{individualvoucherData.studentName}</Text>
     <Text style={[styles.tableCell, {flex: 1}]} rowspan="6">{individualvoucherData.className}</Text>
     <Text style={[styles.tableCell, {flex: 2}]} rowspan="3">Tuition Fee of {SingelvoucherMonth}</Text>
-    <Text style={[styles.tableCell]} rowspan="3">{individualvoucherData.baseFee} {individualvoucherData.month}</Text>
+         <Text style={[styles.tableCell]} rowspan="3">{totalFee} </Text>
 </View>
 <View style={styles.tableRow}>
     <Text style={[styles.tableCell, {flex: 1}]}>Issue Date</Text>
@@ -196,14 +213,14 @@ const renderIndividualVoucher = () => {
                     <Text style={[styles.tableCell, {flex: 1}]}>{individualvoucherData.className}</Text>
                     <Text style={[styles.tableCell, {flex: 2}]}>Tuition Fee of {SingelvoucherMonth}
                     
-                    <span>Hello </span>
+             
                     </Text>
                     
-                    <Text style={[styles.tableCell]}>{individualvoucherData.baseFee} {individualvoucherData.month}</Text>
+                    <Text style={[styles.tableCell]}>{totalFee}</Text>
                 </View>
                 <View style={styles.tableRow}>
                     <Text style={[styles.tableCell, {flex: 2, borderTopWidth: 0}]}>Annual Charges</Text>
-                    <Text style={[styles.tableCell, {borderTopWidth: 0}]}>[Annual Amount]</Text>
+                    <Text style={[styles.tableCell, {borderTopWidth: 0}]}>{annualChargesIndividual && annualChargesIndividual }</Text>
                 </View>
                 <View style={styles.tableRow}>
                     <Text style={[styles.tableCell, {flex: 2, borderTopWidth: 0}]}>Lab Charges</Text>
@@ -226,10 +243,16 @@ const renderIndividualVoucher = () => {
 </View>
 </View>
 
-</>
+</> 
     );
-};
+}; 
 const renderBatchVouchers = () => {
+
+// total fee 
+
+
+
+
     // Current Date
     let currentDate= Date.now()
     let timeStamp= new Date( currentDate)
@@ -240,18 +263,20 @@ const renderBatchVouchers = () => {
     let dueTimeStamp = new Date(dateNow.getTime() + (24 * 60 * 60 * 1000));
     let due = dueTimeStamp.toISOString().split("T")[0]
     return batchVocuhers.map((individualvoucherData, index) => {
+
+        let totalFee = batchVocuhersAnnualCharges  ? individualvoucherData.annualCharges + individualvoucherData.baseFee : individualvoucherData.baseFee
      return (
 <>
            <View>
             <View style={styles.header}>
-            
+              
                 <View>
                     <Text style={styles.title}>Green Peace School</Text>
                     <Text style={styles.subtitle}>Model Campus</Text>
                 </View>
               
             </View>
-            <Text style={styles.title}>Monthly Bill for {individualvoucherData.month}</Text>
+            <Text style={styles.title}>Monthly Bill for {batchVocuhersMonth}</Text>
             <View style={styles.table}>
                 <View style={styles.tableRow}>
                     <Text style={[styles.tableCell, {flex: 1}]}>Gr No</Text>
@@ -264,8 +289,8 @@ const renderBatchVouchers = () => {
                     <Text style={[styles.tableCell, {flex: 1}]} rowspan="6">531</Text>
                     <Text style={[styles.tableCell, {flex: 2}]} rowspan="4">{individualvoucherData.studentName}</Text>
                     <Text style={[styles.tableCell, {flex: 1}]} rowspan="6">{individualvoucherData.className}</Text>
-                    <Text style={[styles.tableCell, {flex: 2}]} rowspan="3">Tuition Fee of {individualvoucherData.month}</Text>
-                    <Text style={[styles.tableCell]} rowspan="3">{individualvoucherData.baseFee} {individualvoucherData.month}</Text>
+                    <Text style={[styles.tableCell, {flex: 2}]} rowspan="3">Tuition Fee of {batchVocuhersMonth}</Text>
+                    <Text style={[styles.tableCell]} rowspan="3">{totalFee} </Text>
                 </View>
                 <View style={styles.tableRow}>
                     <Text style={[styles.tableCell, {flex: 1}]}>Issue Date</Text>
@@ -273,7 +298,7 @@ const renderBatchVouchers = () => {
                     {date}
                     </Text>
                     <Text rowspan="3" style={[styles.tableCell,{flex:1}]}>Payable Within Due Date</Text>
-                    <Text style={[styles.tableCell]}>{individualvoucherData.baseFee}</Text>
+                    <Text style={[styles.tableCell]}>{totalFee}</Text>
                 </View>
                 <View style={styles.tableRow}>
                     <Text style={[styles.tableCell, {flex: 1}]}>Due Date</Text>
@@ -295,7 +320,7 @@ const renderBatchVouchers = () => {
             </View>
           
         </View>
-<Text style={styles.title}>Monthly Bill for {individualvoucherData.month}</Text>
+<Text style={styles.title}>Monthly Bill for {batchVocuhersMonth}</Text>
 <View style={styles.table}>
     <View style={styles.tableRow}>
         <Text style={[styles.tableCell, {flex: 1}]}>Gr No</Text>
@@ -308,8 +333,8 @@ const renderBatchVouchers = () => {
         <Text style={[styles.tableCell, {flex: 1}]} rowspan="6">531</Text>
         <Text style={[styles.tableCell, {flex: 2}]} rowspan="4">{individualvoucherData.studentName}</Text>
         <Text style={[styles.tableCell, {flex: 1}]} rowspan="6">{individualvoucherData.className}</Text>
-        <Text style={[styles.tableCell, {flex: 2}]} rowspan="3">Tuition Fee of {individualvoucherData.month}</Text>
-        <Text style={[styles.tableCell]} rowspan="3">{individualvoucherData.baseFee} {individualvoucherData.month}</Text>
+        <Text style={[styles.tableCell, {flex: 2}]} rowspan="3">Tuition Fee of {batchVocuhersMonth}</Text>
+        <Text style={[styles.tableCell]} rowspan="3">{totalFee} </Text>
     </View>
     <View style={styles.tableRow}>
         <Text style={[styles.tableCell, {flex: 1}]}>Issue Date</Text>
@@ -336,7 +361,7 @@ const renderBatchVouchers = () => {
             </View>
           
         </View>
-<Text style={styles.title}>Monthly Bill for {individualvoucherData.month}</Text>
+<Text style={styles.title}>Monthly Bill for {batchVocuhersMonth}</Text>
 
 <View style={styles.table}>
     <View style={styles.tableRow}>
@@ -350,8 +375,8 @@ const renderBatchVouchers = () => {
         <Text style={[styles.tableCell, {flex: 1}]} rowspan="6">531</Text>
         <Text style={[styles.tableCell, {flex: 2}]} rowspan="4">{individualvoucherData.studentName}</Text>
         <Text style={[styles.tableCell, {flex: 1}]} rowspan="6">{individualvoucherData.className}</Text>
-        <Text style={[styles.tableCell, {flex: 2}]} rowspan="3">Tuition Fee of {individualvoucherData.month}</Text>
-        <Text style={[styles.tableCell]} rowspan="3">{individualvoucherData.baseFee} {individualvoucherData.month}</Text>
+        <Text style={[styles.tableCell, {flex: 2}]} rowspan="3">Tuition Fee of {batchVocuhersMonth}</Text>
+        <Text style={[styles.tableCell]} rowspan="3">{totalFee} </Text>
     </View>
     <View style={styles.tableRow}>
         <Text style={[styles.tableCell, {flex: 1}]}>Issue Date</Text>
