@@ -196,6 +196,15 @@ const FeeReport = () => {
   return (
     <>
       {loading && <Loader />}
+      <div className="filter-gr">
+      {displayStudents.length > 0 && (
+        <button
+          className="csv-btn"
+          onClick={generateAndDownloadPDF}
+        >
+          Download PDF
+        </button>
+      )}
       {students.length > 0 && (
         <div className="w-50 mx-auto my-3">
           <label htmlFor="grNum" className="ms-2 mb-2">
@@ -221,7 +230,7 @@ const FeeReport = () => {
           </form>
         </div>
       )}
-
+  </div>
       <div className="row my-4">
         <div className="col">
           <form
@@ -333,15 +342,14 @@ const FeeReport = () => {
           </div>
         </div>
       )}
-      {displayStudents.length > 0 && (
+      {/* {displayStudents.length > 0 && (
         <button
-          className="csv-btn btn btn-primary"
-          style={{ backgroundColor: "#2c3e50" }}
+          className="csv-btn"
           onClick={generateAndDownloadPDF}
         >
           Download PDF
         </button>
-      )}
+      )} */}
     </>
   );
 };

@@ -82,8 +82,8 @@ const token = document.cookie.split('=')[1];
           <div className="card">
             <div className="card-body">
               <h4 className="card-title text-center mb-4">Create Student</h4>
-              <form onSubmit={handleSubmit}>
-                
+              <form className='form-break'>
+                <div>
                 <div className="mb-3">
                   <label htmlFor="inputName" className="form-label">Student Name</label>
                   <input type="text" className="form-control" id="inputName" 
@@ -147,7 +147,9 @@ const token = document.cookie.split('=')[1];
                   autoComplete='off'/>
                       {phoneError && <div className="text-danger">{phoneError}</div>}
                 </div>
+                </div>
 
+            <div>      
                 <div className="mb-3">
                   <label htmlFor="inputName" className="form-label">CNIC</label>
                   <input type="text" className="form-control" id="inputName" 
@@ -212,13 +214,19 @@ const token = document.cookie.split('=')[1];
                   onChange={e=>{setLateFee(e.target.value)}}
                   autoComplete='off'/>
                 </div>
+
+               
+
+              </div>
                 
-                <div className="d-grid gap-2">
-                  <button  style={{   backgroundColor:'#2c3e50'}} type="submit" 
+
+              </form>
+              <div className="d-grid gap-2">
+                  <button  style={{   backgroundColor:'#2c3e50'}} 
+                  onClick={handleSubmit}
                     className="btn btn-primary">Save Student</button>
                 </div>
 
-              </form>
             </div>
           </div>
         </div>
