@@ -44,6 +44,7 @@ export default function Allstudents() {
  const [checkValue,setCheckValue]=useState()
  const [batchVoucherData,setBatchVoucherdata]=useState([])
  const [ singelVoucher,setSingelVocuher]=useState(false)
+ const [ comment,setComment]=useState()
 
 //! PAgination handle 
 
@@ -674,6 +675,22 @@ studentStatus == "pending" &&
                         <option value="Paid">Paid</option>
                       </select>
                     </div>
+                    <div className="mb-3">
+                      <label htmlFor="inputName" className="form-label">
+                        Comment
+                      </label>
+                      <textarea 
+                         type="text"
+                        value={comment}
+                        onChange={(e)=>setComment(e.target.value)}
+                        className="form-control"
+                        id="inputName"
+                        placeholder="small comment about fee"
+                        autoComplete="off"
+                      />
+                    </div>
+
+
                     <div className="modal-footer">
                       <button style={{   backgroundColor:'#2c3e50'}} type="submit" className="btn btn-primary">
                         Save changes

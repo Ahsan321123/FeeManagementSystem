@@ -37,7 +37,10 @@ feeStatus:[{
     feeReceived:{
         type:Number,
         // required:true
-    }, 
+    },
+    comment:{
+        type:String
+    } 
 }],
 
 bankName:{

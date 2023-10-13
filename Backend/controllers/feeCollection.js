@@ -152,7 +152,8 @@ if(currentMonthFeeStatus && currentMonthFeeStatus.status === "Paid"   ){
     year:currentYear.toString(),
     feeReceived:req.body.feeReceived,
     status:req.body.status || 'pending',
-    date: req.body.date
+    date: req.body.date,
+    comment:req.body.comment ? req.body.comment : "no comments"
   }
 // pushing payment object to feeStatus array 
 existingPayment.feeStatus.push(currentMonthFeeStatus)
@@ -161,6 +162,7 @@ existingPayment.feeStatus.push(currentMonthFeeStatus)
   currentMonthFeeStatus.status = req.body.status
   currentMonthFeeStatus.feeReceived = req.body.feeReceived
   currentMonthFeeStatus.date = req.body.date
+  currentMonthFeeStatus.comment = req.body.comment
 }
 
 

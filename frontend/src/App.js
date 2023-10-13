@@ -75,86 +75,70 @@ function AppContent({ role, isAuthenticated }) {
 
   useEffect(() => {
     async function verifyToken() {
-      try {
         const token = document.cookie.split("=")[1];
-        if (!token) {
-            savedRole === "admin" ? navigate("/adminLogin") : navigate("/");
-           toast.error("time expired kindly logged in again",{  
-            autoClose: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-            position: "top-right",
-          
-           })
-            return; // Exit the function early
-        }
-        if (token) {
-          setLoading(true);
 
-          const endpoint =
-            savedRole == "admin"
-              ? "http://localhost:5000/api/v1/auth/verifyAdmin"
-              : "http://localhost:5000/api/v1/auth/verify";
-          const response = await axios.get(endpoint, {
-            headers: {
-              "x-auth-token": token,
-            },
-          });
-          if (response.data.success == true) {
-            if (response.data.message == "Admin Token is valid") {
-              dispatch({
-                type: "setRole",
-                payload: {
-                  userName: "admin",
+        try {
+            const endpoint =
+                savedRole == "admin"
+                    ? "http://localhost:5000/api/v1/auth/verifyAdmin"
+                    : "http://localhost:5000/api/v1/auth/verify";
+            const response = await axios.get(endpoint, {
+                headers: {
+                    "x-auth-token": token,
                 },
-              });
-            }
-            dispatch({
-              type: "login",
-              payload: {
-                userName: response.data.userName,
-                campus: response.data.campus,
-              },
             });
-          }else if (!token){
+            if (response.data.success == true) {
+                if (response.data.message == "Admin Token is valid") {
+                    dispatch({
+                        type: "setRole",
+                        payload: {
+                            userName: "admin",
+                        },
+                    });
+                }
                 dispatch({
-                    type: "logout",
+                    type: "login",
                     payload: {
-                      userName: null,
-                      role: null,
+                        userName: response.data.userName,
+                        campus: response.data.campus,
                     },
-                })
-                navigate('/')
-          } 
-          else {
-            dispatch ({
-              type: "logout",
-              payload: {
+                });
+            } else {
+                handleNoToken();
+            }
+        } catch (err) {
+            handleNoToken();
+        }
+    }
+
+    function handleNoToken() {
+        dispatch({
+            type: "logout",
+            payload: {
                 userName: null,
                 role: null,
-              },
-            });
-            savedRole == "admin" ? navigate("/adminLogin") : navigate("/");
-          }
-          setLoading(false);
-        } else {
-          setLoading(false); // Set loading to false if there's no token.
-        }
-      } catch (err) {
-        dispatch({
-          type: "logout",
-          payload: {
-            userName: null,
-            role: null,
-          },
+            },
         });
-        savedRole === "admin" ? navigate("/adminLogin") : navigate("/");
-      }
+       if(savedRole === "staff"){
+        navigate("/") 
+        localStorage.removeItem('role')
+        toast.error("time expired kindly logged in again", {
+          autoClose: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          position: "top-right",
+      });
+       } else if(savedRole === "admin" ){
+        navigate("/adminLogin");
+       }
+
+       
     }
+
     verifyToken();
-  }, []);
+}, []);
 
   if (loading) {
     return <div>Loading...</div>;

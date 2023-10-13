@@ -58,9 +58,7 @@ const token = document.cookie.split('=')[1];
             })
         }).catch(e => {
           if (e.response) {
-              if (e.response.data.message.includes("CNIC Number should be 13 digits")) {
-                  setCnicError(e.response.data.message.split(': phoneNo: Phone Number incorrect ')[1]);
-              } else if (e.response.data.message.includes("some other error")) {
+               if (e.response.data.message.includes("some other error")) {
                   setPhoneError(e.response.data.message);
               } else if (e.response.data.message === "student with this GrNo# already exist") {
                   setGrError(e.response.data.message );
