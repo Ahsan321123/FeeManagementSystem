@@ -331,7 +331,9 @@ useEffect(()=>{
   };
 
   const renderStudents = (studentsList) =>
+  
     studentsList.map((student) => (
+      
       <div className="card w-50 mx-auto my-3" key={student._id}>
         <h5 className="card-header d-flex justify-content-between">
           {student.name}
@@ -540,8 +542,21 @@ const allMonths= ["January", "February", "March", "April", "May", "June", "July"
               </button>
             </form>
           </div>
+          
         </div>
-
+        {filterData.length > 0 && (
+        <div className="d-flex justify-content-end mt-1">
+          {filterData.length > 0 && (
+            <button
+            style={{   backgroundColor:'#2c3e50'}} 
+              className="csv-btn voucher-btn"
+              onClick={ handleVoucherModal}
+            >
+              Generate All Vouchers
+            </button>
+          )}
+        </div>
+      )}
       {/* render  */}
 
          {     studentsToRender.length===0 ? (
@@ -710,19 +725,7 @@ studentStatus == "pending" &&
           </div>
         )}
       </div>
-      {filterData.length > 0 && (
-        <div className="d-flex justify-content-end mt-1">
-          {filterData.length > 0 && (
-            <button
-            style={{   backgroundColor:'#2c3e50'}} 
-              className="btn btn-primary mx-1 "
-              onClick={ handleVoucherModal}
-            >
-              Generate All Vouchers
-            </button>
-          )}
-        </div>
-      )}
+      
 {/* voucher Modal */}
 
 { voucherModal && 
