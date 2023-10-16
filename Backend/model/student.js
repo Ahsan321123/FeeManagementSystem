@@ -26,6 +26,17 @@ const studentSchema = new mongoose.Schema({
         type:Number,
         // required:[true,"please enter fee "]
     },
+    enrollmentCharges:{
+        type:Number,
+    },
+    copyPresentationCharges:{
+        type:Number,
+    },
+    admissionCharges:{
+        type:Number,
+
+    },
+   
     status:{
     type:String,
     default:"pending"

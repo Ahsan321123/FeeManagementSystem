@@ -41,10 +41,21 @@ export default function Allstudents() {
       }
 
     )
- const [checkValue,setCheckValue]=useState()
+    const [checkedFees, setCheckedFees] = useState({
+      annualCharges: false,
+      labCharges: false,
+      enrollmentFee: false
+  });
  const [batchVoucherData,setBatchVoucherdata]=useState([])
  const [ singelVoucher,setSingelVocuher]=useState(false)
  const [ comment,setComment]=useState()
+ const [feeType,setFeeType]=useState({
+  TutionFee:"",
+  AnnualCharges:"",
+  LabCharges:"",
+  EnrollmentFeee:""
+} )
+
 
 //! PAgination handle 
 
@@ -182,17 +193,20 @@ useEffect(()=>{
       
     })
       .then((res) => {
+        console.log(res.data)
         // passing student data and navigating
-
-        navigate("/voucher", {
-          state: {
-            studentData: data.student,
-            voucherData: res.data,
-            annualCharges: checkValue == "on" ? res.data.annualCharges:0,
-            month,
-            from: "generateSingle",
-          },
-        });
+if(res && res.data){   navigate("/voucher", {
+  state: {
+    studentData: data.student,
+    voucherData: res.data,
+    annualCharges: checkedFees.annualCharges ? res.data.annualCharges : 0,
+    enrollmentCharges: checkedFees.enrollmentFee ? res.data.enrollmentCharges : 0,
+    labCharges: checkedFees.labCharges ? res.data.labCharges:0  ,
+    month,
+    from: "generateSingle",
+  },
+});}
+     
       });
 
     setStudentID(data.studentId);}catch(err){
@@ -230,7 +244,7 @@ useEffect(()=>{
     e.preventDefault();
     
     const id = studentId;
-    const data = { bankName, date, status,month,feeReceived};
+    const data = { bankName, date, status,month,feeReceived,feeType};
     let url = `http://localhost:5000/api/v1/student/${id}/updateStatus`;
     axios
       .patch(url, data,{
@@ -264,7 +278,7 @@ useEffect(()=>{
               autoClose: 2000 
             })
           }else{
-            toast.error("Student not created",{
+            toast.error(e.response.data.message,{
               position: toast.POSITION.TOP_CENTER,
               autoClose: 2000 
             })
@@ -295,7 +309,7 @@ useEffect(()=>{
   }
 
 
-
+console.log(feeType)
  
   // delete
   const handleStudentDelete = (student) => {
@@ -423,8 +437,9 @@ const handleVoucherModal=()=>{
             studentsData: res.data.students,
             vouchersData: res.data.vouchers,
             month,
-            annualCharges: checkValue == "on" ? res.data.vouchers.map(s=>s.annualCharges) : 0 ,
-           
+            annualCharges: checkedFees.annualCharges ? res.data.vouchers.map(s=>s.annualCharges) : 0,
+enrollmentCharges: checkedFees.enrollmentFee ? res.data.vouchers.map(s=>s.enrollmentCharges) : 0,
+labCharges: checkedFees.labCharges ? res.data.vouchers.map(s=>s.labCharges):0, 
             from: "generateAll",
           },
           
@@ -479,6 +494,7 @@ let studentsToRender=getFilteredStudents()
 //  Alll Months 
 
 const allMonths= ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+
 
   return (
     <>
@@ -626,24 +642,85 @@ studentStatus == "pending" &&
                         autoComplete="off"
                       />
                     </div>
+                    <div className="mb-3">Fee Type </div>
+
+                    <div className="mb-3 form-check">
+        
+
+                    <label>
+  Annual-Charges
+<input 
+  value="AnnualCharges"
+  className="form-check-input"
+type="checkbox"
+onChange={(e)=> setFeeType(prev=>({
+
+...prev,
+AnnualCharges:e.target.value,
+}))}
+/> 
+</label>
+</div>
+
+<div className="mb-3 form-check">
+        
+
+                    <label>
+Enrollment-Fee
+<input 
+  value="EnrollmentFee"
+  className="form-check-input"
+type="checkbox"
+onChange={(e)=> setFeeType(prev=>({
+
+  ...prev,
+  EnrollmentFeee:e.target.value,
+  }))}
+/> 
+
+</label>
+</div>
+<div className="mb-3 form-check">
+        
+
+                    <label>
+Lab-Charges
+<input 
+value="LabCharges"
+className="form-check-input"
+type="checkbox"
+onChange={(e)=> setFeeType(prev=>({
+
+  ...prev,
+  LabCharges:e.target.value,
+  }))}
+/> 
+</label>
+</div>
+<div className="mb-3 form-check">
+        
+
+                    <label>
+Tution-Fee
+<input 
+value="TutionFee"
+className="form-check-input"
+type="checkbox"
+onChange={(e)=> setFeeType(prev=>({
+
+  ...prev,
+  TutionFee:e.target.value,
+  }))}
+/> 
+
+</label>
+</div>
+                   
 
                     <div className="mb-3">
                       <label htmlFor="inputName" className="form-label">
                         Month
                       </label>
-                      {/* <select
-
-                        <option></option>
-
-                        // type="text"
-                        // value={month}
-                        // onChange={(e) => setMonth(e.target.value)}
-                        // className="form-control"
-                        // id="inputName"
-                        // placeholder="Enter Month"
-                        // autoComplete="off"
-                      /> */}
-
 <select
             className="form-select"
             id="classFilter"
@@ -731,88 +808,85 @@ studentStatus == "pending" &&
 { voucherModal && 
 
 <div className="modal show d-block blurred-background" tabIndex="-1">
-<div className="modal-dialog">
-  <div className="modal-content">
-    <div className="modal-header">
-      <h5 className="modal-title">Create Voucher</h5>
-      <button
-        type="button"
-        className="btn-close"
-        onClick={() => setVoucherModal(false)}
-      ></button>
-    </div>
-    <div className="modal-body">
-      <form onSubmit={  singelVoucher ? (e)=>  handleVoucherModalSubmit(e):(e)=>{handleVouchersAll(e)}  }>
-      
-
-        <div className="mb-3">
-          <label htmlFor="inputName" className="form-label">
-            Month
-          </label>
-        
-
-<select
-className="form-select"
-id="classFilter"
-onChange={(e) => setMonth(e.target.value)}
->
-<option value="">Select Month</option>
-{allMonths.map((m) => (
-
-  <option key={m} value={m}>
-    {m}
-
-  </option>
-         
-))}
-
-          
-</select>
-
-        </div>
-
-        <div className="mb-3">
-          <label htmlFor="inputName" className="form-label">
-            Date
-          </label>
-          <input
-            type="date"
-            value={date}
-            onChange={(e) => setDate(e.target.value)}
-            className="form-control"
-            id="inputName"
-            autoComplete="off"
-          />
-        </div>
-
-        <label>
-  Annual Charges-1500 pkr 
-<input 
-
-type="checkbox"
-onChange={(e)=> setCheckValue(e.target.value)}
-/> 
-</label>
-        
-        <div className="modal-footer">
-          <button style={{   backgroundColor:'#2c3e50'}} type="submit" className="btn btn-primary">
-            Save changes
-          </button>
-          <button
-            type="button"
-            className="btn btn-secondary"
-            onClick={() => setShowModal(false)}
-          >
-            Close
-          </button>
-        </div>
-        {checkValue}
-      </form>
+  <div className="modal-dialog">
+    <div className="modal-content">
+      <div className="modal-header">
+        <h5 className="modal-title">Create Voucher</h5>
+        <button
+          type="button"
+          className="btn-close"
+          onClick={() => setVoucherModal(false)}
+        ></button>
+      </div>
+      <div className="modal-body">
+        <form onSubmit={singelVoucher ? (e) => handleVoucherModalSubmit(e) : (e) => { handleVouchersAll(e) }}>
+          <div className="mb-3">
+            <label htmlFor="inputName" className="form-label">Month</label>
+            <select className="form-select" id="classFilter" onChange={(e) => setMonth(e.target.value)}>
+              <option value="">Select Month</option>
+              {allMonths.map((m) => (
+                <option key={m} value={m}>{m}</option>
+              ))}
+            </select>
+          </div>
+          <div className="mb-3">
+            <label htmlFor="inputName" className="form-label">Date</label>
+            <input
+              type="date"
+              value={date}
+              onChange={(e) => setDate(e.target.value)}
+              className="form-control"
+              id="inputName"
+              autoComplete="off"
+            />
+          </div>
+          <div className="mb-3 form-check">
+            <input 
+              type="checkbox"
+              id="annualCharges"
+              className="form-check-input"
+              checked={checkedFees.annualCharges}
+              onChange={(e) => setCheckedFees(prev => ({ ...prev, annualCharges: e.target.checked }))}
+            />
+            <label className="form-check-label" htmlFor="annualCharges">Annual Charges</label>
+          </div>
+          <div className="mb-3 form-check">
+            <input 
+              type="checkbox"
+              id="labCharges"
+              className="form-check-input"
+              checked={checkedFees.labCharges}
+              onChange={(e) => setCheckedFees(prev => ({ ...prev, labCharges: e.target.checked }))}
+            />
+            <label className="form-check-label" htmlFor="labCharges">Lab Charges</label>
+          </div>
+          <div className="mb-3 form-check">
+            <input 
+              type="checkbox"
+              id="enrollmentFee"
+              className="form-check-input"
+              checked={checkedFees.enrollmentFee}
+              onChange={(e) => setCheckedFees(prev => ({ ...prev, enrollmentFee: e.target.checked }))}
+            />
+            <label className="form-check-label" htmlFor="enrollmentFee">Enrollment Fee</label>
+          </div>
+          <div className="modal-footer">
+            <button style={{backgroundColor:'#2c3e50'}} type="submit" className="btn btn-primary">
+              Save changes
+            </button>
+            <button
+              type="button"
+              className="btn btn-secondary"
+              onClick={() => setShowModal(false)}
+            >
+              Close
+            </button>
+          </div>
+        </form>
+      </div>
     </div>
   </div>
 </div>
-</div>
-
 }
 
 

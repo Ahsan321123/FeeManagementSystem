@@ -10,7 +10,7 @@ return (
     <>
 
     <div className="modal show d-block blurred-background" tabIndex="-1">
-    <div className="modal-dialog"  style={{ maxWidth: '50%',textAlign:'center'  }}>
+    <div className="modal-dialog"  style={{ maxWidth: '60%',textAlign:'center'  }}>
       <div className="modal-content">
         <div className="modal-header">
           <h5 className="modal-title">Fee Status</h5>
@@ -25,6 +25,7 @@ return (
     <th>Status</th>
     <th>Date</th>
     <th>Fee Received </th>
+    <th> Fee Type </th>
     <th>Comment</th>
   </tr>
 </thead>
@@ -35,6 +36,7 @@ return (
       <td>{data.status}</td>
       <td>{new Date(data.date).toLocaleDateString()}</td>
       <td>{data.feeReceived}</td>
+      <td>{data.feeType.map(( type)=> <p>{type}</p>    )} </td>
       <td>{data.comment ? data.comment:"no comment"   }</td>
     </tr>
   )

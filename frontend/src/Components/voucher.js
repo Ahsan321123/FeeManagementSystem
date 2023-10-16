@@ -15,18 +15,20 @@ const Voucher = () => {
 
 const batchVocuhers= location.state?.vouchersData
 const batchVocuhersMonth=location.state?.month
-const batchVocuhersAnnualCharges = location.state?.annualCharges 
-console.log(batchVocuhersAnnualCharges)
-
+let batchVocuhersAnnualCharges = location.state?.annualCharges
+ let batchVoucherEnrollmentCharges= location.state?.enrollmentCharges 
+ let labChargesBatch=location.state?.labCharges
+// console.log(batcVoucherEnrollmentCharges)
+console.log(batchVocuhers)
 
 // singel Vocuher
 const individualvoucherData= location.state?.voucherData
-
-console.log(individualvoucherData)
+const enrollmentChargesIndvidual= location.state?.enrollmentCharges
+// console.log(individualvoucherData)
 const annualChargesIndividual=location.state?.annualCharges
 const SingelvoucherMonth = location.state?.month 
-
-
+let labChargesIndividual= location.state?.labCharges
+console.log(labChargesIndividual)
 
 
 
@@ -45,7 +47,7 @@ const styles = StyleSheet.create({
 
     logo: {
         width: 50, // or whatever size you want
-        height: 50, // or whatever size you want
+        height: 40, // or whatever size you want
         marginRight: 10, // some margin if needed
     },
     page: {
@@ -58,20 +60,20 @@ const styles = StyleSheet.create({
         marginBottom: 3,
     },
     title: {
-        fontSize: 16,
+        fontSize: 12,
         fontWeight: 'bold',
         border: '1px solid black',
         textAlign:'center',
         
     },
     subtitle: {
-        fontSize: 12,
+        fontSize: 10,
     },
     table: {
         width: '100%',
         border: '1px solid black',
         borderCollapse: 'collapse',
-        marginBottom:14,
+        marginBottom:8,
        
     },
     tableRow: {
@@ -82,7 +84,7 @@ const styles = StyleSheet.create({
     tableCell: {
         flex: 1,
         border: '1px solid black',
-        padding: 5,
+        padding: 4,
         textAlign: 'center',
         fontSize: 11,
     },
@@ -104,11 +106,12 @@ const renderIndividualVoucher = () => {
     let lateFee= individualvoucherData.lateFee ? individualvoucherData.lateFee: 0 
 
 // singel
-if( annualChargesIndividual && individualvoucherData  ){
-     totalFee= annualChargesIndividual+lateFee+ individualvoucherData.baseFee
+if(  individualvoucherData){
+     totalFee= annualChargesIndividual+lateFee+ individualvoucherData.baseFee+labChargesIndividual+enrollmentChargesIndvidual
 }else if(lateFee){
     totalFee=individualvoucherData.baseFee+lateFee
-} else{
+}
+else{
     totalFee=individualvoucherData.baseFee
 }
 
@@ -148,11 +151,11 @@ if( annualChargesIndividual && individualvoucherData  ){
                     <Text style={styles.tableCell}>Amount</Text>
                 </View>
                 <View style={styles.tableRow}>
-                    <Text style={[styles.tableCell, {flex: 1}]} rowspan="6">531</Text>
+                    <Text style={[styles.tableCell, {flex: 1}]} rowspan="6">{individualvoucherData.GRNo}</Text>
                     <Text style={[styles.tableCell, {flex: 2}]} rowspan="6">{individualvoucherData.studentName}</Text>
                     <Text style={[styles.tableCell, {flex: 1}]} rowspan="6">{individualvoucherData.className}</Text>
                     <Text style={[styles.tableCell, {flex: 3}]}>Tuition Fee of {SingelvoucherMonth}</Text> {/* Increased flex */}
-                    <Text style={[styles.tableCell]}>{ individualvoucherData.lateFee?individualvoucherData.lateFee+ totalFee :totalFee }</Text>
+                    <Text style={[styles.tableCell]}>{ totalFee} </Text>
                 </View>
                 <View style={styles.tableRow}>
                     <Text style={[styles.tableCell, {flex: 3}]}>Annual Charges</Text> {/* Increased flex */}
@@ -162,19 +165,27 @@ if( annualChargesIndividual && individualvoucherData  ){
                 {/* Example: Lab Charges */}
                 <View style={styles.tableRow}>
                     <Text style={[styles.tableCell, {flex: 3}]}>Lab Charges</Text> {/* Increased flex */}
-                    <Text style={[styles.tableCell]}>[Lab Charges Amount]</Text>
+                    <Text style={[styles.tableCell]}> {labChargesIndividual?labChargesIndividual:0}  </Text>
+                </View>
+                <View style={styles.tableRow}>
+                    <Text style={[styles.tableCell, {flex: 3}]}>Erollment Charges</Text> {/* Increased flex */}
+                    <Text style={[styles.tableCell]}>{enrollmentChargesIndvidual? enrollmentChargesIndvidual:0}</Text>    
+                </View>
+                <View style={styles.tableRow}>
+                    <Text style={[styles.tableCell, {flex: 3}]}>Late Fee</Text> {/* Increased flex */}
+                    <Text style={[styles.tableCell]}>{individualvoucherData.lateFee?lateFee:0}</Text>    
                 </View>
                 <View style={styles.tableRow}>
                     <Text style={[styles.tableCell, {flex: 1}]}>Issue Date</Text>
                     <Text style={[styles.tableCell, {flex: 2}]}>{date}</Text>
                     <Text rowspan="3" style={[styles.tableCell,{flex:1}]}>Payable Within Due Date</Text>
-                    <Text style={[styles.tableCell]}>{individualvoucherData.baseFee}</Text>
+                    <Text style={[styles.tableCell]}>{totalFee}</Text>
                 </View>
                 <View style={styles.tableRow}>
                     <Text style={[styles.tableCell, {flex: 1}]}>Due Date</Text>
                     <Text style={[styles.tableCell, {flex: 2}]}>{due}</Text>
                     <Text style={[styles.tableCell]}>Payable After Due Date</Text>
-                    <Text style={[styles.tableCell]}>{parseInt(individualvoucherData.baseFee) + 500}</Text>
+                    <Text style={[styles.tableCell]}>{totalFee}</Text>
                 </View>
             </View>
         </View>
@@ -204,7 +215,8 @@ if( annualChargesIndividual && individualvoucherData  ){
     <Text style={styles.tableCell}>Amount</Text>
 </View>
 <View style={styles.tableRow}>
-    <Text style={[styles.tableCell, {flex: 1}]} rowspan="6">531</Text>
+    <Text style={[styles.tableCell, {flex: 1}]} rowspan="6">{individualvoucherData.GRNo}
+    </Text>
     <Text style={[styles.tableCell, {flex: 2}]} rowspan="4">{individualvoucherData.studentName}</Text>
     <Text style={[styles.tableCell, {flex: 1}]} rowspan="6">{individualvoucherData.className}</Text>
     <Text style={[styles.tableCell, {flex: 2}]} rowspan="3">Tuition Fee of {SingelvoucherMonth}</Text>
@@ -219,8 +231,13 @@ if( annualChargesIndividual && individualvoucherData  ){
                 {/* Example: Lab Charges */}
                 <View style={styles.tableRow}>
                     <Text style={[styles.tableCell, {flex: 3}]}>Lab Charges</Text> {/* Increased flex */}
-                    <Text style={[styles.tableCell]}>[Lab Charges Amount]</Text>
+                    <Text style={[styles.tableCell]}>{labChargesIndividual?labChargesIndividual:0} </Text>
                 </View>
+                <View style={styles.tableRow}>
+                    <Text style={[styles.tableCell, {flex: 3}]}>Erollment Charges</Text> {/* Increased flex */}
+                    <Text style={[styles.tableCell]}>{enrollmentChargesIndvidual? enrollmentChargesIndvidual:0}</Text>    
+                </View>
+                
                 <View style={styles.tableRow}>
                     <Text style={[styles.tableCell, {flex: 3}]}>Late Fee</Text> {/* Increased flex */}
                     <Text style={[styles.tableCell]}> {lateFee?lateFee:0} </Text>
@@ -230,13 +247,13 @@ if( annualChargesIndividual && individualvoucherData  ){
     <Text style={[styles.tableCell, {flex: 1}]}>Issue Date</Text>
     <Text style={[styles.tableCell, {flex: 2}]}>{date} </Text>
     <Text rowspan="3" style={[styles.tableCell,{flex:1}]}>Payable Within Due Date</Text>
-    <Text style={[styles.tableCell]}>{individualvoucherData.baseFee}</Text>
+    <Text style={[styles.tableCell]}>{totalFee}</Text>
 </View>
 <View style={styles.tableRow}>
     <Text style={[styles.tableCell, {flex: 1}]}>Due Date</Text>
     <Text style={[styles.tableCell, {flex: 2}]}>{due} </Text>
     <Text style={[styles.tableCell]}>Payable After Due Date</Text>
-    <Text style={[styles.tableCell]}>{parseInt(individualvoucherData.baseFee) + parseInt(individualvoucherData.lateFee)}</Text>
+    <Text style={[styles.tableCell]}>{totalFee}</Text>
 </View>
 </View>
 </View>
@@ -265,7 +282,7 @@ if( annualChargesIndividual && individualvoucherData  ){
     <Text style={[styles.tableCell, {flex: 2}]}>Fee Desc</Text>
     <Text style={styles.tableCell}>Amount</Text>
 </View> <View style={styles.tableRow}>
-                    <Text style={[styles.tableCell, {flex: 1}]}>531</Text>
+                    <Text style={[styles.tableCell, {flex: 1}]}>{individualvoucherData.GRNo}</Text>
                     <Text style={[styles.tableCell, {flex: 2}]}>{individualvoucherData.studentName}</Text>
                     <Text style={[styles.tableCell, {flex: 1}]}>{individualvoucherData.className}</Text>
                     <Text style={[styles.tableCell, {flex: 2}]}>Tuition Fee of {SingelvoucherMonth}
@@ -275,27 +292,38 @@ if( annualChargesIndividual && individualvoucherData  ){
                     
                     <Text style={[styles.tableCell]}>{totalFee}</Text>
                 </View>
+               
+<View style={styles.tableRow}>
+                    <Text style={[styles.tableCell, {flex: 3}]}>Annual Charges</Text> {/* Increased flex */}
+                    <Text style={[styles.tableCell]}>{annualChargesIndividual}</Text>
+                </View>
+                {/* Add other fee types similarly */}
+                {/* Example: Lab Charges */}
                 <View style={styles.tableRow}>
-                    <Text style={[styles.tableCell, {flex: 2, borderTopWidth: 0}]}>Annual Charges</Text>
-                    <Text style={[styles.tableCell, {borderTopWidth: 0}]}>{annualChargesIndividual && annualChargesIndividual }</Text>
+                    <Text style={[styles.tableCell, {flex: 3}]}>Lab Charges</Text> {/* Increased flex */}
+                    <Text style={[styles.tableCell]}>{labChargesIndividual?labChargesIndividual:0} </Text>
                 </View>
                 <View style={styles.tableRow}>
-                    <Text style={[styles.tableCell, {flex: 2, borderTopWidth: 0}]}>Lab Charges</Text>
-                    <Text style={[styles.tableCell, {borderTopWidth: 0}]}>[Lab Amount]</Text>
+                    <Text style={[styles.tableCell, {flex: 3}]}>Erollment Charges</Text> {/* Increased flex */}
+                    <Text style={[styles.tableCell]}>{enrollmentChargesIndvidual? enrollmentChargesIndvidual:0}</Text>    
                 </View>
-
+                
+                <View style={styles.tableRow}>
+                    <Text style={[styles.tableCell, {flex: 3}]}>Late Fee</Text> {/* Increased flex */}
+                    <Text style={[styles.tableCell]}> {lateFee?lateFee:0} </Text>
+                </View>
 
 <View style={styles.tableRow}>
     <Text style={[styles.tableCell, {flex: 1}]}>Issue Date</Text>
     <Text style={[styles.tableCell, {flex: 2}]}>{date} </Text>
     <Text rowspan="3" style={[styles.tableCell,{flex:1}]}>Payable Within Due Date</Text>
-    <Text style={[styles.tableCell]}>{individualvoucherData.baseFee}</Text>
+    <Text style={[styles.tableCell]}>{totalFee}</Text>
 </View>
 <View style={styles.tableRow}>
     <Text style={[styles.tableCell, {flex: 1}]}>Due Date</Text>
     <Text style={[styles.tableCell, {flex: 2}]}>{due} </Text>
     <Text style={[styles.tableCell]}>Payable After Due Date</Text>
-    <Text style={[styles.tableCell]}>{parseInt(individualvoucherData.baseFee) + parseInt(individualvoucherData.lateFee)}</Text>
+    <Text style={[styles.tableCell]}>{totalFee}</Text>
 </View>
 </View>
 </View>
@@ -305,16 +333,11 @@ if( annualChargesIndividual && individualvoucherData  ){
 }; 
 const renderBatchVouchers = () => {
 
-// total fee 
-if(batchVocuhers && batchVocuhersAnnualCharges){
-    totalFee= batchVocuhers.baseFee + batchVocuhers.lateFee+batchVocuhersAnnualCharges
-}else if(batchVocuhers.lateFee){
-    totalFee=batchVocuhers.baseFee + batchVocuhers.lateFee
-}else{
-    totalFee=batchVocuhers.baseFee 
-}
+
+    
 
 
+   
 
     // Current Date
     let currentDate= Date.now()
@@ -326,17 +349,48 @@ if(batchVocuhers && batchVocuhersAnnualCharges){
     let dueTimeStamp = new Date(dateNow.getTime() + (24 * 60 * 60 * 1000));
     let due = dueTimeStamp.toISOString().split("T")[0]
     return batchVocuhers.map((individualvoucherData, index) => {
+        let totalFee = 
+        (individualvoucherData.baseFee || 0) + 
+        (batchVocuhersAnnualCharges[index] || 0) + 
+        (batchVoucherEnrollmentCharges[index] || 0) + 
+        (labChargesBatch[index] || 0);
+        let lateFee= individualvoucherData.lateFee ? individualvoucherData.lateFee: 0 
+        // Add lateFee if present
+        if (individualvoucherData.lateFee) {
+            totalFee += individualvoucherData.lateFee;
+        }
+    
+        // Add annual charges if present
+  // Add annual charges if present
+// if (batchVocuhersAnnualCharges && batchVocuhersAnnualCharges[index]) {
+//     totalFee += batchVocuhersAnnualCharges[index];
+// }
 
-        // let totalFee = batchVocuhersAnnualCharges  ? individualvoucherData.annualCharges + individualvoucherData.baseFee : individualvoucherData.baseFee
+// // Add enrollment charges if present
+// if (batchVoucherEnrollmentCharges && batchVoucherEnrollmentCharges[index]) {
+//     totalFee += batchVoucherEnrollmentCharges[index];
+// }
+
+        // if(batcVoucherEnrollmentCharges[index]&& batchVocuhersAnnualCharges[index]){
+        //     totalFee += batchVocuhersAnnualCharges[index]+batchVocuhersAnnualCharges[index];
+        // }
      return (
 <>
            <View>  
+
+
+            
             <View style={styles.header}>
-              
-                <View>
-                    <Text style={styles.title}>Green Peace School</Text>
-                    <Text style={styles.subtitle}>Model Campus</Text>
-                </View>
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+        <Image
+            style={styles.logo}
+            src={process.env.PUBLIC_URL + '/SchoolLogo.png'}
+        />
+        <View>
+            <Text style={styles.titleSchool}>Green Peace School</Text>
+            <Text style={styles.subtitle}>Model Campus</Text>
+        </View>
+    </View>
               
             </View>
             <Text style={styles.title}>Monthly Bill for {batchVocuhersMonth}</Text>
@@ -349,12 +403,35 @@ if(batchVocuhers && batchVocuhersAnnualCharges){
                     <Text style={styles.tableCell}>Amount</Text>
                 </View>
                 <View style={styles.tableRow}>
-                    <Text style={[styles.tableCell, {flex: 1}]} rowspan="6">531</Text>
+                    <Text style={[styles.tableCell, {flex: 1}]} rowspan="6">{individualvoucherData.GRNo}</Text>
                     <Text style={[styles.tableCell, {flex: 2}]} rowspan="4">{individualvoucherData.studentName}</Text>
                     <Text style={[styles.tableCell, {flex: 1}]} rowspan="6">{individualvoucherData.className}</Text>
                     <Text style={[styles.tableCell, {flex: 2}]} rowspan="3">Tuition Fee of {batchVocuhersMonth}</Text>
-                    <Text style={[styles.tableCell]} rowspan="3">{totalFee} </Text>
+                    <Text style={[styles.tableCell]} rowspan="3">{ totalFee  } </Text>
                 </View>
+                {/* extra fees info  */}
+
+                <View style={styles.tableRow}>
+                    <Text style={[styles.tableCell, {flex: 3}]}>Annual Charges</Text> {/* Increased flex */}
+                    <Text style={[styles.tableCell]}>{annualChargesIndividual? annualChargesIndividual[index]:0 }</Text>
+                </View>
+                {/* Add other fee types similarly */}
+                {/* Example: Lab Charges */}
+                <View style={styles.tableRow}>
+                    <Text style={[styles.tableCell, {flex: 3}]}>Lab Charges</Text> {/* Increased flex */}
+                    <Text style={[styles.tableCell]}>{labChargesBatch?labChargesBatch[index]:0}</Text>
+                </View>
+                <View style={styles.tableRow}>
+                    <Text style={[styles.tableCell, {flex: 3}]}>Erollment Charges</Text> {/* Increased flex */}
+                    <Text style={[styles.tableCell]  }>{enrollmentChargesIndvidual? enrollmentChargesIndvidual[index]:0}</Text>    
+                </View>
+                <View style={styles.tableRow}>
+                    <Text style={[styles.tableCell, {flex: 3}]}>Late Fee</Text> {/* Increased flex */}
+                    <Text style={[styles.tableCell]}> {lateFee?lateFee:0} </Text>
+                </View>
+
+
+
                 <View style={styles.tableRow}>
                     <Text style={[styles.tableCell, {flex: 1}]}>Issue Date</Text>
                     <Text style={[styles.tableCell, {flex: 2}]}> 
@@ -368,7 +445,7 @@ if(batchVocuhers && batchVocuhersAnnualCharges){
                     <Text style={[styles.tableCell, {flex: 2}]}> 
                     {due}</Text>
                     <Text style={[styles.tableCell]}>Payable After Due Date</Text>
-                    <Text style={[styles.tableCell]}>{parseInt(individualvoucherData.baseFee) + parseInt(individualvoucherData.lateFee)}</Text>
+                    <Text style={[styles.tableCell]}>{totalFee}</Text>
                 </View>
             </View>
         </View>
@@ -376,11 +453,16 @@ if(batchVocuhers && batchVocuhersAnnualCharges){
 
 <View>
 <View style={styles.header}>
-            
-            <View>
-                <Text style={styles.title}>Green Peace School</Text>
-                <Text style={styles.subtitle}>Model Campus</Text>
-            </View>
+<View style={{ flexDirection: 'row', alignItems: 'center' }}>
+        <Image
+            style={styles.logo}
+            src={process.env.PUBLIC_URL + '/SchoolLogo.png'}
+        />
+        <View>
+            <Text style={styles.titleSchool}>Green Peace School</Text>
+            <Text style={styles.subtitle}>Model Campus</Text>
+        </View>
+    </View>
           
         </View>
 <Text style={styles.title}>Monthly Bill for {batchVocuhersMonth}</Text>
@@ -393,23 +475,47 @@ if(batchVocuhers && batchVocuhersAnnualCharges){
         <Text style={styles.tableCell}>Amount</Text>
     </View>
     <View style={styles.tableRow}>
-        <Text style={[styles.tableCell, {flex: 1}]} rowspan="6">531</Text>
+        <Text style={[styles.tableCell, {flex: 1}]} rowspan="6">{individualvoucherData.GRNo}</Text>
         <Text style={[styles.tableCell, {flex: 2}]} rowspan="4">{individualvoucherData.studentName}</Text>
         <Text style={[styles.tableCell, {flex: 1}]} rowspan="6">{individualvoucherData.className}</Text>
         <Text style={[styles.tableCell, {flex: 2}]} rowspan="3">Tuition Fee of {batchVocuhersMonth}</Text>
         <Text style={[styles.tableCell]} rowspan="3">{totalFee} </Text>
     </View>
+
+    {/* extra fee */}
+
+    <View style={styles.tableRow}>
+                    <Text style={[styles.tableCell, {flex: 3}]}>Annual Charges</Text> {/* Increased flex */}
+                    <Text style={[styles.tableCell]}>{annualChargesIndividual? annualChargesIndividual[index]:0 }</Text>
+                </View>
+                {/* Add other fee types similarly */}
+                {/* Example: Lab Charges */}
+                <View style={styles.tableRow}>
+                    <Text style={[styles.tableCell, {flex: 3}]}>Lab Charges</Text> {/* Increased flex */}
+                    <Text style={[styles.tableCell]}>{labChargesBatch?labChargesBatch[index]:0}</Text>
+                </View>
+                <View style={styles.tableRow}>
+                    <Text style={[styles.tableCell, {flex: 3}]}>Erollment Charges</Text> {/* Increased flex */}
+                    <Text style={[styles.tableCell]}>{enrollmentChargesIndvidual? enrollmentChargesIndvidual[index]:0}</Text>    
+                </View>
+
+                <View style={styles.tableRow}>
+                    <Text style={[styles.tableCell, {flex: 3}]}>Late Fee</Text> {/* Increased flex */}
+                    <Text style={[styles.tableCell]}> {lateFee?lateFee:0} </Text>
+                </View>
+
+
     <View style={styles.tableRow}>
         <Text style={[styles.tableCell, {flex: 1}]}>Issue Date</Text>
         <Text style={[styles.tableCell, {flex: 2}]}>{date} </Text>
         <Text rowspan="3" style={[styles.tableCell,{flex:1}]}>Payable Within Due Date</Text>
-        <Text style={[styles.tableCell]}>{individualvoucherData.baseFee}</Text>
+        <Text style={[styles.tableCell]}>{totalFee}</Text>
     </View>
     <View style={styles.tableRow}>
         <Text style={[styles.tableCell, {flex: 1}]}>Due Date</Text>
         <Text style={[styles.tableCell, {flex: 2}]}>{due} </Text>
         <Text style={[styles.tableCell]}>Payable After Due Date</Text>
-        <Text style={[styles.tableCell]}>{parseInt(individualvoucherData.baseFee) + parseInt(individualvoucherData.lateFee)}</Text>
+        <Text style={[styles.tableCell]}>{totalFee}</Text>
     </View>
 </View>
 </View>
@@ -418,10 +524,16 @@ if(batchVocuhers && batchVocuhersAnnualCharges){
 <View>
 <View style={styles.header}>
             
-            <View>
-                <Text style={styles.title}>Green Peace School</Text>
-                <Text style={styles.subtitle}>Model Campus</Text>
-            </View>
+<View style={{ flexDirection: 'row', alignItems: 'center' }}>
+        <Image
+            style={styles.logo}
+            src={process.env.PUBLIC_URL + '/SchoolLogo.png'}
+        />
+        <View>
+            <Text style={styles.titleSchool}>Green Peace School</Text>
+            <Text style={styles.subtitle}>Model Campus</Text>
+        </View>
+    </View>
           
         </View>
 <Text style={styles.title}>Monthly Bill for {batchVocuhersMonth}</Text>
@@ -435,23 +547,46 @@ if(batchVocuhers && batchVocuhersAnnualCharges){
         <Text style={styles.tableCell}>Amount</Text>
     </View>
     <View style={styles.tableRow}>
-        <Text style={[styles.tableCell, {flex: 1}]} rowspan="6">531</Text>
+        <Text style={[styles.tableCell, {flex: 1}]} rowspan="6">{individualvoucherData.GRNo}</Text>
         <Text style={[styles.tableCell, {flex: 2}]} rowspan="4">{individualvoucherData.studentName}</Text>
         <Text style={[styles.tableCell, {flex: 1}]} rowspan="6">{individualvoucherData.className}</Text>
         <Text style={[styles.tableCell, {flex: 2}]} rowspan="3">Tuition Fee of {batchVocuhersMonth}</Text>
         <Text style={[styles.tableCell]} rowspan="3">{totalFee} </Text>
     </View>
+        {/* extra */}
+
+
+        <View style={styles.tableRow}>
+                    <Text style={[styles.tableCell, {flex: 3}]}>Annual Charges</Text> {/* Increased flex */}
+                    <Text style={[styles.tableCell]}>{annualChargesIndividual? annualChargesIndividual[index]:0 }</Text>
+                </View>
+                {/* Add other fee types similarly */}
+                {/* Example: Lab Charges */}
+                <View style={styles.tableRow}>
+                    <Text style={[styles.tableCell, {flex: 3}]}>Lab Charges</Text> {/* Increased flex */}
+                    <Text style={[styles.tableCell]}>{labChargesBatch?labChargesBatch[index]:0}</Text>
+                </View>
+                <View style={styles.tableRow}>
+                    <Text style={[styles.tableCell, {flex: 3}]}>Erollment Charges</Text> {/* Increased flex */}
+                    <Text style={[styles.tableCell]}>{enrollmentChargesIndvidual? enrollmentChargesIndvidual[index]:0}</Text>    
+                </View>
+                <View style={styles.tableRow}>
+                    <Text style={[styles.tableCell, {flex: 3}]}>Late Fee</Text> {/* Increased flex */}
+                    <Text style={[styles.tableCell]}> {lateFee?lateFee:0} </Text>
+                </View>
+
+
     <View style={styles.tableRow}>
         <Text style={[styles.tableCell, {flex: 1}]}>Issue Date</Text>
         <Text style={[styles.tableCell, {flex: 2}]}>{date} </Text>
         <Text rowspan="3" style={[styles.tableCell,{flex:1}]}>Payable Within Due Date</Text>
-        <Text style={[styles.tableCell]}>{individualvoucherData.baseFee}</Text>
+        <Text style={[styles.tableCell]}>{totalFee}</Text>
     </View>
     <View style={styles.tableRow}>
         <Text style={[styles.tableCell, {flex: 1}]}>Due Date</Text>
         <Text style={[styles.tableCell, {flex: 2}]}>{due} </Text>
         <Text style={[styles.tableCell]}>Payable After Due Date</Text>
-        <Text style={[styles.tableCell]}>{parseInt(individualvoucherData.baseFee) + parseInt(individualvoucherData.lateFee)}</Text>
+        <Text style={[styles.tableCell]}>{totalFee}</Text>
     </View>
 </View>
 </View>

@@ -1,9 +1,11 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState,useRef } from 'react'
 import axios from 'axios';
 import {toast} from 'react-toastify'
 import Loader from './Loader'
 
 export default function CreateStudent() {
+
+
 
     const [name,setName]=useState('')
     const [studentClass,setStudentClass]=useState('')
@@ -24,8 +26,8 @@ export default function CreateStudent() {
     const [annualCharges,setAnnualCharges]=useState('');
     const [lateFee,setLateFee]=useState('');
     const [labCharges,setLabCharges]=useState('');
-
-  
+    const [enrollmentCharges,setEnrollmentFee]=useState('');
+    const [copyPresentationCharges,setCopyPresentationFee]=useState('');
     useEffect(()=>{
       axios.get('http://localhost:5000/api/v1/classes')
       .then(res=>{
@@ -34,15 +36,15 @@ export default function CreateStudent() {
 },[])
 
 
-
+const inputRef= useRef(null)
 const token = document.cookie.split('=')[1];
 
     const handleSubmit = (e)=>{
-   
+      
       setLoading(true)
         e.preventDefault();
         const data={name,class:studentClass,fee,DOB,fatherName,dateOfAdmission,gender,
-                        phoneNo,address,CNIC,GRNo,lateFee,annualCharges,labCharges}
+                        phoneNo,address,CNIC,GRNo,lateFee,annualCharges,labCharges,enrollmentCharges,copyPresentationCharges}
         axios.post('http://localhost:5000/api/v1/students',data,{
           headers:{
             'x-auth-token': token
@@ -56,6 +58,7 @@ const token = document.cookie.split('=')[1];
               position: toast.POSITION.TOP_CENTER,
               autoClose: 2000 
             })
+            inputRef.current.focus();
         }).catch(e => {
           if (e.response) {
                if (e.response.data.message.includes("some other error")) {
@@ -87,6 +90,7 @@ const token = document.cookie.split('=')[1];
                   <input type="text" className="form-control" id="inputName" 
                   placeholder="Enter student name" 
                   onChange={e=>{setName(e.target.value)}}
+                  ref={inputRef}
                   autoComplete='off'/>
                 </div>
 
@@ -202,6 +206,20 @@ const token = document.cookie.split('=')[1];
                   <input type="number" className="form-control" id="inputFees" 
                   placeholder="Enter Lab charges" 
                   onChange={e=>{setLabCharges(e.target.value)}}
+                  autoComplete='off'/>
+                </div>
+                <div className="mb-3">
+                  <label htmlFor="inputFees" className="form-label">Erollment Charges</label>
+                  <input type="number" className="form-control" id="inputFees" 
+                  placeholder="Enter Lab charges" 
+                  onChange={e=>{setEnrollmentFee(e.target.value)}}
+                  autoComplete='off'/>
+                </div>
+                <div className="mb-3">
+                  <label htmlFor="inputFees" className="form-label">Copy Presentation Charges</label>
+                  <input type="number" className="form-control" id="inputFees" 
+                  placeholder="Enter Lab charges" 
+                  onChange={e=>{setCopyPresentationFee(e.target.value)}}
                   autoComplete='off'/>
                 </div>
                

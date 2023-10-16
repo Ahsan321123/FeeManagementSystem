@@ -113,85 +113,76 @@ const FeeReport = () => {
     "Fee Status",
     "Date",
   ];
+const studentCmapus= students && students.map(s=> s.campus[0])
+const generateAndDownloadPDF = () => {
+  const doc = new jsPDF();
 
-  const generateAndDownloadPDF = () => {
-    const doc = new jsPDF();
-    const pageWidth = doc.internal.pageSize.getWidth();
+  // Add the school name and campus at the top center of the page
+  doc.setFontSize(16);
+  doc.setFont("helvetica", "bold");
+  doc.text("Green Peace School", doc.internal.pageSize.getWidth() / 2, 20, "center");
+  doc.text(`Campus: ${studentCmapus[0]}`, doc.internal.pageSize.getWidth() / 2, 30, "center");
 
-    // Add the school name and campus at the top center of the page
-    doc.setFontSize(16);
-    doc.setFont("helvetica", "bold");
-    doc.text("Green Peace School", pageWidth / 2, 20, "center");
-    doc.text(
-      `Campus: ${students.map((s) => s.campus)}`,
-      pageWidth / 2,
-      30,
-      "center"
-    ); // Replace [Your Campus Name] with the actual campus name
-
-    let yPos = 40; // Adjust initial Y position after the title
-
-    // Add headers
-    doc.setFontSize(12);
-    doc.setFont("helvetica", "bold");
-    doc.text("GRNo", 10, yPos);
-    doc.text("Student Name", 40, yPos);
-    doc.text("Month", 70, yPos);
-    doc.text("Fee Status", 100, yPos);
-    doc.text("Date", 130, yPos);
-    doc.text("Fee Received", 160, yPos);
-    yPos += 10; // Adjust Y position after headers
-
-    let totalFeeReceived = 0; // To keep track of the total fee received
-
-    displayStudents.forEach((student) => {
-      doc.setFontSize(10);
-      doc.setFont("helvetica", "normal");
-      doc.text(student.GRNo ? student.GRNo.toString() : "N/A", 10, yPos);
-
-      doc.text(student.studentName, 40, yPos);
-
-      // Nested table for Fee Details
-      const feeDetails = student.feeStatus.filter((status) => {
-        const paymentDate = status.date && new Date(status.date.split("T")[0]);
-        return (
-          paymentDate >= new Date(formattedStartDate) &&
-          paymentDate <= new Date(formattedEndDate)
-        );
+  const headers = ["GRNo", "Name", "Month", " Status", "Date", "Fee Paid", "Fee Type"];
+  const tableData = [];
+  let totalFeeReceived=0;
+  displayStudents.forEach(student => {
+      const feeDetails = student.feeStatus.filter(status => {
+          const paymentDate = status.date && new Date(status.date.split("T")[0]);
+          return (
+              paymentDate >= new Date(formattedStartDate) &&
+              paymentDate <= new Date(formattedEndDate)
+          );
       });
 
       if (feeDetails.length > 0) {
-        feeDetails.forEach((status, index) => {
-          const fee = Number(status.feeReceived) || 0; // Convert feeReceived to a number, if it's not a valid number, use 0
-          totalFeeReceived += fee; // Add to the total fee received
-          doc.text(status.month, 70, yPos + index * 10);
-          doc.text(status.status, 100, yPos + index * 10);
-          doc.text(status.date.split("T")[0], 130, yPos + index * 10);
-          doc.text(
-            status.feeReceived ? status.feeReceived.toString() : "",
-            160,
-            yPos + index * 10
-          );
-        });
-        yPos += feeDetails.length * 10; // Adjust Y position based on the number of fee details
+          feeDetails.forEach((detail, index) => {
+              totalFeeReceived += parseFloat(detail.feeReceived) || 0;
+              tableData.push([
+                  index === 0 ? student.GRNo : "",  // Only display GRNo for the first row
+                  index === 0 ? student.studentName : "",  // Only display student name for the first row
+                  detail.month,
+                  detail.status,
+                  detail.date.split("T")[0],
+                  detail.feeReceived,
+                  detail.feeType.join(", ")  // Assuming feeType is an array
+              ]);
+   
+         
+            });
       }
-      yPos += 10; // Adjust Y position for next student
-    });
+  });
 
-    // Add the total fee received at the bottom
-    doc.setFontSize(14);
-    doc.setFont("helvetica", "bold");
-    doc.text(
-      `Total Fee Received: ${totalFeeReceived}`,
-      pageWidth / 2,
-      yPos + 10,
-      "center"
-    );
+  doc.autoTable(headers, tableData, {
+    startY: 40,
+    styles: { fontSize: 10, textAlign: "center" },
+    headStyles: { textColor: [0, 0, 0], fontSize: 12, fontStyle: 'bold',fillColor:false  }, // Updated headStyles
+    margin: { top: 10, right: 5, bottom: 10, left: 5 },
+    tableWidth: 'auto',
+      columnStyles: {
+          0: { cellWidth: 20 },  // Adjusted cell width for GRNo
+          1: { cellWidth: 30 },  // Adjusted cell width for Student Name
+          2: { cellWidth: 22 },  // Adjusted cell width for Month
+          3: { cellWidth: 30 },  // Adjusted cell width for Fee Status
+          4: { cellWidth: 35 },  // Adjusted cell width for Date
+          5: { cellWidth: 30 },  // Adjusted cell width for Fee Received
+          6: { cellWidth: 'auto' }  // Let Fee Type take the remaining space
+      }
+  });
+  doc.setFontSize(14);
+  doc.setFont("helvetica", "bold");
+  doc.text(
+    `Total Fee Received: ${totalFeeReceived}`,
+    doc.internal.pageSize.getWidth() / 2,
+    doc.autoTable.previous.finalY + 20, // Position it 20 units below the table
+    "center"
+  );
 
-    // Save the PDF
-    const fileName = `school_info_${Date.now()}.pdf`;
-    doc.save(fileName);
-  };
+  // Save the PDF
+  const fileName = `school_info_${Date.now()}.pdf`;
+  doc.save(fileName);
+};
+
 
   return (
     <>
@@ -305,6 +296,7 @@ const FeeReport = () => {
                           <th>Fee Status</th>
                           <th>Date</th>
                           <th>Fee Received</th>
+                          <th>Fee Type</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -324,7 +316,9 @@ const FeeReport = () => {
                               <td>{status.status}</td>
                               <td> {status.date.split("T")[0]}</td>
                               <td>{status.feeReceived}</td>
-                              {console.log(status)}
+                              <td>{status.feeType.map(type => type.split("  ").join(",")).join(', ')}</td>
+
+                        
                             </tr>
                           ))}
                       </tbody>

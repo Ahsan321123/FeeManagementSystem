@@ -24,7 +24,8 @@ const UpdateStudent = ({
     lateFee:student.lateFee,
     annualCharges:student.annualCharges,
     labCharges:student.labCharges,
-
+    enrollmentCharges:student.enrollmentCharges,
+    copyPresentaionCharges:student.copyPresentaionCharges,
     dateOfAdmission:student.dateOfAdmission,
     campus:student.campus
   });
@@ -310,6 +311,45 @@ const UpdateStudent = ({
                   />
                 </div>
 
+                <div className="mb-3">
+                  <label htmlFor="inputName" className="form-label">
+                    Enrollment Charges
+                  </label>
+                  <input
+                    type="text"
+                    className="form-control"
+                    id="inputName"
+                    placeholder="Enrollment fee"
+                    value={studentData.enrollmentCharges}
+                    onChange={(e) => {
+                      setStudentData((prev) => ({
+                          ...prev,
+                        enrollmentCharges: e.target.value,
+                      }));
+                    }}
+                    autoComplete="off"
+                  />
+                </div>
+
+                <div className="mb-3">
+                  <label htmlFor="inputName" className="form-label">
+                  Copy Presentaion Charges
+                  </label>
+                  <input
+                    type="text"
+                    className="form-control"
+                    id="inputName"
+                    placeholder="copypresentation fee"
+                    value={studentData.copyPresentaionCharges}
+                    onChange={(e) => {
+                      setStudentData((prev) => ({
+                          ...prev,
+                        copyPresentaionCharges: e.target.value,
+                      }));
+                    }}
+                    autoComplete="off"
+                  />
+                </div>
 
 
                 <div className="mb-3">

@@ -38,6 +38,9 @@ feeStatus:[{
         type:Number,
         // required:true
     },
+    feeType:{
+        type:Array,
+    },
     comment:{
         type:String
     } 

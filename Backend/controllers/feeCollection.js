@@ -69,12 +69,17 @@ let totalFee=  student.fee +( lateFeeApplied ? lateFee : 0)
 let dueDateString = dueDate.toLocaleDateString()
 return{
     schoolName: schoolName,
+    GRNo:student.GRNo,
     schoolBank: Bank,
     studentName: student.name,
     className: student.className,
      baseFee: student.fee,
     lateFee: lateFeeApplied ? lateFee : 0,
     annualCharges: student.annualCharges,
+    labCharges:student.labCharges ? student.labCharges:0,
+    enrollmentCharges:student.enrollmentCharges ? student.enrollmentCharges:0,
+    copyPresentattionCharges:student.copyPresentationCharges ? student.copyPresentationCharges:0,
+    admissionCharge:student.admissionCharges ? student.admissionCharges:0,
     totalFee: totalFee,
     dueDate: dueDateString,
     currentDate: currentDate,
@@ -108,9 +113,36 @@ const voucherDetails=await calculateFee(student)
     return monthNames[monthIndex];
   }
 
+
+function checkPayment (feeStatus,feeTypes,currentMonth,currentYear) {
+
+let existingPayment= feeStatus.find(status=>status.month===currentMonth && status.year===currentYear )
+if(existingPayment){
+let existingFeeType = existingPayment.feeType
+let existingFeeTypes = [ ...existingFeeType]
+
+// check kay feetypes jo body say mil rhay kia wo already hain 
+feeTypes.forEach(type=>{
+  if(existingFeeType.includes(type)){
+ throw new Error(`${type} already paid this fee`)
+  }else{
+    existingFeeTypes.push(type)
+  }
+})
+
+
+}
+
+
+}
+
+
 exports.updateFeeStatus=async(req,res,next)=>{
 const id= req.params.id
+const feeTypes = req.body.feeType
     try{
+      console.log("Received feeTypes:", feeTypes);
+
       const student = await studentSchema.findById(id)
       if(!student){
         res.status(400).json({
@@ -118,6 +150,10 @@ const id= req.params.id
           message:"no student found"
         })
       }
+
+      // feeType check 
+      let feeTypesReceived=  Object.keys(feeTypes).filter(key=> feeTypes[key] !== "")
+
     //  Month bhi receive krna hai request body
       const currentMonth= req.body.month || getMonthName(new Date().getMonth()) 
       const currentYear= new Date().getFullYear()
@@ -135,6 +171,7 @@ const id= req.params.id
     });
     await existingPayment.save(); 
      }
+     console.log("existingPayment" ,existingPayment )
       
 // checking kay current Month ka fee status object hai ya nhi 
 
@@ -153,6 +190,7 @@ if(currentMonthFeeStatus && currentMonthFeeStatus.status === "Paid"   ){
     feeReceived:req.body.feeReceived,
     status:req.body.status || 'pending',
     date: req.body.date,
+    feeType:feeTypesReceived? feeTypesReceived :["no fee Type"],
     comment:req.body.comment ? req.body.comment : "no comments"
   }
 // pushing payment object to feeStatus array 
@@ -163,13 +201,13 @@ existingPayment.feeStatus.push(currentMonthFeeStatus)
   currentMonthFeeStatus.feeReceived = req.body.feeReceived
   currentMonthFeeStatus.date = req.body.date
   currentMonthFeeStatus.comment = req.body.comment
+  currentMonthFeeStatus.feeType = feeTypesReceived
 }
 
 
 existingPayment.date= req.body.date;
 existingPayment.bankName= req.body.bankName;
- 
-
+checkPayment( existingPayment.feeStatus,feeTypesReceived,currentMonth,currentYear  )
 await existingPayment.save()
 student.status= req.body.status
 await student.save()    
