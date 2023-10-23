@@ -22,6 +22,11 @@ const studentSchema = new mongoose.Schema({
         type:Number,
         // required:[true,"please enter fee "]
     },
+    
+    extraCharges:{
+        type:Number,
+        // required:[true,"please enter fee "]
+    },
     labCharges:{
         type:Number,
         // required:[true,"please enter fee "]

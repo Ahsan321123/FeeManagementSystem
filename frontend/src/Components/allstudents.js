@@ -640,6 +640,7 @@ studentStatus == "pending" &&
                         id="inputName"
                         placeholder="Enter Fee"
                         autoComplete="off"
+                        required
                       />
                     </div>
                     <div className="mb-3">Fee Type </div>
@@ -724,6 +725,7 @@ onChange={(e)=> setFeeType(prev=>({
 <select
             className="form-select"
             id="classFilter"
+            required
             onChange={(e) => setMonth(e.target.value)}
           >
             <option value="">Select Month</option>
@@ -751,6 +753,7 @@ onChange={(e)=> setFeeType(prev=>({
                         className="form-control"
                         id="inputName"
                         autoComplete="off"
+                        required
                       />
                     </div>
                     <div className="mb-3">
@@ -761,6 +764,7 @@ onChange={(e)=> setFeeType(prev=>({
                         className="form-select"
                         id="inputName"
                         value={status}
+                        required
                         onChange={(e) => setStatus(e.target.value)}
                       >
                         <option value="Pending">Pending</option>
@@ -819,14 +823,21 @@ onChange={(e)=> setFeeType(prev=>({
         ></button>
       </div>
       <div className="modal-body">
-        <form onSubmit={singelVoucher ? (e) => handleVoucherModalSubmit(e) : (e) => { handleVouchersAll(e) }}>
+        <form onSubmit={singelVoucher ? (e) => handleVoucherModalSubmit(e) : (e) => 
+          { handleVouchersAll(e) }}>
           <div className="mb-3">
             <label htmlFor="inputName" className="form-label">Month</label>
-            <select className="form-select" id="classFilter" onChange={(e) => setMonth(e.target.value)}>
+            <select className="form-select" id="classFilter" 
+              onChange={(e) => setMonth(e.target.value)}
+              required
+              >
               <option value="">Select Month</option>
               {allMonths.map((m) => (
-                <option key={m} value={m}>{m}</option>
+                <option key={m} value={m}>{m}
+              
+                </option>
               ))}
+              
             </select>
           </div>
           <div className="mb-3">

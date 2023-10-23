@@ -24,7 +24,7 @@ export default function CreateStudent() {
     const [ phoneError ,setPhoneError]=useState(null )
     const [ cnicError ,setCnicError]=useState(null )
     const [annualCharges,setAnnualCharges]=useState('');
-    const [lateFee,setLateFee]=useState('');
+    const [extraCharges,setExtraCharges]=useState('');
     const [labCharges,setLabCharges]=useState('');
     const [enrollmentCharges,setEnrollmentFee]=useState('');
     const [copyPresentationCharges,setCopyPresentationFee]=useState('');
@@ -44,7 +44,7 @@ const token = document.cookie.split('=')[1];
       setLoading(true)
         e.preventDefault();
         const data={name,class:studentClass,fee,DOB,fatherName,dateOfAdmission,gender,
-                        phoneNo,address,CNIC,GRNo,lateFee,annualCharges,labCharges,enrollmentCharges,copyPresentationCharges}
+                        phoneNo,address,CNIC,GRNo,extraCharges,annualCharges,labCharges,enrollmentCharges,copyPresentationCharges}
         axios.post('http://localhost:5000/api/v1/students',data,{
           headers:{
             'x-auth-token': token
@@ -66,10 +66,10 @@ const token = document.cookie.split('=')[1];
               } else if (e.response.data.message === "student with this GrNo# already exist") {
                   setGrError(e.response.data.message );
               }
-              toast.error(e.response.data.message, {
-                  position: toast.POSITION.TOP_CENTER,
-                  autoClose: 2000
-              });
+              // toast.error(e.response.data.message, {
+              //     position: toast.POSITION.TOP_CENTER,
+              //     autoClose: 2000
+              // });
           }
       });
     }
@@ -91,13 +91,15 @@ const token = document.cookie.split('=')[1];
                   placeholder="Enter student name" 
                   onChange={e=>{setName(e.target.value)}}
                   ref={inputRef}
-                  autoComplete='off'/>
+                  autoComplete='off'
+                  required/>
                 </div>
 
                 <div className="mb-3">
                   <label htmlFor="inputName" className="form-label">Father Name</label>
                   <input type="text" className="form-control" id="inputName" 
                   placeholder="Enter Father name" 
+                  required
                   onChange={e=>{ 
                   
                     setFatherName(e.target.value)}}
@@ -110,6 +112,7 @@ const token = document.cookie.split('=')[1];
                   className={`form-control ${grError ? "is-invalid" : ""}`}
                   id="inputName" 
                   placeholder="Enter GRNo" 
+                  required
                   onChange={e=>{
                     setGrError(null)
                     setGRNo(e.target.value)}}
@@ -122,6 +125,7 @@ const token = document.cookie.split('=')[1];
                   <input type="date" className="form-control" id="inputName" 
                   placeholder="Date of Admission" 
                   onChange={e=>{setDateOfAdmission(e.target.value)}}
+                  required
                   autoComplete='off'/>
                 </div>
 
@@ -130,7 +134,10 @@ const token = document.cookie.split('=')[1];
                   <input type="date" className="form-control" id="inputName" 
                   placeholder="Date of Birth" 
                   onChange={e=>{setDOB(e.target.value)}}
-                  autoComplete='off'/>
+                  autoComplete='off'
+                  required
+                  />
+                  
                 </div>
 
                 <div className="mb-3">
@@ -138,7 +145,8 @@ const token = document.cookie.split('=')[1];
                   <input type="text" className="form-control" id="inputName" 
                   placeholder="Gender" 
                   onChange={e=>{setGender(e.target.value)}}
-                  autoComplete='off'/>
+                  autoComplete='off'
+                  required/>
                 </div>
 
                 <div className="mb-3">
@@ -146,7 +154,8 @@ const token = document.cookie.split('=')[1];
                   <input type="number" className="form-control" id="inputName" 
                   placeholder="Phone No." 
                   onChange={e=>{setPhoneNo(e.target.value)}}
-                  autoComplete='off'/>
+                  autoComplete='off'
+                  required/>
                       {phoneError && <div className="text-danger">{phoneError}</div>}
                 </div>
                 </div>
@@ -166,14 +175,16 @@ const token = document.cookie.split('=')[1];
                   <input type="text" className="form-control" id="inputName" 
                   placeholder="Address" 
                   onChange={e=>{setAddress(e.target.value)}}
-                  autoComplete='off'/>
+                  autoComplete='off'
+                  required/>
                 </div>
 
                 <div className="mb-3">
    <label htmlFor="inputClass" className="form-label">Class</label>
    <select 
       id="inputClass" 
-      className="form-control" 
+      className="form-control"
+      required 
       onChange={e => setStudentClass(e.target.value)}
    >
       <option value="">Select Class </option>
@@ -190,7 +201,8 @@ const token = document.cookie.split('=')[1];
                   <input type="number" className="form-control" id="inputFees" 
                   placeholder="Enter fees" 
                   onChange={e=>{setFees(e.target.value)}}
-                  autoComplete='off'/>
+                  autoComplete='off'
+                  required/>
                 </div>
                
                 <div className="mb-3">
@@ -224,10 +236,10 @@ const token = document.cookie.split('=')[1];
                 </div>
                
                 <div className="mb-3">
-                  <label htmlFor="inputFees" className="form-label">Late charges</label>
+                  <label htmlFor="inputFees" className="form-label">Extra charges</label>
                   <input type="number" className="form-control" id="inputFees" 
-                  placeholder="Enter Late fees" 
-                  onChange={e=>{setLateFee(e.target.value)}}
+                  placeholder="Enter Extra fees" 
+                  onChange={e=>{setExtraCharges(e.target.value)}}
                   autoComplete='off'/>
                 </div>
 
